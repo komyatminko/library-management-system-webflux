@@ -1,0 +1,53 @@
+package com.myat.java.springBoot.library.controller.rest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
+import com.myat.java.springBoot.library.dao.UserDao;
+import com.myat.java.springBoot.library.dto.JWTToken;
+import com.myat.java.springBoot.library.jwt.JwtUtil;
+import com.myat.java.springBoot.library.model.User;
+import com.myat.java.springBoot.library.service.AuthService;
+
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
+import reactor.core.publisher.Mono;
+
+@CrossOrigin(value = { "http://localhost:4200/" })
+@RestController
+@RequestMapping("/api")
+public class AuthController {
+	
+	@Autowired
+	private Validator validation;
+	
+	@Autowired
+	AuthService authService;
+	
+    @PostMapping("/register")
+    public Mono<JWTToken> register(@Valid @RequestBody User user) {
+    	System.out.println("register");
+        if (!this.validation.validate(user).isEmpty()) {
+            return Mono.error(new RuntimeException("Bad request"));
+        }
+        return this.authService.register(user);
+    }
+    
+   
+    @PostMapping("/login")
+    public Mono<JWTToken> login(@Valid @RequestBody User user) {
+    	System.out.println("login");
+        if (!this.validation.validate(user).isEmpty()) {
+            return Mono.error(new RuntimeException("Bad request"));
+        }
+
+        return this.authService.login(user);
+    }
+	
+}
