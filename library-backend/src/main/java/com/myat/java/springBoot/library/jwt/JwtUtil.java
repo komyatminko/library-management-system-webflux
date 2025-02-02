@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.BadCredentialsException;
@@ -46,10 +47,11 @@ public class JwtUtil {
     }
 
     public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
+        List<String> authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.toList());
 
+        System.out.println("roles "  + authorities);
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 

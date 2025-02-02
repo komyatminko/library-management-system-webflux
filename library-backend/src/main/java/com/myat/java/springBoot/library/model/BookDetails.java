@@ -56,6 +56,11 @@ public class BookDetails {
 	public void setPage(Integer page) {
 		this.page = page;
 	}
+
+	@Override
+	public String toString() {
+		return "BookDetails [id=" + id + ", details=" + details + ", genres=" + genres + ", page=" + page + "]";
+	}
 	
 	
 }

@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.myat.java.springBoot.library.model.Author;
+import com.myat.java.springBoot.library.model.Book;
 import com.myat.java.springBoot.library.model.BookDetails;
 
 import jakarta.validation.constraints.NotBlank;
@@ -19,16 +20,44 @@ public class BookDto {
 	private String id;
 	
 	private String name;
+	
+	private String imgUrl;
 
 	private BookDetailsDto bookDetails;
 
 	private AuthorDto author;
+	
+	private Double rating;
+	
+	private Boolean isAvailable;
+	
+	private Integer availableCount;
+	
+	private List<BorrowedUserDto> borrowedBy;
 
 	private Date updatedAt;
 
 	private Date createdAt;
 	
 	public BookDto() {}
+	
+	public BookDto(String id, String name, String imgUrl, BookDetailsDto bookDetails, AuthorDto author, Double rating,
+			Boolean isAvailable, Integer availableCount, List<BorrowedUserDto> borrowedBy, Date updatedAt,
+			Date createdAt) {
+		this.id = id;
+		this.name = name;
+		this.imgUrl = imgUrl;
+		this.bookDetails = bookDetails;
+		this.author = author;
+		this.rating = rating;
+		this.isAvailable = isAvailable;
+		this.availableCount = availableCount;
+		this.borrowedBy = borrowedBy;
+		this.updatedAt = updatedAt;
+		this.createdAt = createdAt;
+	}
+
+
 
 	public String getId() {
 		return id;
@@ -76,6 +105,46 @@ public class BookDto {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
+	}
+	
+	public Boolean getIsAvailable() {
+		return isAvailable;
+	}
+
+	public void setIsAvailable(Boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+
+	public Integer getAvailableCount() {
+		return availableCount;
+	}
+
+	public void setAvailableCount(Integer availableCount) {
+		this.availableCount = availableCount;
+	}
+
+	public Double getRating() {
+		return rating;
+	}
+
+	public void setRating(Double rating) {
+		this.rating = rating;
+	}
+	
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
+	}
+
+	public List<BorrowedUserDto> getBorrowedBy() {
+		return borrowedBy;
+	}
+
+	public void setBorrowedBy(List<BorrowedUserDto> borrowedBy) {
+		this.borrowedBy = borrowedBy;
 	}
 	
 	

@@ -1,6 +1,8 @@
 package com.myat.java.springBoot.library.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +21,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import reactor.core.publisher.Mono;
 
-@CrossOrigin(value = { "http://localhost:4200/" })
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
+@CrossOrigin(value = { "http://localhost:4200" })
 public class AuthController {
 	
 	@Autowired

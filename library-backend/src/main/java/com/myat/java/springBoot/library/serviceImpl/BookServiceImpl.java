@@ -1,5 +1,7 @@
 package com.myat.java.springBoot.library.serviceImpl;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.internal.bytebuddy.asm.Advice.This;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +12,20 @@ import org.springframework.stereotype.Service;
 import com.myat.java.springBoot.library.dao.AuthorDao;
 import com.myat.java.springBoot.library.dao.BookDao;
 import com.myat.java.springBoot.library.dao.BookDetailsDao;
+import com.myat.java.springBoot.library.dao.BorrowingDao;
+import com.myat.java.springBoot.library.dao.UserDao;
 import com.myat.java.springBoot.library.dto.AuthorDto;
 import com.myat.java.springBoot.library.dto.BookDetailsDto;
 import com.myat.java.springBoot.library.dto.BookDto;
+import com.myat.java.springBoot.library.dto.BorrowedUserDto;
 import com.myat.java.springBoot.library.exception.AuthorNotFoundException;
 import com.myat.java.springBoot.library.exception.BookDetailsNotFoundException;
 import com.myat.java.springBoot.library.exception.BookNotFoundException;
 import com.myat.java.springBoot.library.model.Author;
 import com.myat.java.springBoot.library.model.Book;
 import com.myat.java.springBoot.library.model.BookDetails;
+import com.myat.java.springBoot.library.model.Borrowing;
+import com.myat.java.springBoot.library.model.User;
 import com.myat.java.springBoot.library.response.ApiResponse;
 import com.myat.java.springBoot.library.service.BookService;
 
@@ -37,34 +44,60 @@ public class BookServiceImpl implements BookService{
 	@Autowired
 	AuthorDao authorDao;
 	
+	@Autowired
+	BorrowingDao borrowingDao;
+	
+	@Autowired
+	UserDao userDao;
+	
 	ModelMapper modelMapper = new ModelMapper();
 	
-//	@Override
-//	public Flux<BookDto> getAllBook() {
-//		
-//		return this.bookDao.findAll()
-//				.map(book -> this.bookEntityToDto(book));
-//	}
-//	
-//	@Override
-//	public Mono<BookDto> getBookById(String id) {
-//		
-//		return this.bookDao.findById(id)
-//				.map(book -> this.bookEntityToDto(book))
-//				.doOnError(err -> {
-//					throw new BookNotFoundException("Failed to retrieve book by id.");
-//				});
-//	}
-//
-//	@Override
-//	public Mono<BookDto> getBookByName(String name) {
-//		
-//		return this.bookDao.findByName(name)
-//				.map(book -> this.bookEntityToDto(book))
-//				.doOnError(err -> {
-//					throw new BookNotFoundException("Failed to retrieve book by name.");
-//				});
-//	}
+	@Override
+	public Flux<BookDto> getAllBook() {
+		
+		return this.bookDao.findAll()
+				.map(book -> this.bookEntityToDto(book));
+	}
+	
+	@Override
+	public Mono<BookDto> getBookById(String id) {
+		
+		return this.bookDao.findById(id)
+				.switchIfEmpty(Mono.error(new BookNotFoundException("Failed to retrieve book by id.")))
+				.map(book -> this.bookEntityToDto(book));
+	}
+
+	@Override
+	public Mono<BookDto> getBookByName(String name) {
+		
+		return this.bookDao.findByName(name)
+				.switchIfEmpty(Mono.error(new BookNotFoundException("Failed to retrieve book by name.")))
+				.map(book -> this.bookEntityToDto(book));
+	}
+	
+	@Override
+	public Mono<BookDto> getBookByIdWithBorrowedUsers(String id) {
+		Mono<Book> bookEntity = this.bookDao.findById(id);
+		Flux<Borrowing> borrowings = this.borrowingDao.findByBookId(id);
+
+		Mono<List<BorrowedUserDto>> userList = borrowings
+				.flatMap(borrowing -> this.userDao.findById(borrowing.getUserId()) // Ensure this gets the user ID
+						.map(user -> new BorrowedUserDto(user.getId(), user.getUsername(), borrowing.getIssueDate(),
+								borrowing.getReturnDate(), borrowing.getIsOverdue())))
+				.collectList();
+		
+		Mono<BookDto> dto = bookEntity.map(book -> this.bookEntityToDto(book));
+
+		return dto.flatMap(bookDto ->
+		    userList.map(users -> {
+		        bookDto.setBorrowedBy(users);  
+		        return bookDto;  
+		    })
+		);
+
+
+	}
+
 
 	@Override
 	public Mono<BookDto> saveBook(BookDto bookDto) {
@@ -132,8 +165,11 @@ public class BookServiceImpl implements BookService{
 			AuthorDto authorDto = modelMapper.map(book.getAuthor(), AuthorDto.class);
 			bookDto.setAuthor(authorDto);
 		}
+		
 		return bookDto;
 	}
+
+	
 
 	
 

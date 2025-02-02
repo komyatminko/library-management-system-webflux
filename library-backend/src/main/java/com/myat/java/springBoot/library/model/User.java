@@ -14,13 +14,15 @@ public class User {
 	private String password;
 	private String email;
 	private List<Role> roles;
+	private Integer issueBooksCount;
 
-	public User(String id, String username, String password, String email, List<Role> roles) {
+	public User(String id, String username, String password, String email, List<Role> roles, Integer issueBookscount) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.roles = roles;
+		this.issueBooksCount = issueBookscount;
 	}
 	
 	public User() {}
@@ -63,6 +65,14 @@ public class User {
 
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
+	}
+
+	public Integer getIssueBooksCount() {
+		return issueBooksCount;
+	}
+
+	public void setIssueBooksCount(Integer issueBooksCount) {
+		this.issueBooksCount = issueBooksCount;
 	}
 
 }

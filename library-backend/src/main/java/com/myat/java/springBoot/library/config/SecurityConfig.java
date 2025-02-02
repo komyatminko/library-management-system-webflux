@@ -37,15 +37,17 @@ public class SecurityConfig {
 	private static final String[] AUTH_WHITELIST = {
             "/public/**",
             "/v1/books/**",
+            "/admin/books/**",
     };
 	
 	@Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		
         return http
+        		.cors().disable()
                 .csrf().disable()
                 .authorizeExchange()
-                .pathMatchers("/api/register", "/api/login").permitAll()
+                .pathMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 .pathMatchers(AUTH_WHITELIST).permitAll()
                 .anyExchange().authenticated()
                 .and()

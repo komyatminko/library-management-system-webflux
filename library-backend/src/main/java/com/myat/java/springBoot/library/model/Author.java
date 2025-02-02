@@ -20,7 +20,6 @@ public class Author {
 	@NotBlank
 	private String lastName;
 	
-	@NotNull
 	private Date birthday;
 	
 	public Author() {}
@@ -55,6 +54,12 @@ public class Author {
 
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
+	}
+
+	@Override
+	public String toString() {
+		return "Author [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", birthday=" + birthday
+				+ "]";
 	}
 	
 	

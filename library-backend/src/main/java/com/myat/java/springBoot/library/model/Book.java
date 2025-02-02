@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-
 @Document(collection = "books")
 public class Book {
 
@@ -23,19 +22,26 @@ public class Book {
 	private String name;
 	
 	@NotBlank
+	private String imgUrl;
+	
+	@NotBlank
 	@Size(max = 250)
 	private BookDetails bookDetails;
 	
 	@NotBlank
 	private Author author;
 	
+	private Double rating;
+	
+	private Boolean isAvailable;
+	
+	private Integer availableCount;
+	
 	@LastModifiedDate
 	private Date updatedAt;
 	
 	@CreatedDate
 	private Date createdAt;
-	
-	private Boolean isAvailable;
 	
 	public Book() {}
 
@@ -93,6 +99,36 @@ public class Book {
 
 	public void setIsAvailable(Boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public Integer getAvailableCount() {
+		return availableCount;
+	}
+
+	public void setAvailableCount(Integer availableCount) {
+		this.availableCount = availableCount;
+	}
+
+	public Double getRating() {
+		return rating;
+	}
+
+	public void setRating(Double rating) {
+		this.rating = rating;
+	}
+	
+	
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "Book [id=" + id + ", name=" + name + ", bookDetails=" + bookDetails + ", author=" + author + "]";
 	}
 	
 	

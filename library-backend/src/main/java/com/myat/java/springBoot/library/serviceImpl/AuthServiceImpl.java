@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -70,6 +71,7 @@ public class AuthServiceImpl implements AuthService{
 
         return authentication.map(auth -> {
             String jwt = tokenProvider.createToken(auth);
+            
             return new JWTToken(jwt);
         });
 	}
