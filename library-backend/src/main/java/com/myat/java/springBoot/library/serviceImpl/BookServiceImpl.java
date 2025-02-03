@@ -61,10 +61,16 @@ public class BookServiceImpl implements BookService{
 	
 	@Override
 	public Mono<BookDto> getBookById(String id) {
-		
+		Mono<List<BorrowedUserDto>> userList = getBorrowedUsers(id);
 		return this.bookDao.findById(id)
 				.switchIfEmpty(Mono.error(new BookNotFoundException("Failed to retrieve book by id.")))
-				.map(book -> this.bookEntityToDto(book));
+				.map(book -> this.bookEntityToDto(book))
+				.flatMap(bookDto ->
+							userList.map(users -> {
+								bookDto.setBorrowedBy(users);  
+								return bookDto;  
+							})
+				);
 	}
 
 	@Override
@@ -78,13 +84,7 @@ public class BookServiceImpl implements BookService{
 	@Override
 	public Mono<BookDto> getBookByIdWithBorrowedUsers(String id) {
 		Mono<Book> bookEntity = this.bookDao.findById(id);
-		Flux<Borrowing> borrowings = this.borrowingDao.findByBookId(id);
-
-		Mono<List<BorrowedUserDto>> userList = borrowings
-				.flatMap(borrowing -> this.userDao.findById(borrowing.getUserId()) // Ensure this gets the user ID
-						.map(user -> new BorrowedUserDto(user.getId(), user.getUsername(), borrowing.getIssueDate(),
-								borrowing.getReturnDate(), borrowing.getIsOverdue())))
-				.collectList();
+		Mono<List<BorrowedUserDto>> userList = getBorrowedUsers(id);
 		
 		Mono<BookDto> dto = bookEntity.map(book -> this.bookEntityToDto(book));
 
@@ -97,7 +97,6 @@ public class BookServiceImpl implements BookService{
 
 
 	}
-
 
 	@Override
 	public Mono<BookDto> saveBook(BookDto bookDto) {
@@ -138,6 +137,17 @@ public class BookServiceImpl implements BookService{
 											});
 				});
 	}
+	
+	private Mono<List<BorrowedUserDto>> getBorrowedUsers(String id) {
+		Flux<Borrowing> borrowings = this.borrowingDao.findByBookId(id);
+
+		Mono<List<BorrowedUserDto>> userList = borrowings
+				.flatMap(borrowing -> this.userDao.findById(borrowing.getUserId()) // Ensure this gets the user ID
+						.map(user -> new BorrowedUserDto(user.getId(), user.getUsername(), borrowing.getIssueDate(),
+								borrowing.getReturnDate(), borrowing.getIsOverdue())))
+				.collectList();
+		return userList;
+	}
 
 	private Book bookDtoToEntity(BookDto bookDto) {
 		
@@ -168,10 +178,6 @@ public class BookServiceImpl implements BookService{
 		
 		return bookDto;
 	}
-
-	
-
-	
 
 	
 }

@@ -31,7 +31,7 @@ public class BookController {
 	@Autowired
 	BookService bookService;
 	
-	@GetMapping("/findAllBooks")
+	@GetMapping
 	public ResponseEntity<Flux<ApiResponse>> getAllBooks() {
 	    Flux<BookDto> books = this.bookService.getAllBook();
 
@@ -39,7 +39,7 @@ public class BookController {
 	            .body(books.map(book -> ApiResponse.success("Books have been retrieved successfully.", 200, book)));
 	}
 
-	@GetMapping("/findBookBy/{id}")
+	@GetMapping("/{id}")
 	public Mono<ResponseEntity<ApiResponse>> getBookById(@PathVariable String id){
 		
 		return this.bookService.getBookById(id)
@@ -52,19 +52,20 @@ public class BookController {
 		
 	}
 	
-	@GetMapping("/findBy")
-	public Mono<ResponseEntity<ApiResponse>> getBookByName(@RequestParam String name){
-		
-		return this.bookService.getBookByName(name)
-				.map(book -> {
-					return ResponseEntity.ok().body(ApiResponse.success("Book retrieved successfully.", 200, book));
-				})
-				.onErrorResume(BookNotFoundException.class,err -> {
-					return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(404, "Book not found", err.getMessage())));
-				});
-		
-	}
+//	@GetMapping
+//	public Mono<ResponseEntity<ApiResponse>> getBookByName(@RequestParam String name){
+//		
+//		return this.bookService.getBookByName(name)
+//				.map(book -> {
+//					return ResponseEntity.ok().body(ApiResponse.success("Book retrieved successfully.", 200, book));
+//				})
+//				.onErrorResume(BookNotFoundException.class,err -> {
+//					return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(404, "Book not found", err.getMessage())));
+//				});
+//		
+//	}
 	
+	///findBookByWithBorrowedUsers
 	@GetMapping("/findBookByWithBorrowedUsers/{id}")
 	public Mono<ResponseEntity<ApiResponse>> getBookByIdWithBorrowedUsers(@PathVariable String id){
 		
