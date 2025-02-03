@@ -1,0 +1,28 @@
+<div class="card card-body">
+    <div class="row">
+        <div class="col-6">
+            <h4 class="card-title">Books List</h4>
+        </div>
+        <div class="col-6 text-end">
+            <button type="button" class="btn btn-outline-secondary">Add New Book</button>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Available</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <tr app-table-row *ngFor="let book of books" [data]="book">
+            </tr>
+        </tbody>
+        
+    </table>
+</div>
