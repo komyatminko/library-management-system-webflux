@@ -1,5 +1,0 @@
-ng generate component components/name
-ng generate service services/name
-ng generate module modules/name
-ng generate interface models/name
-ng generate class models/name
