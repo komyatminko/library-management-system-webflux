@@ -31,8 +31,8 @@ public class QueryTest {
 	
 	@Test
 	void borrowingTest() {
-		String userId = "6797932ec6c8e2529fb09dcf"; //user one
-		String bookId = "679f396e0568f856a50323ec"; //book three
+		String userId = "67978e5bc6c8e2529fb09dc9"; //user one
+		String bookId = "67a1be39ff865a2ae9addc9a"; //book three
 		Date issueDate = new Date(2025,2,1);
 		Date returnDate = new Date(2025,2,6);
 		Boolean isOverdue = false;

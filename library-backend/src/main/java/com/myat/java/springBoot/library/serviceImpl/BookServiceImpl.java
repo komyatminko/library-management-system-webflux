@@ -1,5 +1,6 @@
 package com.myat.java.springBoot.library.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -21,9 +22,11 @@ import com.myat.java.springBoot.library.dto.BorrowedUserDto;
 import com.myat.java.springBoot.library.exception.AuthorNotFoundException;
 import com.myat.java.springBoot.library.exception.BookDetailsNotFoundException;
 import com.myat.java.springBoot.library.exception.BookNotFoundException;
+import com.myat.java.springBoot.library.exception.BorrowingNotFoundException;
 import com.myat.java.springBoot.library.model.Author;
 import com.myat.java.springBoot.library.model.Book;
 import com.myat.java.springBoot.library.model.BookDetails;
+import com.myat.java.springBoot.library.model.BorrowedUser;
 import com.myat.java.springBoot.library.model.Borrowing;
 import com.myat.java.springBoot.library.model.User;
 import com.myat.java.springBoot.library.response.ApiResponse;
@@ -56,12 +59,20 @@ public class BookServiceImpl implements BookService{
 	public Flux<BookDto> getAllBook() {
 		
 		return this.bookDao.findAll()
-				.map(book -> this.bookEntityToDto(book));
-	}
+				.map(book -> this.bookEntityToDto(book))
+				.flatMap(bookDto -> this.getBorrowedUsersDto(bookDto.getId())
+									.map(users -> {
+										bookDto.setBorrowedBy(users);  
+										return bookDto;  
+									})
+				);
+		
+	}	
+	
 	
 	@Override
 	public Mono<BookDto> getBookById(String id) {
-		Mono<List<BorrowedUserDto>> userList = getBorrowedUsers(id);
+		Mono<List<BorrowedUserDto>> userList = getBorrowedUsersDto(id);
 		return this.bookDao.findById(id)
 				.switchIfEmpty(Mono.error(new BookNotFoundException("Failed to retrieve book by id.")))
 				.map(book -> this.bookEntityToDto(book))
@@ -83,8 +94,8 @@ public class BookServiceImpl implements BookService{
 	
 	@Override
 	public Mono<BookDto> getBookByIdWithBorrowedUsers(String id) {
-		Mono<Book> bookEntity = this.bookDao.findById(id);
-		Mono<List<BorrowedUserDto>> userList = getBorrowedUsers(id);
+		Mono<Book> bookEntity = this.bookDao.findById(id).switchIfEmpty(Mono.error(new BookNotFoundException("Book not found.")));
+		Mono<List<BorrowedUserDto>> userList = getBorrowedUsersDto(id);
 		
 		Mono<BookDto> dto = bookEntity.map(book -> this.bookEntityToDto(book));
 
@@ -102,6 +113,7 @@ public class BookServiceImpl implements BookService{
 	public Mono<BookDto> saveBook(BookDto bookDto) {
 		
 		Book book = this.bookDtoToEntity(bookDto);
+		System.out.println(book);
 		return Mono.zip(this.detailsDao.save(book.getBookDetails()), this.authorDao.save(book.getAuthor()))
 				.flatMap(tuple -> {
 					book.setBookDetails(tuple.getT1());
@@ -113,33 +125,44 @@ public class BookServiceImpl implements BookService{
 				
 	}
 	
+//	@Override
+//	public Mono<BookDto> deleteBookById(String id) {
+//		System.out.println("delete service");
+//		return this.bookDao.findById(id)
+//				.flatMap(book -> {
+//					return Mono.zip(this.detailsDao.findById(book.getBookDetails().getId())
+//										.switchIfEmpty(Mono.error(new BookDetailsNotFoundException("Book details not found."))), 
+//									this.authorDao.findById(book.getAuthor().getId())
+//										.switchIfEmpty(Mono.error(new AuthorNotFoundException("Author not found.")))
+//									)
+//							
+//							.flatMap(tuple -> {
+//								BookDetails details = tuple.getT1();
+//								Author author = tuple.getT2();
+//								return Mono
+//										.when(this.detailsDao.deleteById(details.getId()),
+//												this.authorDao.deleteById(author.getId()), 
+//												this.bookDao.deleteById(id))
+//										.thenReturn(this.bookEntityToDto(book));
+//							});
+//				});
+//	}
+	
 	@Override
 	public Mono<BookDto> deleteBookById(String id) {
-		System.out.println("delete service");
-		return this.bookDao.findById(id)
-				.switchIfEmpty(Mono.error(new BookNotFoundException("Book not found.")))
-				.flatMap(book -> {;
-					return Mono.zip(this.detailsDao.findById(book.getBookDetails().getId())
-										.switchIfEmpty(Mono.error(new BookDetailsNotFoundException("Book details not found."))), 
-									this.authorDao.findById(book.getAuthor().getId())
-									)
-										.switchIfEmpty(Mono.error(new AuthorNotFoundException("Author not found.")))
-											.flatMap(tuple -> {
-												BookDetails details = tuple.getT1();
-												Author author = tuple.getT2();
-												
-												return Mono.when(
-															this.detailsDao.deleteById(details.getId()),
-															this.authorDao.deleteById(author.getId()),
-															this.bookDao.deleteById(id)
-														)
-														.thenReturn(this.bookEntityToDto(book));
-											});
+		return this.getBookByIdWithBorrowedUsers(id)
+				.flatMap(bookDto -> {
+					return Mono
+							.when(this.detailsDao.deleteById(bookDto.getBookDetails().getId()),
+							this.authorDao.deleteById(bookDto.getAuthor().getId()), 
+							this.borrowingDao.deleteByBookId(id),
+							this.bookDao.deleteById(id))
+					.thenReturn(bookDto);
 				});
 	}
 	
-	private Mono<List<BorrowedUserDto>> getBorrowedUsers(String id) {
-		Flux<Borrowing> borrowings = this.borrowingDao.findByBookId(id);
+	private Mono<List<BorrowedUserDto>> getBorrowedUsersDto(String id) {
+		Flux<Borrowing> borrowings = this.getBorrowingByBookId(id);
 
 		Mono<List<BorrowedUserDto>> userList = borrowings
 				.flatMap(borrowing -> this.userDao.findById(borrowing.getUserId()) // Ensure this gets the user ID
@@ -148,7 +171,23 @@ public class BookServiceImpl implements BookService{
 				.collectList();
 		return userList;
 	}
-
+	
+	private Mono<BookDetails> getBookDetailsById(String id){
+		return this.detailsDao.findById(id)
+					.switchIfEmpty(Mono.error(new BookDetailsNotFoundException("Book details not found.")));
+	}
+	
+	private Mono<Author> getAuthorById(String id){
+		return this.authorDao.findById(id)
+					.switchIfEmpty(Mono.error(new AuthorNotFoundException("Author not found.")));
+	}
+	
+	private Flux<Borrowing> getBorrowingByBookId(String bookId){
+		return this.borrowingDao.findByBookId(bookId)
+				.switchIfEmpty(Mono.empty());
+	}
+	
+	
 	private Book bookDtoToEntity(BookDto bookDto) {
 		
 		Book book = modelMapper.map(bookDto, Book.class);
@@ -160,6 +199,15 @@ public class BookServiceImpl implements BookService{
 			Author author = modelMapper.map(bookDto.getAuthor(), Author.class);
 			book.setAuthor(author);
 		}
+//		if(bookDto.getBorrowedBy() != null || bookDto.getBorrowedBy().size() != 0) {
+//			List<BorrowedUserDto> userDtos = bookDto.getBorrowedBy(); 
+//			List<BorrowedUser> users = new ArrayList<>();
+//			for(BorrowedUserDto userDto : userDtos) {
+//				BorrowedUser user = this.modelMapper.map(userDto, BorrowedUser.class);
+//				users.add(user);
+//			}
+//			
+//		}
 		
 		return book;
 	}
