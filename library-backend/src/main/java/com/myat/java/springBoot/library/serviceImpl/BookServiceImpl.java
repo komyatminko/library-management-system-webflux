@@ -1,14 +1,21 @@
 package com.myat.java.springBoot.library.serviceImpl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.bytebuddy.asm.Advice.This;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.myat.java.springBoot.library.dao.AuthorDao;
 import com.myat.java.springBoot.library.dao.BookDao;
@@ -54,6 +61,7 @@ public class BookServiceImpl implements BookService{
 	UserDao userDao;
 	
 	ModelMapper modelMapper = new ModelMapper();
+	private static final String BASE_UPLOAD_DIR = "uploads/";
 	
 	@Override
 	public Flux<BookDto> getAllBook() {
@@ -187,6 +195,41 @@ public class BookServiceImpl implements BookService{
 				.switchIfEmpty(Mono.empty());
 	}
 	
+//	public Map<String,String> uploadImage(MultipartFile file, String uploadFolderName) throws IOException{
+//		String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+//		Path filePath = Paths.get(uploadFolderName + fileName);
+//		Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//		String fileUrl = "/" + uploadFolderName + "/" + fileName;
+//		return Collections.singletonMap("imgUrl", fileUrl);
+//	} 
+	
+	public Mono<String> uploadImage(FilePart filePart, String uploadFolderName) {
+        // Generate a unique file name
+        String fileName = UUID.randomUUID().toString() + "_" + filePart.filename();
+        Path uploadPath = Paths.get(BASE_UPLOAD_DIR + uploadFolderName);
+
+        // Ensure the directory exists
+        return Mono.fromCallable(() -> {
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            return uploadPath;
+        }).flatMap(path -> {
+            Path filePath = path.resolve(fileName);
+            return filePart.transferTo(filePath).thenReturn(BASE_UPLOAD_DIR + uploadFolderName + "/" + fileName);
+        });
+    }
+	
+	public Mono<Boolean> deleteImage(String filePath) {
+        return Mono.fromCallable(() -> {
+            Path path = Paths.get(BASE_UPLOAD_DIR + filePath);
+            if (Files.exists(path)) {
+                return Files.deleteIfExists(path);
+            }
+            return false;
+        });
+    }
+	
 	
 	private Book bookDtoToEntity(BookDto bookDto) {
 		
@@ -199,15 +242,6 @@ public class BookServiceImpl implements BookService{
 			Author author = modelMapper.map(bookDto.getAuthor(), Author.class);
 			book.setAuthor(author);
 		}
-//		if(bookDto.getBorrowedBy() != null || bookDto.getBorrowedBy().size() != 0) {
-//			List<BorrowedUserDto> userDtos = bookDto.getBorrowedBy(); 
-//			List<BorrowedUser> users = new ArrayList<>();
-//			for(BorrowedUserDto userDto : userDtos) {
-//				BorrowedUser user = this.modelMapper.map(userDto, BorrowedUser.class);
-//				users.add(user);
-//			}
-//			
-//		}
 		
 		return book;
 	}
@@ -226,6 +260,9 @@ public class BookServiceImpl implements BookService{
 		
 		return bookDto;
 	}
+
+
+	
 
 	
 }
