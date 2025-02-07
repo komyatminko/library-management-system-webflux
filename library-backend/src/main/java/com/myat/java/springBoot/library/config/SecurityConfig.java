@@ -37,6 +37,7 @@ public class SecurityConfig {
 	private static final String[] AUTH_WHITELIST = {
             "/public/**",
             "/v1/books/**",
+            "/v1/users/**",
             "/admin/books/**",
     };
 	

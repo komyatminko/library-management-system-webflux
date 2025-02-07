@@ -132,30 +132,7 @@ public class BookServiceImpl implements BookService{
 				.map(savedBook -> this.bookEntityToDto(savedBook));
 				
 	}
-	
-//	@Override
-//	public Mono<BookDto> deleteBookById(String id) {
-//		System.out.println("delete service");
-//		return this.bookDao.findById(id)
-//				.flatMap(book -> {
-//					return Mono.zip(this.detailsDao.findById(book.getBookDetails().getId())
-//										.switchIfEmpty(Mono.error(new BookDetailsNotFoundException("Book details not found."))), 
-//									this.authorDao.findById(book.getAuthor().getId())
-//										.switchIfEmpty(Mono.error(new AuthorNotFoundException("Author not found.")))
-//									)
-//							
-//							.flatMap(tuple -> {
-//								BookDetails details = tuple.getT1();
-//								Author author = tuple.getT2();
-//								return Mono
-//										.when(this.detailsDao.deleteById(details.getId()),
-//												this.authorDao.deleteById(author.getId()), 
-//												this.bookDao.deleteById(id))
-//										.thenReturn(this.bookEntityToDto(book));
-//							});
-//				});
-//	}
-	
+
 	@Override
 	public Mono<BookDto> deleteBookById(String id) {
 		return this.getBookByIdWithBorrowedUsers(id)
@@ -173,10 +150,15 @@ public class BookServiceImpl implements BookService{
 		Flux<Borrowing> borrowings = this.getBorrowingByBookId(id);
 
 		Mono<List<BorrowedUserDto>> userList = borrowings
-				.flatMap(borrowing -> this.userDao.findById(borrowing.getUserId()) // Ensure this gets the user ID
-						.map(user -> new BorrowedUserDto(user.getId(), user.getUsername(), borrowing.getIssueDate(),
-								borrowing.getReturnDate(), borrowing.getIsOverdue())))
-				.collectList();
+												.flatMap(borrowing -> this.userDao.findById(borrowing.getUserId()) 
+																		.map(user -> new BorrowedUserDto(user.getId(), 
+																										user.getUsername(), 
+																										borrowing.getIssueDate(),
+																										borrowing.getReturnDate(), 
+																										borrowing.getIsOverdue())
+																		)
+												)
+												.collectList();
 		return userList;
 	}
 	
