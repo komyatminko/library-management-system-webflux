@@ -1,3 +1,5 @@
+import { Book } from '@/app/models/book';
+import { BookService } from '@/app/services/admin/book.service';
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
@@ -9,6 +11,10 @@ import { Router, RouterLink } from '@angular/router';
 })
 export class BookListCardComponent {
 
-  constructor(private router: Router){}
+  book!: Book[];
+  constructor(private router: Router, private bookService: BookService){
+    this.bookService.fetchBooksFromServer();
+    this.bookService.books.subscribe(books => this.book = books)
+  }
   
 }

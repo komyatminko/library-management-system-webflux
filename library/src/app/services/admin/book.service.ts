@@ -19,7 +19,7 @@ export class BookService {
   }
 
   getAllBooks(): Observable<{ data: Book }[]> {
-    return this.http.get<{ data: Book }[]>(URL + '/findAllBooks'); 
+    return this.http.get<{ data: Book }[]>(URL); 
   }
 
   fetchBooksFromServer(): void {
@@ -31,6 +31,29 @@ export class BookService {
       }
     );
   }
+
+  //saving book cover img before saving a new book
+  //this method return book url
+  uploadBookCover(bookCoverFile:File){
+    const formData = new FormData();
+    formData.append('file', bookCoverFile);
+    return this.http.post<{imgUrl: string}>(URL + '/upload/bookCover', formData);
+  }
+
+  deleteBook(book:Book,callback:()=>void )
+  {
+    this.http.delete<Book>(URL+"/delete/"+book.id).subscribe(()=>{
+      this._deleteBook(book);
+      callback();
+    });
+  }
+
+  _deleteBook(book:Book)
+  {
+    this._booksData = this._booksData.filter(b=>book.id!=b.id);
+    this.emitChange();
+  }
+
   private emitChange() {
     this._books.next(this._booksData);
   }

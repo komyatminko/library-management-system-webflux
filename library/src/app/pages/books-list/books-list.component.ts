@@ -2,18 +2,21 @@ import { TableRowComponent } from '@/app/components/table-row/table-row.componen
 import { Book } from '@/app/models/book';
 import { BookService } from '@/app/services/admin/book.service';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { BookFormComponent } from "../../components/book-form/book-form.component";
 
 @Component({
   selector: 'app-books-list',
   imports: [
     CommonModule,
-    TableRowComponent
-  ],
+    TableRowComponent,
+    BookFormComponent
+],
   templateUrl: './books-list.component.html',
   styleUrl: './books-list.component.css'
 })
 export class BooksListComponent implements OnInit{
+  // @ViewChild('bookFrom') bookFrom!: BookFormComponent;
 
   books!: Book[];
 
@@ -25,7 +28,12 @@ export class BooksListComponent implements OnInit{
    
    
   }
-
+  // showEditDialog(book:Book)
+  // {
+  //   //console.log('Show edit movie ',movie);
+  //   this.bookFrom.openDialogForNew();
+  //   //console.log('Movieform ',this.movieForm);
+  // }
   
   
 
