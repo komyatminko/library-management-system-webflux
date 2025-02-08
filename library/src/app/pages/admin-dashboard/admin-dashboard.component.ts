@@ -6,8 +6,10 @@ import { BookListCardComponent } from "../../components/book-list-card/book-list
 import { OverDueBookListComponent } from "../../components/over-due-book-list/over-due-book-list.component";
 import { BooksIssuedCardComponent } from "../../components/books-issued-card/books-issued-card.component";
 import { BooksAvailableCardComponent } from "../../components/books-available-card/books-available-card.component";
-import { BookService } from '@/app/services/admin/book.service';
+import { BookService } from '@/app/services/book/book.service';
 import { Book } from '@/app/models/book';
+import { UserService } from '@/app/services/user/user.service';
+import { User } from '@/app/models/user';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -25,8 +27,15 @@ import { Book } from '@/app/models/book';
 export class AdminDashboardComponent {
 
   booksArr!: Book[];
-  constructor(private bookService: BookService) {
-    this.bookService.fetchBooksFromServer();
+  usersArr!: User[];
+  constructor(private bookService: BookService,
+              private userService: UserService) {
+    // this.bookService.fetchBooksFromServer();
     this.bookService.books.subscribe(books => this.booksArr = books)
+    this.userService.users.subscribe(users => {
+      this.usersArr = users;
+      // this.usersArr.forEach(obj=> console.log(obj.username))
+    })
+    
   }
 }

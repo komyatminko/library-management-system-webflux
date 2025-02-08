@@ -32,12 +32,16 @@ export class BookService {
     );
   }
 
-  //saving book cover img before saving a new book
-  //this method return book url
-  uploadBookCover(bookCoverFile:File){
-    const formData = new FormData();
-    formData.append('file', bookCoverFile);
-    return this.http.post<{imgUrl: string}>(URL + '/upload/bookCover', formData);
+  saveBook(book:Book){
+    this.http.post<{data: Book}>(URL+'/save',book).subscribe(res=> {
+      // console.log(res.data);
+      this._saveBook(res.data);
+    });
+  }
+
+  _saveBook(book:Book){
+    this._booksData.push(book);
+    this.emitChange();
   }
 
   deleteBook(book:Book,callback:()=>void )
@@ -56,5 +60,13 @@ export class BookService {
 
   private emitChange() {
     this._books.next(this._booksData);
+  }
+
+  //saving book cover img before saving a new book
+  //this method return book url
+  uploadBookCover(bookCoverFile:File){
+    const formData = new FormData();
+    formData.append('file', bookCoverFile);
+    return this.http.post<{imgUrl: string}>(URL + '/upload/bookCover', formData);
   }
 }

@@ -1,5 +1,5 @@
 export interface BookDetails {
-    id: string;
+    id?: string;
     details: string;
     genres: string[];
     page: number;

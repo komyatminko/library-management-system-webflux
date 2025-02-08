@@ -4,13 +4,13 @@ import { BorrowedUser } from "./borrowed-user";
 
 export interface Book {
 
-    id: string;
+    id?: string;
     name: string;
     imgUrl: string;
     bookDetails: BookDetails;
-    author: Author;
+    author?: Author;
     rating: number;
-    isAvailable: boolean;
+    isAvailable?: boolean;
     availableCount: number;
     borrowedBy?: Array<BorrowedUser>;
 

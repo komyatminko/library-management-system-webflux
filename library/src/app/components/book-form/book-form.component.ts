@@ -1,8 +1,13 @@
-import { BookService } from '@/app/services/admin/book.service';
+import { Author } from '@/app/models/author';
+import { Book } from '@/app/models/book';
+import { AuthorService } from '@/app/services/author/author.service';
+import { BookService } from '@/app/services/book/book.service';
 import { CommonModule } from '@angular/common';
-import { Component, inject, TemplateRef, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+import { retryWhen, take } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-book-form',
@@ -12,7 +17,7 @@ import { NgbModal, NgbModalRef, NgbRatingModule } from '@ng-bootstrap/ng-bootstr
   templateUrl: './book-form.component.html',
   styleUrl: './book-form.component.css'
 })
-export class BookFormComponent {
+export class BookFormComponent implements OnInit{
 
   bookForm!: FormGroup;
   selectedFileName: string = '';
@@ -21,24 +26,23 @@ export class BookFormComponent {
   bookCoverFile!: File;
   authorType: string = 'existing'; // Default to existing author
 
-  existingAuthors = [
-    { id: 1, fullName: 'J.K. Rowling' },
-    { id: 2, fullName: 'George R.R. Martin' },
-    { id: 3, fullName: 'J.R.R. Tolkien' }
-  ];
+  existingAuthors: Author[] = [];
 
-  // private modalService = inject(NgbModal);
   @ViewChild('content', { static: false }) private content:any;
 
-  constructor(private fb: FormBuilder, private modalService: NgbModal, private bookService: BookService){
+  constructor(private fb: FormBuilder, 
+              private modalService: NgbModal, 
+              private bookService: BookService,
+              private authorService: AuthorService){
+                
     this.bookForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required]],
       image: [null, Validators.required],
-      rating: [0, [Validators.required, Validators.maxLength(5)]],
+      rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
       availableCount: [1, [Validators.required, Validators.min(1)]],
       bookDetails: this.fb.group({
         details: ['', Validators.required],
-        page: [1, [Validators.required, Validators.min(1)]],
+        page: [, [Validators.required, Validators.min(3)]],
         genres: this.fb.array([]) 
       }),
       authorType: ['existing'], // Radio button selection
@@ -49,6 +53,22 @@ export class BookFormComponent {
         birthday: ['', Validators.required]
       })
     });
+  }
+
+  ngOnInit(): void {
+
+    this.authorService.authors.subscribe(authors=> {
+      this.existingAuthors = [];
+      this.existingAuthors = authors;
+      })
+      
+      this.updateFormValidation(); // Initialize validation based on default authorType
+
+      // Listen for authorType changes to update validation dynamically
+      this.bookForm.get('authorType')?.valueChanges.subscribe(() => {
+        this.updateFormValidation();
+        // console.log(this.bookForm.get('authorType')?.value)
+      });
   }
 
   openDialogForNew(){
@@ -64,6 +84,11 @@ export class BookFormComponent {
     if (this.bookCoverFile) {
       this.selectedFileName = this.bookCoverFile.name;
       this.bookForm.patchValue({ image: this.bookCoverFile.name });
+      this.bookForm.get('image')?.updateValueAndValidity();
+    }
+    else{
+      this.bookForm.patchValue({ image: null });
+      this.bookForm.get('image')?.markAsTouched();
     }
   }
 
@@ -85,37 +110,114 @@ export class BookFormComponent {
   }
 
   onSubmit() {
-    console.log(this.bookForm.value);
+    
     this.modalDialog.close();
     
     this.bookService.uploadBookCover(this.bookCoverFile).subscribe(response => {
-        console.log(response.imgUrl); 
-        this.bookForm.patchValue({image: response.imgUrl})
-        // this.submitBookData();
-        this.removeUselessFields();
+        // console.log(response.imgUrl); 
+        this.bookForm.value.image = response.imgUrl;
+        this.saveBook(this.formatFormData());
         this.bookForm.reset();
     });
+    
+    
 }
 
-removeUselessFields(){
-  if (this.bookForm.valid) {
-    let formData = { ...this.bookForm.value };
-
-    // Remove unnecessary author data based on selection
-    if (formData.authorType === 'existing') {
-      delete formData.newAuthor;
-    } else {
-      delete formData.existingAuthor;
+saveBook(data: any) {
+  Swal.fire({
+    title: "Do you want to save a new book?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    denyButtonText: `Don't save`
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.bookService.saveBook(data);
+      Swal.fire("Saved!", "", "success");
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
     }
-    delete formData.authorType; // Remove authorType if not needed
+  });
+}
 
-    console.log("Final Data to Send:", formData);
+updateFormValidation() {
+  if (this.bookForm.get('authorType')?.value === 'existing') {
+    console.log('existing author');
+    // Clear new author fields' validators
+    this.bookForm.get('newAuthor')?.reset();
+    this.bookForm.get('newAuthor.firstName')?.clearValidators();
+    this.bookForm.get('newAuthor.lastName')?.clearValidators();
+    this.bookForm.get('newAuthor.birthday')?.clearValidators();
+
+    // Ensure existing author selection is required
+    this.bookForm.get('existingAuthor')?.setValidators([Validators.required]);
+  } else {
+    console.log('new author');
+    // Clear existing author validator
+    this.bookForm.get('existingAuthor')?.reset();
+    this.bookForm.get('existingAuthor')?.clearValidators();
+
+    // Set validators for new author fields
+    this.bookForm.get('newAuthor.firstName')?.setValidators([Validators.required]);
+    this.bookForm.get('newAuthor.lastName')?.setValidators([Validators.required]);
+    this.bookForm.get('newAuthor.birthday')?.setValidators([Validators.required]);
   }
+
+  // Reset touched & pristine states to ensure UI updates
+  this.bookForm.get('existingAuthor')?.updateValueAndValidity();
+  this.bookForm.get('newAuthor.firstName')?.updateValueAndValidity();
+  this.bookForm.get('newAuthor.lastName')?.updateValueAndValidity();
+  this.bookForm.get('newAuthor.birthday')?.updateValueAndValidity();
 }
 
-submitBookData() {
-    console.log('Submitting book:', this.bookForm.value);
+
+get isFormValid(): boolean | undefined{
+  const isExistingAuthorSelected = !!this.bookForm.get('existingAuthor')?.value;
+  const isFormValid = this.bookForm.valid;
+  const isFileValid = this.bookForm.get('image')?.valid; // Ensure file input is valid
+
+  return (isFormValid || isExistingAuthorSelected) && isFileValid;
 }
 
+
+
+formatFormData(): Book{
+
+  let formData = this.bookForm.value;
+
+  let bookData: Book = {
+    
+      name: formData.name,
+      imgUrl: formData.image,
+      bookDetails: {
+        details: formData.bookDetails.details,
+        genres: formData.bookDetails.genres,
+        page: formData.bookDetails.page
+      },
+      rating: formData.rating,
+      isAvailable: true,
+      availableCount: formData.availableCount
+    
+
+  }
+
+  if (formData.authorType === 'new') {
+    bookData.author = {
+      firstName: formData.newAuthor.firstName,
+      lastName: formData.newAuthor.lastName,
+      birthday: formData.newAuthor.birthday
+    };
+  } else {
+    let id = formData.existingAuthor;
+    let existingAuthor = this.existingAuthors.filter(author=> author.id == id);
+    bookData.author = { 
+      id,
+      firstName: existingAuthor[0].firstName,
+      lastName: existingAuthor[0].lastName,
+      birthday: existingAuthor[0].birthday
+    }; 
+  }
+  return bookData;
+}
 
 }

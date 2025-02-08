@@ -38,6 +38,7 @@ public class SecurityConfig {
             "/public/**",
             "/v1/books/**",
             "/v1/users/**",
+            "/v1/authors/**",
             "/admin/books/**",
     };
 	

@@ -1,7 +1,7 @@
 
     <td>{{data.id}}</td>
     <td>{{data.name}}</td>
-    <td>{{data.author.firstName}}</td>
+    <td>{{data.author?.firstName + ' ' + data.author?.lastName}}</td>
     <td>{{data.availableCount}}</td>
     <td>
         <button type="button" class="btn p-0 me-3">

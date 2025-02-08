@@ -1,6 +1,6 @@
 import { TableRowComponent } from '@/app/components/table-row/table-row.component';
 import { Book } from '@/app/models/book';
-import { BookService } from '@/app/services/admin/book.service';
+import { BookService } from '@/app/services/book/book.service';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { BookFormComponent } from "../../components/book-form/book-form.component";
@@ -21,10 +21,10 @@ export class BooksListComponent implements OnInit{
   books!: Book[];
 
   constructor(private bookService: BookService){
-    this.bookService.fetchBooksFromServer();
-    this.bookService.books.subscribe(data => this.books = data);
+    
   }
   ngOnInit(): void {
+    this.bookService.books.subscribe(data => this.books = data);
    
    
   }

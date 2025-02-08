@@ -121,7 +121,7 @@ public class BookServiceImpl implements BookService{
 	public Mono<BookDto> saveBook(BookDto bookDto) {
 		
 		Book book = this.bookDtoToEntity(bookDto);
-		System.out.println(book);
+//		System.out.println(book);
 		return Mono.zip(this.detailsDao.save(book.getBookDetails()), this.authorDao.save(book.getAuthor()))
 				.flatMap(tuple -> {
 					book.setBookDetails(tuple.getT1());
@@ -176,15 +176,7 @@ public class BookServiceImpl implements BookService{
 		return this.borrowingDao.findByBookId(bookId)
 				.switchIfEmpty(Mono.empty());
 	}
-	
-//	public Map<String,String> uploadImage(MultipartFile file, String uploadFolderName) throws IOException{
-//		String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-//		Path filePath = Paths.get(uploadFolderName + fileName);
-//		Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//		String fileUrl = "/" + uploadFolderName + "/" + fileName;
-//		return Collections.singletonMap("imgUrl", fileUrl);
-//	} 
-	
+
 	public Mono<String> uploadImage(FilePart filePart, String uploadFolderName) {
         // Generate a unique file name
         String fileName = UUID.randomUUID().toString() + "_" + filePart.filename();

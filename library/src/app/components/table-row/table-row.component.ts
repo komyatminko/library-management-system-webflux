@@ -1,5 +1,5 @@
 import { Book } from '@/app/models/book';
-import { BookService } from '@/app/services/admin/book.service';
+import { BookService } from '@/app/services/book/book.service';
 import { Component, Input } from '@angular/core';
 import Swal from 'sweetalert2';
 

@@ -89,6 +89,7 @@ public class BookController {
 	
 	@PostMapping("/save")
 	public Mono<ResponseEntity<ApiResponse>> saveBook(@Valid @RequestBody BookDto bookDto){
+		System.out.println("save controller method");
 		return this.bookService.saveBook(bookDto)
 				.map(savedBook -> {
 					return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Book saved successfully.", 201, savedBook));

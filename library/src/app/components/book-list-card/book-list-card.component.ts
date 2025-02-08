@@ -1,5 +1,5 @@
 import { Book } from '@/app/models/book';
-import { BookService } from '@/app/services/admin/book.service';
+import { BookService } from '@/app/services/book/book.service';
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
