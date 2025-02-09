@@ -1,11 +1,12 @@
 import { Book } from '@/app/models/book';
 import { BookService } from '@/app/services/book/book.service';
 import { Component, Input } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'tr[app-table-row]',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './table-row.component.html',
   styleUrl: './table-row.component.css'
 })
@@ -14,7 +15,8 @@ export class TableRowComponent {
   @Input()
   data!: Book;
 
-  constructor(private bookService : BookService){}
+  constructor(private bookService : BookService,
+              private router: Router) { }
 
   showDeleteConfirmDailog(){
     Swal.fire({
@@ -39,6 +41,12 @@ export class TableRowComponent {
       text: "Book has been deleted.",
       icon: "success"
     });
+  }
+
+
+  goToDetailsPage(data: Book){
+    console.log("goToDetailsPage btn click", data.id)
+    // this.router.navigate()
   }
 
 

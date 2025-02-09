@@ -13,7 +13,7 @@ export const routes: Routes = [
     { path: 'admin', component: AdminDashboardComponent},
     { path: 'user', component: UserDashboardComponent},
     { path: 'admin/books', component: BooksListComponent},
-    // { path: 'books/:id/details', component: BookDetailsComponent},
+    { path: 'admin/books/:id/details', component: BookDetailsComponent},
     { path: '',   redirectTo: '/login', pathMatch: 'full' },
     { path: '**', component: NotFoundPageComponent },
 ];
