@@ -27,6 +27,8 @@ public class BookDto {
 
 	private AuthorDto author;
 	
+	private Double price;
+	
 	private Double rating;
 	
 	private Boolean isAvailable;
@@ -41,7 +43,8 @@ public class BookDto {
 	
 	public BookDto() {}
 	
-	public BookDto(String id, String name, String imgUrl, BookDetailsDto bookDetails, AuthorDto author, Double rating,
+	public BookDto(String id, String name, String imgUrl, BookDetailsDto bookDetails, AuthorDto author, 
+			Double rating, Double price,
 			Boolean isAvailable, Integer availableCount, List<BorrowedUserDto> borrowedBy, Date updatedAt,
 			Date createdAt) {
 		this.id = id;
@@ -49,6 +52,7 @@ public class BookDto {
 		this.imgUrl = imgUrl;
 		this.bookDetails = bookDetails;
 		this.author = author;
+		this.price = price;
 		this.rating = rating;
 		this.isAvailable = isAvailable;
 		this.availableCount = availableCount;
@@ -146,6 +150,16 @@ public class BookDto {
 	public void setBorrowedBy(List<BorrowedUserDto> borrowedBy) {
 		this.borrowedBy = borrowedBy;
 	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+	
+	
 	
 	
 }

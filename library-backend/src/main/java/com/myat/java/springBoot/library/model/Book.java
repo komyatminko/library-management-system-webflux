@@ -31,6 +31,8 @@ public class Book {
 	@NotBlank
 	private Author author;
 	
+	private Double price;
+	
 	private Double rating;
 	
 	private Boolean isAvailable;
@@ -124,6 +126,14 @@ public class Book {
 
 	public void setImgUrl(String imgUrl) {
 		this.imgUrl = imgUrl;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
 	}
 
 	@Override
