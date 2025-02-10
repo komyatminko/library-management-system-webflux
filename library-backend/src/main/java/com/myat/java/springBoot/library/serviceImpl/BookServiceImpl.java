@@ -61,7 +61,7 @@ public class BookServiceImpl implements BookService{
 	UserDao userDao;
 	
 	ModelMapper modelMapper = new ModelMapper();
-	private static final String BASE_UPLOAD_DIR = "uploads/";
+	private static final String BASE_UPLOAD_DIR = "images/uploads/";
 	
 	@Override
 	public Flux<BookDto> getAllBook() {
@@ -119,7 +119,7 @@ public class BookServiceImpl implements BookService{
 
 	@Override
 	public Mono<BookDto> saveBook(BookDto bookDto) {
-		
+		Mono<List<BorrowedUserDto>> userList = getBorrowedUsersDto(bookDto.getId());
 		Book book = this.bookDtoToEntity(bookDto);
 //		System.out.println(book);
 		return Mono.zip(this.detailsDao.save(book.getBookDetails()), this.authorDao.save(book.getAuthor()))
@@ -129,7 +129,13 @@ public class BookServiceImpl implements BookService{
 					return this.bookDao.save(book);	
 					
 				})
-				.map(savedBook -> this.bookEntityToDto(savedBook));
+				.map(savedBook -> this.bookEntityToDto(savedBook))
+				.flatMap(dto ->
+				userList.map(users -> {
+					dto.setBorrowedBy(users);  
+					return dto;  
+				})
+	);
 				
 	}
 

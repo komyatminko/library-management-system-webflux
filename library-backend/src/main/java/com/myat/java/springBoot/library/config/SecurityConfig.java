@@ -35,6 +35,7 @@ public class SecurityConfig {
 	private JwtUtil jwtUtil;
 	
 	private static final String[] AUTH_WHITELIST = {
+			"/**",
             "/public/**",
             "/v1/books/**",
             "/v1/users/**",
