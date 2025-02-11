@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,7 +95,19 @@ public class BookController {
 				.map(savedBook -> {
 					return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Book saved successfully.", 201, savedBook));
 				});
+//				.onErrorResume(BookNotFoundException.class,err -> {
+//					return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(404, "Book not found.", err.getMessage())));
+//				});
 		
+	}
+	
+	@PutMapping("/{id}")
+	public Mono<ResponseEntity<ApiResponse>> updateBook(@Valid @RequestBody BookDto bookDto){
+		return this.bookService.updateBook(bookDto)
+				.map(updatedBook -> ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Book updated successfully.", 200, updatedBook)))
+				.onErrorResume(BookNotFoundException.class,err -> {
+					return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(404, "Book not found to update.", err.getMessage())));
+				});
 	}
 	
 	@DeleteMapping("/delete/{bookId}")
@@ -120,22 +133,11 @@ public class BookController {
 	//delete method to remove image from local folder
 	@DeleteMapping("/delete/bookCover")
     public Mono<Map<String, String>> deleteBookCover(@RequestParam("filePath") String filePath) {
+		System.out.println("delete book cover controller");
+		System.out.println(filePath);
         return this.bookService.deleteImage(filePath)
                 .map(deleted -> deleted ? "File deleted successfully" : "File not found")
                 .map(message -> Collections.singletonMap("message", message));
     }
-	//for saving user profile before saving a new user
-//	@PostMapping("/upload/userProfile")
-//	public ResponseEntity<Map<String, String>> uploadUserProfile(@RequestParam  MultipartFile file){
-//		
-//		Map<String, String> imgUrl = null;
-//		try {
-//			imgUrl = this.bookService.uploadImage(file, "upload/users/");
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		return ResponseEntity.ok().body(imgUrl);
-//	}
+	
 }

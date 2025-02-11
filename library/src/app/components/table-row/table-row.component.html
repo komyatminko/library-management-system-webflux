@@ -5,7 +5,7 @@
     <td>{{data.availableCount}}</td>
     <td>
         <button type="button" class="btn p-0 me-3">
-            <i class="fa-solid fa-pen-to-square text-success"></i>
+            <i class="fa-solid fa-pen-to-square text-success" (click)="showEditDialog()"></i>
         </button>
         <button type="button" class="btn p-0 me-3" (click)="goToDetailsPage(data)" [routerLink]="['/admin/books', data.id, 'details']">
             <i class="fas fa-info-circle text-primary"></i>

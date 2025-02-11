@@ -13,7 +13,7 @@
     
     <!-- main layout -->
     <div class="row ge-5 gy-3">
-        <div class="col-sm-12 col-md-5" id="first-column">
+        <div class="col-sm-12 col-md-12 col-lg-5" id="first-column">
             <div class="card shadow border-0">
                 <div class="card-body p-0 d-flex justify-content-center align-items-center">
                     <img [src]="imgUrl" alt="Book Cover" width="95%" class="py-2 rounded-3" id="image">
@@ -21,14 +21,27 @@
             </div>
         </div>
 
-        <div class="col-sm-12 col-md-7" id="second-column">
+        <div class="col-sm-12 col-md-12 col-lg-7" id="second-column">
             <div id="upperContent">
                 <!-- book name, author name & genres -->
                 <div class="mb-4">
                     <h1>{{book.name.toUpperCase()}}</h1>
-                    <span>by {{book.author?.firstName + ' ' + book.author?.lastName}}</span>
-                    <br>
-                    <span class="badge bg-primary me-2 mt-3" *ngFor="let genre of book.bookDetails.genres">{{genre}}</span>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <span>by {{book.author?.firstName + ' ' + book.author?.lastName}}</span>
+                                    
+                                </div>
+                                <div class="col-12">
+                                    <span class="badge bg-primary me-2 mt-3" *ngFor="let genre of book.bookDetails.genres">{{genre}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 d-flex justify-content-center align-items-center">
+                            <h4 class="text-warning">$ 99.99</h4>
+                        </div>
+                    </div>
                 </div>
             
                 <!-- issue book count and available book count -->

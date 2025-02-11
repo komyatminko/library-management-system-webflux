@@ -21,6 +21,7 @@ public interface BookService {
 	public Mono<BookDto> getBookById(String id);
 	public Mono<BookDto> getBookByIdWithBorrowedUsers(String id);
 	public Mono<BookDto> saveBook(BookDto bookDto);
+	public Mono<BookDto> updateBook(BookDto bookDto);
 	public Mono<BookDto> deleteBookById(String id);
 	
 	public Mono<String> uploadImage(FilePart filePart, String uploadFolderName);

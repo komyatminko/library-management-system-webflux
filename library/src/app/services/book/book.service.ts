@@ -1,5 +1,5 @@
 import { Book } from '@/app/models/book';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BASE_URL } from '../Api';
@@ -68,5 +68,11 @@ export class BookService {
     const formData = new FormData();
     formData.append('file', bookCoverFile);
     return this.http.post<{imgUrl: string}>(URL + '/upload/bookCover', formData);
+  }
+
+  deleteBookCover(filePath: string): void {
+    const params = new HttpParams().set('filePath', filePath);
+
+    this.http.delete<void>(URL + '/delete/bookCover?', { params });
   }
 }

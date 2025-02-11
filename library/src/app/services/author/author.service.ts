@@ -33,6 +33,18 @@ export class AuthorService {
     );
   }
 
+  _saveAuthor(author: Author){
+    this._authorsData.push(author);
+    this.emitChange();
+  }
+
+  _deleteAuthor(author: Author | undefined){
+    if(author){
+      this._authorsData = this._authorsData.filter(oldAuthor => oldAuthor.id != author.id);
+      this.emitChange();
+    }
+  }
+
   private emitChange() {
     this._authors.next(this._authorsData);
   }

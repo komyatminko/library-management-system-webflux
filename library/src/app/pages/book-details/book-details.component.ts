@@ -16,7 +16,7 @@ import { NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class BookDetailsComponent{
 
-
+flagForContentHeight = false;
 book!: Book;
 availableBookCount: number = 0;
 issueBookCount: number = 0;
@@ -28,7 +28,7 @@ activeTab: string = 'overview';
               private router: Router){}
 
   ngOnInit(){
-    
+    // console.log('ng on init')
     // this.adjustContentHeigh();
 
     this.route.paramMap.subscribe(params => {
@@ -50,10 +50,17 @@ activeTab: string = 'overview';
 
     
   }
-
-ngAfterViewInit(){
-  this.calculateHeightForContent();
-}
+  
+  ngAfterViewChecked() {
+    if (!this.flagForContentHeight) {
+      
+      setTimeout(() => {
+        this.calculateHeightForContent();
+        this.flagForContentHeight = true;  // Ensure the timeout is not called again
+      }, 100);
+    }
+  }
+  
 
   calculateAvailableBookCount(): void{
     let borrowedCount = this.book.borrowedBy?.length || 0;
@@ -68,13 +75,14 @@ ngAfterViewInit(){
     const content = document.getElementById("content") as HTMLDivElement;
     const secondColumn = document.getElementById("second-column") as HTMLDivElement;
     const upperContent = document.getElementById("upperContent");
+    // console.log(upperContent)
 
     if(upperContent && content && secondColumn){
       const secondColumnHeight = secondColumn.clientHeight;
       const upperContentHeight = upperContent.clientHeight;
       const heightForContent = secondColumnHeight - upperContentHeight;
 
-      console.log('actual second column height ', secondColumnHeight);
+      // console.log('actual second column height ', secondColumnHeight);
       content.style.height = heightForContent + "px";
     }
   }

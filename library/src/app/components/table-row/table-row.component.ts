@@ -1,6 +1,7 @@
 import { Book } from '@/app/models/book';
+import { AuthorService } from '@/app/services/author/author.service';
 import { BookService } from '@/app/services/book/book.service';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import Swal from 'sweetalert2';
 
@@ -15,7 +16,11 @@ export class TableRowComponent {
   @Input()
   data!: Book;
 
+  @Output()
+  onEditClid = new EventEmitter<Book>();
+
   constructor(private bookService : BookService,
+              private authorService: AuthorService,
               private router: Router) { }
 
   showDeleteConfirmDailog(){
@@ -30,6 +35,7 @@ export class TableRowComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.bookService.deleteBook(this.data,this.deleteCallBack);
+        this.authorService._deleteAuthor(this.data.author? this.data.author : undefined);
       }
     });
   }
@@ -49,5 +55,9 @@ export class TableRowComponent {
     // this.router.navigate()
   }
 
+  showEditDialog(){
+    // console.log('show edit dialog');
+    this.onEditClid.emit(this.data);
+  }
 
 }

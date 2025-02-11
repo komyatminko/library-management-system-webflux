@@ -25,6 +25,8 @@ export class BookFormComponent implements OnInit{
   modalDialog!: NgbModalRef;
   bookCoverFile!: File;
   authorType: string = 'existing'; // Default to existing author
+  editMode: boolean = false;
+  bookToEdit: Book | undefined;
 
   existingAuthors: Author[] = [];
 
@@ -57,22 +59,58 @@ export class BookFormComponent implements OnInit{
 
   ngOnInit(): void {
 
-    this.authorService.authors.subscribe(authors=> {
-      this.existingAuthors = [];
-      this.existingAuthors = authors;
-      })
+    this.loadAllAuthor();
       
-      this.updateFormValidation(); // Initialize validation based on default authorType
-
-      // Listen for authorType changes to update validation dynamically
-      this.bookForm.get('authorType')?.valueChanges.subscribe(() => {
-        this.updateFormValidation();
-        // console.log(this.bookForm.get('authorType')?.value)
-      });
   }
 
   openDialogForNew(){
+    this.editMode = false;
+    this.loadAllAuthor();
     this.open(this.content);
+    this.resetFormIfDismiss();
+  }
+
+  openDialogForUpdate(book:Book){
+    this.editMode = true;
+    this.bookToEdit = book;
+    console.log('book to edit ', book.name);
+
+    this.patchGenres(book);
+    this.bookForm.patchValue({
+      name: book.name,
+      //img url here
+      rating: book.rating,
+      availableCount: book.availableCount,
+      bookDetails: {
+        details: book.bookDetails.details,
+        page: book.bookDetails.page,
+      },
+      newAuthor: {
+        firstName: book.author?.firstName,
+        lastName: book.author?.lastName,
+        //birthday here
+      }
+    })
+
+    this.open(this.content);
+    this.resetFormIfDismiss();
+    
+  }
+
+  
+  private patchGenres(book: Book) {
+    
+    if (book.bookDetails.genres) {
+
+      book.bookDetails.genres.forEach(() => {
+        this.genres.push(this.fb.control('',Validators.required));
+      });
+      this.bookForm.patchValue({
+        bookDetails: {
+          genres: book.bookDetails.genres
+        }
+      })
+    }
   }
 
   open(content: TemplateRef<any>) {
@@ -99,6 +137,7 @@ export class BookFormComponent implements OnInit{
   // Update Author Type
   updateAuthorType(type: string): void {
     this.authorType = type;
+    this.updateFormValidation();
   }
 
   addGenre(): void {
@@ -110,16 +149,24 @@ export class BookFormComponent implements OnInit{
   }
 
   onSubmit() {
+
     
-    this.modalDialog.close();
+    
     
     this.bookService.uploadBookCover(this.bookCoverFile).subscribe(response => {
         // console.log(response.imgUrl); 
         this.bookForm.value.image = response.imgUrl;
-        this.saveBook(this.formatFormData());
-        this.bookForm.reset();
+        let book: Book = this.formatFormData();
+        this.saveBook(book);
+        if(book.author){
+          this.authorService._saveAuthor(book.author);
+        }
+
+        this.bookForm.reset({authorType : 'existing'});
+        this.authorType = 'existing';
+        this.genres.controls = [];
     });
-    
+    this.modalDialog.close();
     
 }
 
@@ -133,6 +180,8 @@ saveBook(data: any) {
   }).then((result) => {
     if (result.isConfirmed) {
       this.bookService.saveBook(data);
+      
+      // this.loadAllAuthor();
       Swal.fire("Saved!", "", "success");
     } else if (result.isDenied) {
       Swal.fire("Changes are not saved", "", "info");
@@ -220,4 +269,18 @@ formatFormData(): Book{
   return bookData;
 }
 
+loadAllAuthor(): void{
+  this.authorService.authors.subscribe(authors=> {
+    this.existingAuthors = [];
+    this.existingAuthors = authors;
+    })
+}
+resetFormIfDismiss():void{
+  this.modalDialog.dismissed.subscribe(() => {
+    this.genres.controls = [];
+    this.bookForm.reset({authorType: 'existing'});
+    this.authorType = 'existing';
+    // this.genres.push();
+  });
+}
 }

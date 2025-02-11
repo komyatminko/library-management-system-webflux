@@ -139,18 +139,6 @@ public class BookServiceImpl implements BookService{
 				
 	}
 
-	@Override
-	public Mono<BookDto> deleteBookById(String id) {
-		return this.getBookByIdWithBorrowedUsers(id)
-				.flatMap(bookDto -> {
-					return Mono
-							.when(this.detailsDao.deleteById(bookDto.getBookDetails().getId()),
-							this.authorDao.deleteById(bookDto.getAuthor().getId()), 
-							this.borrowingDao.deleteByBookId(id),
-							this.bookDao.deleteById(id))
-					.thenReturn(bookDto);
-				});
-	}
 	
 	private Mono<List<BorrowedUserDto>> getBorrowedUsersDto(String id) {
 		Flux<Borrowing> borrowings = this.getBorrowingByBookId(id);
@@ -168,6 +156,45 @@ public class BookServiceImpl implements BookService{
 		return userList;
 	}
 	
+	@Override
+	public Mono<BookDto> updateBook(BookDto bookDto) {
+		
+		return this.bookDao.findById(bookDto.getId())
+				.switchIfEmpty(Mono.error(new BookNotFoundException("Book not found.")))
+				.map(oldBook -> {
+						oldBook.setName(bookDto.getName());
+						oldBook.setImgUrl(bookDto.getImgUrl());
+						oldBook.setPrice(bookDto.getPrice());
+						oldBook.setBookDetails(modelMapper.map(bookDto.getBookDetails(), BookDetails.class));
+						oldBook.setAuthor(modelMapper.map(bookDto.getAuthor(), Author.class));
+						oldBook.setRating(bookDto.getRating());
+						oldBook.setAvailableCount(bookDto.getAvailableCount());
+						oldBook.setIsAvailable(bookDto.getIsAvailable());
+						return oldBook;
+				})
+				.flatMap(bookEntity -> this.bookDao.save(bookEntity))
+				.map(entity ->  this.bookEntityToDto(entity));
+				
+	}
+	
+	@Override
+	public Mono<BookDto> deleteBookById(String id) {
+		return this.getBookByIdWithBorrowedUsers(id)
+				.flatMap(bookDto -> {
+					return Mono
+							.when(this.detailsDao.deleteById(bookDto.getBookDetails().getId()),
+									this.authorDao.deleteById(bookDto.getAuthor().getId()), 
+									this.borrowingDao.deleteByBookId(id),
+									this.bookDao.deleteById(id))
+							.thenReturn(bookDto);
+				});
+	}
+	
+	
+	
+	
+	
+	
 	private Mono<BookDetails> getBookDetailsById(String id){
 		return this.detailsDao.findById(id)
 					.switchIfEmpty(Mono.error(new BookDetailsNotFoundException("Book details not found.")));
@@ -182,7 +209,11 @@ public class BookServiceImpl implements BookService{
 		return this.borrowingDao.findByBookId(bookId)
 				.switchIfEmpty(Mono.empty());
 	}
+	
+	
 
+	
+	
 	public Mono<String> uploadImage(FilePart filePart, String uploadFolderName) {
         // Generate a unique file name
         String fileName = UUID.randomUUID().toString() + "_" + filePart.filename();
@@ -209,6 +240,10 @@ public class BookServiceImpl implements BookService{
             return false;
         });
     }
+	
+	
+	
+	
 	
 	
 	private Book bookDtoToEntity(BookDto bookDto) {
@@ -240,6 +275,9 @@ public class BookServiceImpl implements BookService{
 		
 		return bookDto;
 	}
+
+
+	
 
 
 	

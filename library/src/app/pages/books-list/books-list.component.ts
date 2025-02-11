@@ -16,7 +16,7 @@ import { BookFormComponent } from "../../components/book-form/book-form.componen
   styleUrl: './books-list.component.css'
 })
 export class BooksListComponent implements OnInit{
-  // @ViewChild('bookFrom') bookFrom!: BookFormComponent;
+  @ViewChild('bookFrom') bookFrom!: BookFormComponent;
 
   books!: Book[];
 
@@ -28,12 +28,11 @@ export class BooksListComponent implements OnInit{
    
    
   }
-  // showEditDialog(book:Book)
-  // {
-  //   //console.log('Show edit movie ',movie);
-  //   this.bookFrom.openDialogForNew();
-  //   //console.log('Movieform ',this.movieForm);
-  // }
+  editDialogEvent(book:Book)
+  {
+    // console.log('Show edit book ',book);
+    this.bookFrom.openDialogForUpdate(book);
+  }
   
   
 
