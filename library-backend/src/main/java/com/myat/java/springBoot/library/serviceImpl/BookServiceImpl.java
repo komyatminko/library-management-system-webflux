@@ -233,7 +233,7 @@ public class BookServiceImpl implements BookService{
 	
 	public Mono<Boolean> deleteImage(String filePath) {
         return Mono.fromCallable(() -> {
-            Path path = Paths.get(BASE_UPLOAD_DIR + filePath);
+            Path path = Paths.get(filePath);
             if (Files.exists(path)) {
                 return Files.deleteIfExists(path);
             }
