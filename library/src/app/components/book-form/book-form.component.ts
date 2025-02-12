@@ -2,7 +2,7 @@ import { Author } from '@/app/models/author';
 import { Book } from '@/app/models/book';
 import { AuthorService } from '@/app/services/author/author.service';
 import { BookService } from '@/app/services/book/book.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, 
             ReactiveFormsModule,
             NgbRatingModule],
+  providers: [DatePipe],
   templateUrl: './book-form.component.html',
   styleUrl: './book-form.component.css'
 })
@@ -35,7 +36,8 @@ export class BookFormComponent implements OnInit{
   constructor(private fb: FormBuilder, 
               private modalService: NgbModal, 
               private bookService: BookService,
-              private authorService: AuthorService){
+              private authorService: AuthorService,
+              private datePipe: DatePipe ){
                 
     this.bookForm = this.fb.group({
       name: ['', [Validators.required]],
@@ -73,12 +75,14 @@ export class BookFormComponent implements OnInit{
   openDialogForUpdate(book:Book){
     this.editMode = true;
     this.bookToEdit = book;
-    console.log('book to edit ', book.name);
+    let img = book.imgUrl.substring(21,book.imgUrl.length);
+    console.log(img);
+    console.log('book to edit ', book.imgUrl);
 
     this.patchGenres(book);
     this.bookForm.patchValue({
       name: book.name,
-      //img url here
+      // image: img,
       rating: book.rating,
       availableCount: book.availableCount,
       bookDetails: {
@@ -88,10 +92,10 @@ export class BookFormComponent implements OnInit{
       newAuthor: {
         firstName: book.author?.firstName,
         lastName: book.author?.lastName,
-        //birthday here
+        birthday: this.formatDate(book.author?.birthday)
       }
     })
-
+    console.log('img url ', book.imgUrl)
     this.open(this.content);
     this.resetFormIfDismiss();
     
@@ -111,6 +115,14 @@ export class BookFormComponent implements OnInit{
         }
       })
     }
+  }
+
+  formatDate(timestamp: Date|undefined) {
+    if(timestamp){
+      const date = new Date(timestamp);
+      return date.toISOString().split('T')[0]; // Converts to "YYYY-MM-DD"
+    }
+    return;
   }
 
   open(content: TemplateRef<any>) {
@@ -150,9 +162,6 @@ export class BookFormComponent implements OnInit{
 
   onSubmit() {
 
-    
-    
-    
     this.bookService.uploadBookCover(this.bookCoverFile).subscribe(response => {
         // console.log(response.imgUrl); 
         this.bookForm.value.image = response.imgUrl;
@@ -275,6 +284,7 @@ loadAllAuthor(): void{
     this.existingAuthors = authors;
     })
 }
+
 resetFormIfDismiss():void{
   this.modalDialog.dismissed.subscribe(() => {
     this.genres.controls = [];

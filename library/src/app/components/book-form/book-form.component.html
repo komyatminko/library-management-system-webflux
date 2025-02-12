@@ -15,7 +15,7 @@
         </div>
 
         <!-- Image Upload -->
-        <div class="mb-3">
+        <div class="mb-3" *ngIf="!editMode">
           <label class="form-label">Image Upload</label>
           <input type="file" class="form-control" (change)="onFileChange($event)">
           <div *ngIf="bookForm.get('image')?.invalid && (bookForm.get('image')?.dirty || bookForm.get('image')?.touched)">

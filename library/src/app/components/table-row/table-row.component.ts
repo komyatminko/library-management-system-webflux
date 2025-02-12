@@ -35,6 +35,12 @@ export class TableRowComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.bookService.deleteBook(this.data,this.deleteCallBack);
+        this.bookService.deleteBookCover(this.data.imgUrl).subscribe(
+          {
+            next: () => console.log('Book cover deleted successfully'),
+            error: (err) => console.error('Error deleting book cover:', err),
+          }
+        );
         this.authorService._deleteAuthor(this.data.author? this.data.author : undefined);
       }
     });

@@ -70,9 +70,9 @@ export class BookService {
     return this.http.post<{imgUrl: string}>(URL + '/upload/bookCover', formData);
   }
 
-  deleteBookCover(filePath: string): void {
+  deleteBookCover(filePath: string): Observable<void> {
     const params = new HttpParams().set('filePath', filePath);
-
-    this.http.delete<void>(URL + '/delete/bookCover?', { params });
+    console.log(URL + '/delete/bookCover?' + params);
+    return this.http.delete<void>(URL + '/delete/bookCover?', { params });
   }
 }

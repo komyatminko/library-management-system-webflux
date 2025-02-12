@@ -1,8 +1,9 @@
+import { BookFormComponent } from '@/app/components/book-form/book-form.component';
 import { Book } from '@/app/models/book';
 import { BASE_URL } from '@/app/services/Api';
 import { BookService } from '@/app/services/book/book.service';
 import { CommonModule } from '@angular/common';
-import { Component} from '@angular/core';
+import { Component, ViewChild} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -10,7 +11,8 @@ import { NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-book-details',
   imports: [CommonModule,
-            NgbRatingModule],
+            NgbRatingModule,
+            ],
   templateUrl: './book-details.component.html',
   styleUrl: './book-details.component.css'
 })
@@ -20,16 +22,16 @@ flagForContentHeight = false;
 book!: Book;
 availableBookCount: number = 0;
 issueBookCount: number = 0;
+authorBirthday: string | undefined = '';
 id:string | null= '' ;
 imgUrl: string = '';
 activeTab: string = 'overview';
+
   constructor(private route:ActivatedRoute,
               private bookService: BookService,
               private router: Router){}
 
   ngOnInit(){
-    // console.log('ng on init')
-    // this.adjustContentHeigh();
 
     this.route.paramMap.subscribe(params => {
       this.id = params.get('id'); 
@@ -43,6 +45,7 @@ activeTab: string = 'overview';
         if(this.book){
           this.calculateAvailableBookCount();
           this.calculateIssueBookCount()
+          this.authorBirthday = this.formatDate(this.book.author?.birthday);
         }
       })
       
@@ -56,7 +59,7 @@ activeTab: string = 'overview';
       
       setTimeout(() => {
         this.calculateHeightForContent();
-        this.flagForContentHeight = true;  // Ensure the timeout is not called again
+        this.flagForContentHeight = true;  
       }, 100);
     }
   }
@@ -75,16 +78,23 @@ activeTab: string = 'overview';
     const content = document.getElementById("content") as HTMLDivElement;
     const secondColumn = document.getElementById("second-column") as HTMLDivElement;
     const upperContent = document.getElementById("upperContent");
-    // console.log(upperContent)
+
 
     if(upperContent && content && secondColumn){
       const secondColumnHeight = secondColumn.clientHeight;
       const upperContentHeight = upperContent.clientHeight;
       const heightForContent = secondColumnHeight - upperContentHeight;
 
-      // console.log('actual second column height ', secondColumnHeight);
       content.style.height = heightForContent + "px";
     }
+  }
+
+  formatDate(timestamp: Date|undefined) {
+    if(timestamp){
+      const date = new Date(timestamp);
+      return date.toISOString().split('T')[0];
+    }
+    return;
   }
 
   goBackToBookList(): void{
