@@ -67,6 +67,14 @@ public class BookServiceImpl implements BookService{
 	public Flux<BookDto> getAllBook() {
 		
 		return this.bookDao.findAll()
+//				.flatMap(book -> Mono.zip(this.detailsDao.findById(book.getBookDetails().getId()), 
+//											this.authorDao.findById(book.getAuthor().getId()))
+//								.map(tuple -> {
+//									book.setBookDetails(tuple.getT1());
+//									book.setAuthor(tuple.getT2());
+//									return book;
+//								})
+//				)
 				.map(book -> this.bookEntityToDto(book))
 				.flatMap(bookDto -> this.getBorrowedUsersDto(bookDto.getId())
 									.map(users -> {
@@ -158,24 +166,25 @@ public class BookServiceImpl implements BookService{
 	
 	@Override
 	public Mono<BookDto> updateBook(BookDto bookDto) {
-		
-		return this.bookDao.findById(bookDto.getId())
-				.switchIfEmpty(Mono.error(new BookNotFoundException("Book not found.")))
-				.map(oldBook -> {
-						oldBook.setName(bookDto.getName());
-						oldBook.setImgUrl(bookDto.getImgUrl());
-						oldBook.setPrice(bookDto.getPrice());
-						oldBook.setBookDetails(modelMapper.map(bookDto.getBookDetails(), BookDetails.class));
-						oldBook.setAuthor(modelMapper.map(bookDto.getAuthor(), Author.class));
-						oldBook.setRating(bookDto.getRating());
-						oldBook.setAvailableCount(bookDto.getAvailableCount());
-						oldBook.setIsAvailable(bookDto.getIsAvailable());
-						return oldBook;
-				})
-				.flatMap(bookEntity -> this.bookDao.save(bookEntity))
-				.map(entity ->  this.bookEntityToDto(entity));
-				
+	    return this.bookDao.findById(bookDto.getId())
+	            .switchIfEmpty(Mono.error(new BookNotFoundException("Book not found.")))
+	            .flatMap(oldBook -> {
+	                oldBook.setName(bookDto.getName());
+	                oldBook.setImgUrl(bookDto.getImgUrl());
+	                oldBook.setPrice(bookDto.getPrice());
+	                oldBook.setBookDetails(modelMapper.map(bookDto.getBookDetails(), BookDetails.class));
+	                oldBook.setAuthor(modelMapper.map(bookDto.getAuthor(), Author.class));
+	                oldBook.setRating(bookDto.getRating());
+	                oldBook.setAvailableCount(bookDto.getAvailableCount());
+	                oldBook.setIsAvailable(bookDto.getIsAvailable());
+
+	                return this.authorDao.save(oldBook.getAuthor())  
+	                        .then(this.detailsDao.save(oldBook.getBookDetails())) 
+	                        .then(this.bookDao.save(oldBook)); 
+	            })
+	            .map(this::bookEntityToDto);
 	}
+
 	
 	@Override
 	public Mono<BookDto> deleteBookById(String id) {

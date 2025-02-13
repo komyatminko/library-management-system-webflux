@@ -1,9 +1,17 @@
 <div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-6">
-            <h4 class="card-title border-start border-5 border-primary ps-3">Books List</h4>
+        <div class="col-7 ">
+            <span class="card-title border-start border-5 border-primary h4 ps-3">Books List</span>
+            <span class="badge bg-primary rounded-pill ms-2">{{books.length}}</span>
         </div>
-        <div class="col-6 text-end ">
+        <div class="col-5 d-flex ms-auto justify-content-end">
+            <button class="btn text-primary me-2">
+                <i class="fa fa-filter"></i>
+            </button>
+            <button class="btn text-primary me-2">
+                <i class="fa fa-search"></i>
+            </button>
+            <button class="btn btn-outline-primary me-2" routerLink="/admin">Back</button>
             <app-book-form #bookFrom></app-book-form>
            
         </div>

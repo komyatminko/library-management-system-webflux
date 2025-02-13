@@ -44,6 +44,17 @@ export class BookService {
     this.emitChange();
   }
 
+  updateBook(book:Book){
+    this.http.put<{data: Book}>(URL + '/' + book.id, book).subscribe((res) => {
+      this._updateBook(res.data);
+    })
+  }
+
+  _updateBook(book: Book){
+    this._booksData = this._booksData.map(oldBook => oldBook.id == book.id ? book : oldBook)
+    this.emitChange();
+  }
+
   deleteBook(book:Book,callback:()=>void )
   {
     this.http.delete<Book>(URL+"/delete/"+book.id).subscribe(()=>{

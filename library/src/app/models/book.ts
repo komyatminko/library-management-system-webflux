@@ -6,6 +6,7 @@ export interface Book {
 
     id?: string;
     name: string;
+    price: number;
     imgUrl: string;
     bookDetails: BookDetails;
     author?: Author;

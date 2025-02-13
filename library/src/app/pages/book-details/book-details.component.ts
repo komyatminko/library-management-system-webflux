@@ -43,6 +43,7 @@ activeTab: string = 'overview';
         })
         // console.log(this.book);
         if(this.book){
+          
           this.calculateAvailableBookCount();
           this.calculateIssueBookCount()
           this.authorBirthday = this.formatDate(this.book.author?.birthday);

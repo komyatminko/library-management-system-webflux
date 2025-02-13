@@ -14,6 +14,16 @@
           </div>
         </div>
 
+        <!-- price for borrowing -->
+        <div class="mb-3">
+          <label class="form-label">Price</label>
+          <input type="text" class="form-control" formControlName="price" placeholder="Enter price">
+          <div *ngIf="bookForm.get('price')?.invalid && bookForm.get('price')?.touched">
+            <small *ngIf="bookForm.get('price')?.errors?.['required']" class="text-danger">Book price is required.</small>
+            <small *ngIf="bookForm.get('price')?.errors?.['min']" class="text-danger">Book price must be greater than 200 kyats.</small>
+          </div>
+        </div>
+
         <!-- Image Upload -->
         <div class="mb-3" *ngIf="!editMode">
           <label class="form-label">Image Upload</label>

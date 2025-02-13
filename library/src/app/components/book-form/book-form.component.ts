@@ -41,6 +41,7 @@ export class BookFormComponent implements OnInit{
                 
     this.bookForm = this.fb.group({
       name: ['', [Validators.required]],
+      price: [0, [Validators.required, Validators.min(200)]],
       image: [null, Validators.required],
       rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
       availableCount: [1, [Validators.required, Validators.min(1)]],
@@ -75,14 +76,12 @@ export class BookFormComponent implements OnInit{
   openDialogForUpdate(book:Book){
     this.editMode = true;
     this.bookToEdit = book;
-    let img = book.imgUrl.substring(21,book.imgUrl.length);
-    console.log(img);
-    console.log('book to edit ', book.imgUrl);
-
+    // let img = book.imgUrl.substring(21,book.imgUrl.length);
+   
     this.patchGenres(book);
     this.bookForm.patchValue({
       name: book.name,
-      // image: img,
+      price: book.price,
       rating: book.rating,
       availableCount: book.availableCount,
       bookDetails: {
@@ -162,19 +161,27 @@ export class BookFormComponent implements OnInit{
 
   onSubmit() {
 
-    this.bookService.uploadBookCover(this.bookCoverFile).subscribe(response => {
-        // console.log(response.imgUrl); 
-        this.bookForm.value.image = response.imgUrl;
-        let book: Book = this.formatFormData();
-        this.saveBook(book);
-        if(book.author){
-          this.authorService._saveAuthor(book.author);
-        }
+    if(!this.editMode){
+        this.bookService.uploadBookCover(this.bookCoverFile).subscribe(response => {
+          // console.log(response.imgUrl); 
+          this.bookForm.value.image = response.imgUrl;
+          let book: Book = this.formatFormData();
+          this.saveBook(book);
+          if(book.author){
+            this.authorService._saveAuthor(book.author);
+          }
 
-        this.bookForm.reset({authorType : 'existing'});
-        this.authorType = 'existing';
-        this.genres.controls = [];
-    });
+          this.bookForm.reset({authorType : 'existing'});
+          this.authorType = 'existing';
+          this.genres.controls = [];
+      });
+    }
+    else {
+      let modifiedBook = this.formatFormDataForUpdateBook(this.bookToEdit);
+      console.log('modified book ', modifiedBook);
+      this.bookService.updateBook(modifiedBook);
+      console.log('successfully modified')
+    }
     this.modalDialog.close();
     
 }
@@ -190,7 +197,6 @@ saveBook(data: any) {
     if (result.isConfirmed) {
       this.bookService.saveBook(data);
       
-      // this.loadAllAuthor();
       Swal.fire("Saved!", "", "success");
     } else if (result.isDenied) {
       Swal.fire("Changes are not saved", "", "info");
@@ -228,15 +234,54 @@ updateFormValidation() {
   this.bookForm.get('newAuthor.birthday')?.updateValueAndValidity();
 }
 
-
 get isFormValid(): boolean | undefined{
-  const isExistingAuthorSelected = !!this.bookForm.get('existingAuthor')?.value;
   const isFormValid = this.bookForm.valid;
-  const isFileValid = this.bookForm.get('image')?.valid; // Ensure file input is valid
+  if(!this.editMode){
+    const isExistingAuthorSelected = !!this.bookForm.get('existingAuthor')?.value;
+    
+    const isFileValid = this.bookForm.get('image')?.valid; // Ensure file input is valid
 
-  return (isFormValid || isExistingAuthorSelected) && isFileValid;
+    return (isFormValid || isExistingAuthorSelected) && isFileValid;
+  }
+  else{
+    this.bookForm.get('image')?.clearValidators();
+    this.bookForm.get('image')?.updateValueAndValidity();
+    return isFormValid;
+  }
 }
 
+formatFormDataForUpdateBook(book:Book | undefined): Book{
+  let formData = this.bookForm.value;
+  let bookData!: Book;
+    if(book){
+      bookData = {
+        id: book.id,
+        name: formData.name,
+        price: formData.price,
+        imgUrl: book.imgUrl,
+        bookDetails: {
+          id: book.bookDetails.id,
+          details: formData.bookDetails.details,
+          genres: formData.bookDetails.genres,
+          page: formData.bookDetails.page
+        },
+        author: {
+          id: book.author?.id,
+          firstName: formData.newAuthor.firstName,
+          lastName: formData.newAuthor.lastName,
+          birthday: formData.newAuthor.birthday
+        },
+        rating: formData.rating,
+        isAvailable: true,
+        availableCount: formData.availableCount,
+        borrowedBy: book.borrowedBy
+
+    }
+    
+  }
+  return bookData;
+  
+}
 
 
 formatFormData(): Book{
@@ -246,6 +291,7 @@ formatFormData(): Book{
   let bookData: Book = {
     
       name: formData.name,
+      price: formData.price,
       imgUrl: formData.image,
       bookDetails: {
         details: formData.bookDetails.details,
@@ -279,9 +325,11 @@ formatFormData(): Book{
 }
 
 loadAllAuthor(): void{
+  this.authorService.fetchAuthorsFromServer();
   this.authorService.authors.subscribe(authors=> {
     this.existingAuthors = [];
     this.existingAuthors = authors;
+    this.existingAuthors.map(autor => console.log(autor))
     })
 }
 
