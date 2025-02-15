@@ -1,13 +1,16 @@
 import { Book } from '@/app/models/book';
 import { AuthorService } from '@/app/services/author/author.service';
 import { BookService } from '@/app/services/book/book.service';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'tr[app-table-row]',
-  imports: [RouterLink],
+  imports: [RouterLink,
+            CommonModule
+            ],
   templateUrl: './table-row.component.html',
   styleUrl: './table-row.component.css'
 })
@@ -17,11 +20,21 @@ export class TableRowComponent {
   data!: Book;
 
   @Output()
-  onEditClid = new EventEmitter<Book>();
+  onEditClick = new EventEmitter<Book>();
+
+
+  hasInjectedButton = false;
 
   constructor(private bookService : BookService,
               private authorService: AuthorService,
+              private elementRef: ElementRef,
               private router: Router) { }
+
+  
+  ngAfterContentInit() {
+    
+    this.hasInjectedButton = !!this.elementRef.nativeElement.querySelector('[details-btn]');
+  }
 
   showDeleteConfirmDailog(){
     Swal.fire({
@@ -56,14 +69,11 @@ export class TableRowComponent {
   }
 
 
-  goToDetailsPage(data: Book){
-    console.log("goToDetailsPage btn click", data.id)
-    // this.router.navigate()
-  }
+  
 
   showEditDialog(){
     // console.log('show edit dialog');
-    this.onEditClid.emit(this.data);
+    this.onEditClick.emit(this.data);
   }
 
 }

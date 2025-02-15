@@ -27,11 +27,18 @@ id:string | null= '' ;
 imgUrl: string = '';
 activeTab: string = 'overview';
 
+fromPage: string | null= '';
+
   constructor(private route:ActivatedRoute,
               private bookService: BookService,
               private router: Router){}
 
   ngOnInit(){
+
+    this.route.queryParamMap.subscribe(params => {
+      this.fromPage = params.get('from');
+      console.log(this.fromPage);
+    })
 
     this.route.paramMap.subscribe(params => {
       this.id = params.get('id'); 
@@ -49,6 +56,8 @@ activeTab: string = 'overview';
           this.authorBirthday = this.formatDate(this.book.author?.birthday);
         }
       })
+
+      
       
     });
 
@@ -99,7 +108,7 @@ activeTab: string = 'overview';
   }
 
   goBackToBookList(): void{
-    this.router.navigate(['/admin/books'])
+    this.router.navigate([this.fromPage])
   }
 
 }
