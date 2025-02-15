@@ -5,11 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +130,9 @@ public class BookServiceImpl implements BookService{
 	@Override
 	public Mono<BookDto> saveBook(BookDto bookDto) {
 		Mono<List<BorrowedUserDto>> userList = getBorrowedUsersDto(bookDto.getId());
+		String uniqueBookId = this.generateBookId(bookDto.getBookDetails().getGenres(), bookDto.getName());
+		System.out.println(uniqueBookId);
+		bookDto.setUniqueBookId(uniqueBookId);
 		Book book = this.bookDtoToEntity(bookDto);
 //		System.out.println(book);
 		return Mono.zip(this.detailsDao.save(book.getBookDetails()), this.authorDao.save(book.getAuthor()))
@@ -139,11 +144,11 @@ public class BookServiceImpl implements BookService{
 				})
 				.map(savedBook -> this.bookEntityToDto(savedBook))
 				.flatMap(dto ->
-				userList.map(users -> {
-					dto.setBorrowedBy(users);  
-					return dto;  
-				})
-	);
+					userList.map(users -> {
+						dto.setBorrowedBy(users);  
+						return dto;  
+					})
+				);
 				
 	}
 
@@ -283,6 +288,49 @@ public class BookServiceImpl implements BookService{
 		}
 		
 		return bookDto;
+	}
+
+
+	public String generateBookId(List<String> genres, String bookName) {
+		final SecureRandom random = new SecureRandom();
+        String genreCode = genres.stream()
+                .map(genre -> genre.substring(0, 1).toUpperCase()) 
+                .collect(Collectors.joining(""));
+
+        String bookCode = "";
+        String [] name = bookName
+                .toUpperCase()
+                .split(" "); 
+        
+        if(bookName.length() >= 7) {
+        	for(String word : name) {
+            	bookCode += word.charAt(0);
+            }
+        }
+        else if(bookName.length() == 3){
+        	bookCode = bookName.toUpperCase().substring(0,3);
+        }
+        else {
+        	bookCode = bookName.toUpperCase().substring(0,1);
+        }
+                
+
+        // Generate a random 3-digit number
+        int randomDigits = 100 + random.nextInt(900);
+
+        // Combine all parts
+        return String.format("%s-%s-%03d", genreCode, bookCode, randomDigits);
+    }
+
+
+	@Override
+	public Flux<BookDto> searchBooks(String keyword) {
+		// TODO Auto-generated method stub
+		return this.bookDao.findAllBooksByText(keyword)
+				.switchIfEmpty(this.bookDao.findAllBooksByTextRegx(keyword))
+				.switchIfEmpty(Mono.error(new BookNotFoundException("Book not found")))
+				.map(books-> this.bookEntityToDto(books)
+				);
 	}
 
 

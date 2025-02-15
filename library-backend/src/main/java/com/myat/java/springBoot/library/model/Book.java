@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Document(collection = "books")
@@ -17,6 +18,9 @@ public class Book {
 
 	@Id
 	private String id;
+	
+	@NotNull
+	private String uniqueBookId;
 	
 	@NotBlank
 	private String name;
@@ -53,6 +57,15 @@ public class Book {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+
+	public String getUniqueBookId() {
+		return uniqueBookId;
+	}
+
+	public void setUniqueBookId(String uniqueBookId) {
+		this.uniqueBookId = uniqueBookId;
 	}
 
 	public String getName() {

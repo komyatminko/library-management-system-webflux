@@ -1,16 +1,16 @@
 
-    <td>{{data.id}}</td>
+    <td>{{data.uniqueBookId}}</td>
     <td>{{data.name}}</td>
     <td>{{data.author?.firstName + ' ' + data.author?.lastName}}</td>
     <td>{{data.availableCount}}</td>
     <td>
-        <button type="button" class="btn p-0 me-3">
+        <button type="button" class="btn p-0 me-2">
             <i class="fa-solid fa-pen-to-square text-success" (click)="showEditDialog()"></i>
         </button>
-        <button type="button" class="btn p-0 me-3" (click)="goToDetailsPage(data)" [routerLink]="['/admin/books', data.id, 'details']">
+        <button type="button" class="btn p-0 me-2" (click)="goToDetailsPage(data)" [routerLink]="['/admin/books', data.id, 'details']">
             <i class="fas fa-info-circle text-primary"></i>
         </button>
-        <button type="button" class="btn p-0 me-3" (click)="showDeleteConfirmDailog()">
+        <button type="button" class="btn p-0 me-2" (click)="showDeleteConfirmDailog()">
             <i class="fas fa-trash-alt text-danger"></i>
         </button>
         

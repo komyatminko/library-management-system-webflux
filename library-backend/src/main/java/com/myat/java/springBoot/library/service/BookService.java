@@ -23,6 +23,7 @@ public interface BookService {
 	public Mono<BookDto> saveBook(BookDto bookDto);
 	public Mono<BookDto> updateBook(BookDto bookDto);
 	public Mono<BookDto> deleteBookById(String id);
+	public Flux<BookDto> searchBooks(String keyword);
 	
 	public Mono<String> uploadImage(FilePart filePart, String uploadFolderName);
 	public Mono<Boolean> deleteImage(String filePath);

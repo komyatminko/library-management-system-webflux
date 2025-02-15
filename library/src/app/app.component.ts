@@ -24,7 +24,7 @@ export class AppComponent {
         console.log('user is authenticated')
       }
       else {
-        this.router.navigate(['/usesr']);
+        this.router.navigate(['/user']);
       }
     }
   }

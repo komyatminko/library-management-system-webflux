@@ -32,6 +32,11 @@ export class BookService {
     );
   }
 
+  getAllBooksByKeyword(keyword: string):Observable<Book[]>{
+    const params = new HttpParams().set('keyword', keyword);
+    return this.http.get<Book[]>(URL + '/find?', {params})
+  }
+
   saveBook(book:Book){
     this.http.post<{data: Book}>(URL+'/save',book).subscribe(res=> {
       // console.log(res.data);

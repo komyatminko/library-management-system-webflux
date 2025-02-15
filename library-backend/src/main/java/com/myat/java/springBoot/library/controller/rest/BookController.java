@@ -47,6 +47,11 @@ public class BookController {
 	    return ResponseEntity.ok()
 	            .body(books.map(book -> ApiResponse.success("Books have been retrieved successfully.", 200, book)));
 	}
+	
+	@GetMapping("/find")
+	public Flux<BookDto> getAllBooksByKeyword(@RequestParam("keyword") String keyword){
+		return this.bookService.searchBooks(keyword);
+	}
 
 	@GetMapping("/{id}")
 	public Mono<ResponseEntity<ApiResponse>> getBookById(@PathVariable String id){

@@ -1,21 +1,37 @@
 <div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-7 ">
+        <div class="col-sm-12 col-md-5 col-lg-6 my-2">
             <span class="card-title border-start border-5 border-primary h4 ps-3">Books List</span>
-            <span class="badge bg-primary rounded-pill ms-2">{{books.length}}</span>
+            <span class="badge bg-primary rounded-pill ms-2">{{filterBooks.length}}</span>
         </div>
-        <div class="col-5 d-flex ms-auto justify-content-end">
-            <button class="btn text-primary me-2">
+        <div class="col-sm-12 col-md-7 col-lg-6 d-flex d-row justify-content-end my-2">
+            <div class="input-group">
+                <input type="text" name="bookSearch" id="bookSearch" placeholder="Search name ..." class="form-control" [(ngModel)] = "searchKeyword" (input)="showSearchResult()" />
+                <button class="btn text-primary me-2 input-group-text bg-light" disabled>
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+            <button class="btn text-primary me-2" (click)="showFilterBox()">
                 <i class="fa fa-filter"></i>
             </button>
-            <button class="btn text-primary me-2">
-                <i class="fa fa-search"></i>
+            <app-book-form #bookFrom class="me-2"></app-book-form>
+            <button class="btn btn-outline-primary" routerLink="/admin">
+                <span class=""><i class="fa-solid fa-arrow-left"></i></span>
             </button>
-            <button class="btn btn-outline-primary me-2" routerLink="/admin">Back</button>
-            <app-book-form #bookFrom></app-book-form>
-           
         </div>
     </div>
+
+    <!-- to show check boxs for filtering -->
+    <div *ngIf="isClickFilter">
+        <div class="row my-2">
+            <div *ngFor="let genre of genres" class="col-3">
+                <input type="checkbox" [checked]="isChecked(genre)" 
+                                        (change)="onGenreChange($event, genre)" 
+                                        [value]="genre"/> {{ genre }}
+            </div>
+        </div>
+    </div>
+    
 
     <table class="table table-striped">
         <thead>
@@ -29,7 +45,7 @@
         </thead>
         
         <tbody>
-            <tr app-table-row *ngFor="let book of books" [data]="book" (onEditClid)="editDialogEvent($event)">
+            <tr app-table-row *ngFor="let book of filterBooks" [data]="book" (onEditClid)="editDialogEvent($event)">
             </tr>
         </tbody>
         

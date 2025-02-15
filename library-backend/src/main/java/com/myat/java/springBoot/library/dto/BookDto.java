@@ -19,6 +19,8 @@ public class BookDto {
 
 	private String id;
 	
+	private String uniqueBookId;
+	
 	private String name;
 	
 	private String imgUrl;
@@ -69,6 +71,14 @@ public class BookDto {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public String getUniqueBookId() {
+		return uniqueBookId;
+	}
+
+	public void setUniqueBookId(String uniqueBookId) {
+		this.uniqueBookId = uniqueBookId;
 	}
 
 	public String getName() {

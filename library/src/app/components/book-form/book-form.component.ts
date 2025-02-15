@@ -329,7 +329,7 @@ loadAllAuthor(): void{
   this.authorService.authors.subscribe(authors=> {
     this.existingAuthors = [];
     this.existingAuthors = authors;
-    this.existingAuthors.map(autor => console.log(autor))
+    // this.existingAuthors.map(autor => console.log(autor))
     })
 }
 
