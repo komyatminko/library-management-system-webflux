@@ -57,6 +57,12 @@ public class QueryTest {
 	
 	@Test
 	void borrowingTest() {
+		String id = "67978e5bc6c8e2529fb09dc9";
+		this.borrowingDao.findByUserId(id).subscribe(borrowing -> System.out.println(borrowing));
+	}
+	
+//	@Test
+//	void borrowingTest() {
 //		String bookId = "67ac8e9692d3da0a8efc9c58"; 
 //		
 //		Mono<Book> book = this.bookDao.findById(bookId);
@@ -79,15 +85,15 @@ public class QueryTest {
 		
 		
 //		Flux<Book> entity = this.bookDao.saveAll(book);
-		String id = "67ad86d2701cdd65e21181e6";
-		Mono<Author> result = authorDao.findById(id)
-                .flatMap(author -> {
-                    author.setLastName("1");
-                    return authorDao.save(author);
-                });
+//		String id = "67ad86d2701cdd65e21181e6";
+//		Mono<Author> result = authorDao.findById(id)
+//                .flatMap(author -> {
+//                    author.setLastName("1");
+//                    return authorDao.save(author);
+//                });
 //		
-		StepVerifier.create(result)
-					.expectNextMatches(savedEntity -> savedEntity.getLastName().equals("1"))
-					.verifyComplete();
-	}
+//		StepVerifier.create(result)
+//					.expectNextMatches(savedEntity -> savedEntity.getLastName().equals("1"))
+//					.verifyComplete();
+//	}
 }

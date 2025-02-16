@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class BorrowedUserDto {
 
+	private String id;
 	private String userId;
 	private String username;
 	private Date issueDate;
@@ -20,12 +21,29 @@ public class BorrowedUserDto {
 		this.isOverdue = isOverdue;
 	}
 
+	public BorrowedUserDto(String id, String userId, String username, Date issueDate, Date returnDate, Boolean isOverdue) {
+		this.id = id;
+		this.userId = userId;
+		this.username = username;
+		this.issueDate = issueDate;
+		this.returnDate = returnDate;
+		this.isOverdue = isOverdue;
+	}
+
 	public String getId() {
-		return userId;
+		return id;
 	}
 
 	public void setId(String id) {
-		this.userId = id;
+		this.id = id;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getUsername() {
@@ -58,6 +76,12 @@ public class BorrowedUserDto {
 
 	public void setIsOverdue(Boolean isOverdue) {
 		this.isOverdue = isOverdue;
+	}
+
+	@Override
+	public String toString() {
+		return "BorrowedUserDto [userId=" + userId + ", username=" + username + ", issueDate=" + issueDate
+				+ ", returnDate=" + returnDate + ", isOverdue=" + isOverdue + "]";
 	}
 	
 	

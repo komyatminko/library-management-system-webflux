@@ -18,6 +18,14 @@ public class Borrowing {
 	
 	public Borrowing() {}
 
+	public Borrowing(String id, String userId, String bookId, Date issueDate, Date returnDate, Boolean isOverdue) {
+		this.id = id;
+		this.userId = userId;
+		this.bookId = bookId;
+		this.issueDate = issueDate;
+		this.returnDate = returnDate;
+		this.isOverdue = isOverdue;
+	}
 	
 	public Borrowing(String userId, String bookId, Date issueDate, Date returnDate, Boolean isOverdue) {
 		this.userId = userId;
@@ -74,6 +82,12 @@ public class Borrowing {
 
 	public void setIsOverdue(Boolean isOverdue) {
 		this.isOverdue = isOverdue;
+	}
+
+	@Override
+	public String toString() {
+		return "Borrowing [id=" + id + ", userId=" + userId + ", bookId=" + bookId + ", issueDate=" + issueDate
+				+ ", returnDate=" + returnDate + ", isOverdue=" + isOverdue + "]";
 	}
 	
 	

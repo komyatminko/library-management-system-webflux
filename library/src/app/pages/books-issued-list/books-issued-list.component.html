@@ -1,0 +1,55 @@
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-sm-12 col-md-5 col-lg-6 my-2">
+            <span class="card-title border-start border-5 border-primary h4 ps-3">BooksIssued List</span>
+            <span class="badge bg-primary rounded-pill ms-2">10</span>
+        </div>
+        <div class="col-sm-12 col-md-7 col-lg-6 d-flex d-row justify-content-end my-2">
+            <div class="input-group">
+                <input type="text" name="bookSearch" id="bookSearch" placeholder="Search name ..." class="form-control" 
+                    
+                />
+                <button class="btn text-primary me-2 input-group-text bg-light" disabled>
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+            <button class="btn text-primary me-2" >
+                <i class="fa fa-filter"></i>
+            </button>
+            <!-- //for add btn -->
+            <button class="btn btn-outline-primary" routerLink="/admin">
+                <span class=""><i class="fa-solid fa-arrow-left"></i></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- to show check boxs for filtering -->
+    <!-- <div *ngIf="isClickFilter">
+        <div class="row my-2">
+            <div *ngFor="let genre of genres" class="col-3">
+                <input type="checkbox" [checked]="isChecked(genre)" 
+                                        (change)="onGenreChange($event, genre)" 
+                                        [value]="genre"/> {{ genre }}
+            </div>
+        </div>
+    </div> -->
+    
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="d-none d-md-table-cell">User ID</th>
+                <th>Book</th>
+                <th class="d-none d-md-table-cell">Issue Date</th>
+                <th class="d-none d-md-table-cell">Return Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <!-- <tr app-table-row *ngFor="let book of borrowedBooks" [data]="book">
+            </tr> -->
+        </tbody>
+        
+    </table>
+</div>

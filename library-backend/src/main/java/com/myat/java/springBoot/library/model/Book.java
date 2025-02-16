@@ -32,6 +32,8 @@ public class Book {
 	@Size(max = 250)
 	private BookDetails bookDetails;
 	
+	private List<Borrowing> borrowing;
+	
 	@NotBlank
 	private Author author;
 	
@@ -147,6 +149,16 @@ public class Book {
 
 	public void setPrice(Double price) {
 		this.price = price;
+	}
+	
+	
+
+	public List<Borrowing> getBorrowing() {
+		return borrowing;
+	}
+
+	public void setBorrowing(List<Borrowing> borrowing) {
+		this.borrowing = borrowing;
 	}
 
 	@Override

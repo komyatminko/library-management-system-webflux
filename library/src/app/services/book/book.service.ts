@@ -37,6 +37,24 @@ export class BookService {
     return this.http.get<Book[]>(URL + '/find?', {params})
   }
 
+  getBorrowedBooks(): Book[]{
+
+    let borrowedBooks: Book[] = [];
+
+    this.books.subscribe(books=> {
+      if(this._booksData){
+        let borrowedUserCount = 0;
+
+        borrowedBooks = this._booksData.filter(book => {
+          borrowedUserCount = book.borrowedBy?.length || 0;
+          return borrowedUserCount > 0
+        })
+      }
+    })
+
+    return borrowedBooks;
+  }
+
   saveBook(book:Book){
     this.http.post<{data: Book}>(URL+'/save',book).subscribe(res=> {
       // console.log(res.data);
