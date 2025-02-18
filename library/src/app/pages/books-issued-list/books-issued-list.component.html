@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-sm-12 col-md-5 col-lg-6 my-2">
             <span class="card-title border-start border-5 border-primary h4 ps-3">BooksIssued List</span>
-            <span class="badge bg-primary rounded-pill ms-2">10</span>
+            <span class="badge bg-primary rounded-pill ms-2">{{borrowedUsers.length}}</span>
         </div>
         <div class="col-sm-12 col-md-7 col-lg-6 d-flex d-row justify-content-end my-2">
             <div class="input-group">
@@ -16,7 +16,7 @@
             <button class="btn text-primary me-2" >
                 <i class="fa fa-filter"></i>
             </button>
-            <!-- //for add btn -->
+            <app-issued-book-form class="me-2"></app-issued-book-form>
             <button class="btn btn-outline-primary" routerLink="/admin">
                 <span class=""><i class="fa-solid fa-arrow-left"></i></span>
             </button>
@@ -47,8 +47,13 @@
         </thead>
         
         <tbody>
-            <!-- <tr app-table-row *ngFor="let book of borrowedBooks" [data]="book">
-            </tr> -->
+            <ng-container *ngFor="let book of allBooks">
+                <ng-content *ngFor="let user of book.borrowedBy">
+                    <tr app-book-issued-table-row [book]="book" [user]="user">
+
+                    </tr>
+                </ng-content>
+            </ng-container>
         </tbody>
         
     </table>

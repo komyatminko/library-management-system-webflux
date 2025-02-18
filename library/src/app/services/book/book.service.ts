@@ -1,7 +1,7 @@
 import { Book } from '@/app/models/book';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { BASE_URL } from '../Api';
 
 const URL = BASE_URL + '/v1/books';
@@ -10,6 +10,7 @@ const URL = BASE_URL + '/v1/books';
   providedIn: 'root'
 })
 export class BookService {
+  public borrowedBooks: Array<Book> = [];
   private _booksData:Array<Book> = [];
   private _books: BehaviorSubject<Array<Book>> = new BehaviorSubject<Array<Book>>([]);
   public readonly books: Observable<Array<Book>> = this._books.asObservable();
@@ -19,6 +20,7 @@ export class BookService {
   }
 
   getAllBooks(): Observable<{ data: Book }[]> {
+    console.log('get all books ...')
     return this.http.get<{ data: Book }[]>(URL); 
   }
 
@@ -27,7 +29,6 @@ export class BookService {
       (response: { data: Book }[]) => {
         this._booksData = response.map(item => item.data);
         this.emitChange();
-        
       }
     );
   }
@@ -37,27 +38,8 @@ export class BookService {
     return this.http.get<Book[]>(URL + '/find?', {params})
   }
 
-  getBorrowedBooks(): Book[]{
-
-    let borrowedBooks: Book[] = [];
-
-    this.books.subscribe(books=> {
-      if(this._booksData){
-        let borrowedUserCount = 0;
-
-        borrowedBooks = this._booksData.filter(book => {
-          borrowedUserCount = book.borrowedBy?.length || 0;
-          return borrowedUserCount > 0
-        })
-      }
-    })
-
-    return borrowedBooks;
-  }
-
   saveBook(book:Book){
     this.http.post<{data: Book}>(URL+'/save',book).subscribe(res=> {
-      // console.log(res.data);
       this._saveBook(res.data);
     });
   }
@@ -108,5 +90,21 @@ export class BookService {
     const params = new HttpParams().set('filePath', filePath);
     console.log(URL + '/delete/bookCover?' + params);
     return this.http.delete<void>(URL + '/delete/bookCover?', { params });
+  }
+
+  getBorrowedBooks(): Observable<Book[]> {
+    return this.books.pipe(
+      map(books => {
+        return books.filter(book => (book.borrowedBy?.length || 0) > 0);
+      })
+    );
+  }
+
+  formatDate(timestamp: Date|undefined) {
+    if(timestamp){
+      const date = new Date(timestamp);
+      return date.toISOString().split('T')[0]; // Converts to "YYYY-MM-DD"
+    }
+    return;
   }
 }

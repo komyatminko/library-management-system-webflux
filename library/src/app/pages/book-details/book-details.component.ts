@@ -53,7 +53,7 @@ fromPage: string | null= '';
           
           this.calculateAvailableBookCount();
           this.calculateIssueBookCount()
-          this.authorBirthday = this.formatDate(this.book.author?.birthday);
+          this.authorBirthday = this.bookService.formatDate(this.book.author?.birthday);
         }
       })
 
@@ -99,13 +99,7 @@ fromPage: string | null= '';
     }
   }
 
-  formatDate(timestamp: Date|undefined) {
-    if(timestamp){
-      const date = new Date(timestamp);
-      return date.toISOString().split('T')[0];
-    }
-    return;
-  }
+  
 
   goBackToBookList(): void{
     this.router.navigate([this.fromPage])

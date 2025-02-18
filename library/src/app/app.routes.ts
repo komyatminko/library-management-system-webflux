@@ -4,6 +4,7 @@ import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard
 import { BookDetailsComponent } from './pages/book-details/book-details.component';
 import { BooksIssuedListComponent } from './pages/books-issued-list/books-issued-list.component';
 import { BooksListComponent } from './pages/books-list/books-list.component';
+import { IssuedBookDetailsComponent } from './pages/issued-book-details/issued-book-details.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotFoundPageComponent } from './pages/not-found-page/not-found-page.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
@@ -16,6 +17,7 @@ export const routes: Routes = [
     { path: 'admin/books', component: BooksListComponent},
     { path: 'admin/books/:id/details', component: BookDetailsComponent},
     { path: 'admin/issuedBooks', component: BooksIssuedListComponent},
+    { path: 'admin/issuedBooks/:id/details', component: IssuedBookDetailsComponent},
     { path: '',   redirectTo: '/login', pathMatch: 'full' },
     { path: '**', component: NotFoundPageComponent },
 ];

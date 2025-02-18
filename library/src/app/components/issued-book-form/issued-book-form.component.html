@@ -1,0 +1,23 @@
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add Issued Book</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="issuedBookForm" (ngSubmit)="onSubmit()"></form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" >
+       Save
+      </button>
+    </div>
+</ng-template>
+  <div>
+    <button type="button"
+            class="btn btn-outline-primary"
+            (click)="openDialogForNew()">
+            <span class="">
+              <i class="fa-solid fa-plus"></i>
+            </span>
+    </button>
+  </div>

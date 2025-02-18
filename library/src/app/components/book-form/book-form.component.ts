@@ -91,7 +91,7 @@ export class BookFormComponent implements OnInit{
       newAuthor: {
         firstName: book.author?.firstName,
         lastName: book.author?.lastName,
-        birthday: this.formatDate(book.author?.birthday)
+        birthday: this.bookService.formatDate(book.author?.birthday)
       }
     })
     console.log('img url ', book.imgUrl)
@@ -116,13 +116,7 @@ export class BookFormComponent implements OnInit{
     }
   }
 
-  formatDate(timestamp: Date|undefined) {
-    if(timestamp){
-      const date = new Date(timestamp);
-      return date.toISOString().split('T')[0]; // Converts to "YYYY-MM-DD"
-    }
-    return;
-  }
+  
 
   open(content: TemplateRef<any>) {
     this.modalDialog = this.modalService.open(content, {  size: 'lg' ,ariaLabelledBy: 'modal-basic-title' });
