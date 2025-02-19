@@ -74,6 +74,15 @@ public class UserServiceImpl implements UserService{
 		
 		return borrowedBooksList;
 	}
+
+	@Override
+	public Mono<UserDto> saveUser(UserDto userDto) {
+		System.out.println("incoming user is " + userDto);
+		User user = this.modelMapper.map(userDto, User.class);
+		return this.userDao.save(user)
+				.map(userEntity-> this.modelMapper.map(userEntity, UserDto.class));
+				
+	}
 	
 
 

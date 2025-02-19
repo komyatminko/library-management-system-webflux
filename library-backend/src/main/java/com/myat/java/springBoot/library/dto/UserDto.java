@@ -10,19 +10,26 @@ public class UserDto {
 	private String username;
 	private String password;
 	private String email;
+	private String phone;
+	private String address;
 	private List<Role> roles;
 	private List<BorrowedBookDto> borrowedBooks;
 	
 	public UserDto() {}
-	public UserDto(String id, String username, String password, String email, List<Role> roles,
+	public UserDto(String id, String username, 
+			String password, String email, 
+			List<Role> roles, String phone, String address,
 			List<BorrowedBookDto> borrowedBooks) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.roles = roles;
+		this.phone = phone;
+		this.address = address;
 		this.borrowedBooks = borrowedBooks;
 	}
+	
 	public String getId() {
 		return id;
 	}
@@ -59,6 +66,23 @@ public class UserDto {
 	public void setBorrowedBooks(List<BorrowedBookDto> borrowedBooks) {
 		this.borrowedBooks = borrowedBooks;
 	}
-
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	@Override
+	public String toString() {
+		return "UserDto [username=" + username + ", password=" + password + ", email=" + email + ", phone=" + phone
+				+ ", address=" + address + ", roles=" + roles + ", borrowedBooks=" + borrowedBooks + "]";
+	}
+	
 	
 }

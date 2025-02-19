@@ -12,5 +12,6 @@ public interface BorrowingDao extends ReactiveMongoRepository<Borrowing, String>
 	Flux<Borrowing> findByBookId(String bookId);
 	Flux<Borrowing> findByUserId(String userId);
 	Mono<Void> deleteByBookId(String bookId);
+	Mono<Void> deleteByUserId(String userId);
 	
 }

@@ -187,7 +187,6 @@ public class BookServiceImpl implements BookService{
 //	            	   System.out.println(oldBook.getBorrowing());
 	            	   //check whether book has borrowing in db, if not, create new list
 	            	   if(oldBook.getBorrowing() == null) {
-	            		   System.out.println("book has no borrowed users...");
 	            		   List<Borrowing> borrowings = new ArrayList<>();
 	            		   
 	            		   bookDto.getBorrowedBy().stream().forEach(user-> {
@@ -195,18 +194,15 @@ public class BookServiceImpl implements BookService{
 	            			   borrowings.add(borrowing);
 	            			   oldBook.setBorrowing(borrowings);
 	            			   this.borrowingDao.save(borrowing).subscribe();
-	            			   System.out.println("borrowing " + borrowing);
 	            		   });
 	            	   }
 	            	   //if yes, add borrowing to existing list
 	            	   else {
-	            		   System.out.println("old book has borrowing...");
+	            		   List<Borrowing> existingBorrowings = oldBook.getBorrowing();
 	            		   for(BorrowedUserDto borrowedUser: bookDto.getBorrowedBy()) {
 	            			   if(borrowedUser.getId() != null) {
-	            				   System.out.println("update the borrowing " + borrowedUser.getUserId());
 	            				   this.borrowingDao.findByUserId(borrowedUser.getUserId())
 	            				   		.flatMap(oldUser -> {
-	            				   			System.out.println("updating borrowing ");
 	            				   			oldUser.setId(borrowedUser.getId());
 	            				   			oldUser.setUserId(borrowedUser.getUserId());
 	            				   			oldUser.setBookId(bookDto.getId());
@@ -215,12 +211,15 @@ public class BookServiceImpl implements BookService{
 	            				   			oldUser.setIsOverdue(borrowedUser.getIsOverdue());
 	            				   			return this.borrowingDao.save(oldUser);
 	            				   		})
-	            				   		.map(savedUser -> oldBook.getBorrowing().add(savedUser))
+	            				   		.map(savedUser -> {
+//	            				   			 oldBook.getBorrowing().clear();
+	            				   			existingBorrowings.removeIf(b -> b.getUserId().equals(savedUser.getUserId()));
+	            				   			return existingBorrowings.add(savedUser);
+	            				   		})
 	            				   		.then(
 	            				   				
 	            				   				this.userDao.findById(borrowedUser.getUserId())
 	    	            				   		.flatMap(user -> {
-	    	            				   			System.out.println("updating user ");
 	    	            				   			user.setUsername(borrowedUser.getUsername());
 	    	            				   			return this.userDao.save(user);
 	    	            				   		})
@@ -229,9 +228,8 @@ public class BookServiceImpl implements BookService{
 	            				   
 	            			   }
 	            			   else {
-	            				   System.out.println("save the borrowed user");
 	            				   Borrowing borrowing = new Borrowing(borrowedUser.getUserId(), oldBook.getId(), borrowedUser.getIssueDate(), borrowedUser.getReturnDate(), borrowedUser.getIsOverdue());
-	            				   oldBook.getBorrowing().add(borrowing);
+	            				   existingBorrowings.add(borrowing);
 	            				   this.borrowingDao.save(borrowing).subscribe();
 	            			   }
 	            		   }
@@ -263,7 +261,7 @@ public class BookServiceImpl implements BookService{
 				.flatMap(bookDto -> {
 					return Mono
 							.when(this.detailsDao.deleteById(bookDto.getBookDetails().getId()),
-									this.authorDao.deleteById(bookDto.getAuthor().getId()), 
+//									this.authorDao.deleteById(bookDto.getAuthor().getId()), 
 									this.borrowingDao.deleteByBookId(id),
 									this.bookDao.deleteById(id))
 							.thenReturn(bookDto);

@@ -28,7 +28,7 @@ export class BookIssuedTableRowComponent {
 
   get formattedUser() {
     return {
-      id: this._user?.id || '',
+      id: this._user?.userId || '',
       username: this._user?.username || '',
       issueDate: this.bookService.formatDate(this._user?.issueDate),
       returnDate: this.bookService.formatDate(this._user?.returnDate),

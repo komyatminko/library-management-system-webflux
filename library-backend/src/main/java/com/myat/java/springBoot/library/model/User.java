@@ -13,14 +13,21 @@ public class User {
 	private String username;
 	private String password;
 	private String email;
+	private String phone;
+	private String address;
 	private List<Role> roles;
 	private Integer issueBooksCount;
 
-	public User(String id, String username, String password, String email, List<Role> roles, Integer issueBookscount) {
+	public User(String id, String username, 
+			String password, String email, 
+			String address, String phone,
+			List<Role> roles, Integer issueBookscount) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
+		this.phone = phone;
+		this.address = address;
 		this.roles = roles;
 		this.issueBooksCount = issueBookscount;
 	}
@@ -74,5 +81,23 @@ public class User {
 	public void setIssueBooksCount(Integer issueBooksCount) {
 		this.issueBooksCount = issueBooksCount;
 	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	
 
 }

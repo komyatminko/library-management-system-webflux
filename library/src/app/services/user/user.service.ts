@@ -24,13 +24,24 @@ export class UserService {
   }
 
   fetchUsersFromServer(): void {
+    console.log('users fetching ...')
     this.getAllUsers().subscribe(
       (response: User[]) => {
         this._usersData = response.map(item => item);
         this.emitChange();
-        // console.log(this._usersData.length)
+        // console.log('users ', this._usersData)
       }
     );
+  }
+
+  saveUser(user: User) : Observable<User>{
+    this._saveUser(user);
+    return this.http.post<User>(URL+'/save',user);
+  }
+
+  _saveUser(user: User){
+    this._usersData.push(user);
+    this.emitChange();
   }
 
   private emitChange() {

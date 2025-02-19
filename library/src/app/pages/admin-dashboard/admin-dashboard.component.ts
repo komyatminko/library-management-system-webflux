@@ -32,10 +32,8 @@ export class AdminDashboardComponent {
               private userService: UserService) {
     // this.bookService.fetchBooksFromServer();
     this.bookService.books.subscribe(books => this.booksArr = books)
-    this.userService.users.subscribe(users => {
-      this.usersArr = users;
-      // this.usersArr.forEach(obj=> console.log(obj.username))
-    })
+    this.userService.users.subscribe(users => this.usersArr = users
+    )
     
   }
 }
