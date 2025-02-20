@@ -43,6 +43,8 @@ public class Book {
 	
 	private Boolean isAvailable;
 	
+	private Integer totalCount;
+	
 	private Integer availableCount;
 	
 	@LastModifiedDate
@@ -159,6 +161,16 @@ public class Book {
 
 	public void setBorrowing(List<Borrowing> borrowing) {
 		this.borrowing = borrowing;
+	}
+	
+	
+
+	public Integer getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(Integer totalCount) {
+		this.totalCount = totalCount;
 	}
 
 	@Override

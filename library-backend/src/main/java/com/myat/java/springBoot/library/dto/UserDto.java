@@ -6,7 +6,7 @@ import com.myat.java.springBoot.library.model.Role;
 
 public class UserDto {
 	
-	private String id;
+	private String userId;
 	private String username;
 	private String password;
 	private String email;
@@ -20,7 +20,7 @@ public class UserDto {
 			String password, String email, 
 			List<Role> roles, String phone, String address,
 			List<BorrowedBookDto> borrowedBooks) {
-		this.id = id;
+		this.userId = id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
@@ -31,10 +31,10 @@ public class UserDto {
 	}
 	
 	public String getId() {
-		return id;
+		return userId;
 	}
 	public void setId(String id) {
-		this.id = id;
+		this.userId = id;
 	}
 	public String getUsername() {
 		return username;

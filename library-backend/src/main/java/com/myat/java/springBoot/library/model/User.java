@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
 
 	@Id
-	private String id;
+	private String userId;
 	private String username;
 	private String password;
 	private String email;
@@ -22,7 +22,7 @@ public class User {
 			String password, String email, 
 			String address, String phone,
 			List<Role> roles, Integer issueBookscount) {
-		this.id = id;
+		this.userId = id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
@@ -35,11 +35,11 @@ public class User {
 	public User() {}
 
 	public String getId() {
-		return id;
+		return userId;
 	}
 
 	public void setId(String id) {
-		this.id = id;
+		this.userId = id;
 	}
 
 	public String getUsername() {

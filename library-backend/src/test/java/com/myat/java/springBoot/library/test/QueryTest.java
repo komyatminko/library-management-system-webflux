@@ -57,8 +57,13 @@ public class QueryTest {
 	
 	@Test
 	void borrowingTest() {
-		String id = "67978e5bc6c8e2529fb09dc9";
-		this.borrowingDao.findByUserId(id).subscribe(borrowing -> System.out.println(borrowing));
+		String bookId = "67b6d7e74e61305bf3996da6";
+		this.borrowingDao.deleteByBookId(bookId).subscribe();
+		try {
+			Thread.sleep(2000);
+		}catch (Exception e) {
+			System.out.println("error............");
+		}
 	}
 	
 //	@Test

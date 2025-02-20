@@ -45,7 +45,7 @@ export class BookIssuedTableRowComponent {
   }
 
   deleteBookIssued(){
-   
+   console.log('borrowed user to be deleted ', this._user);
   }
 
 }
