@@ -26,14 +26,33 @@ import { User } from '@/app/models/user';
 })
 export class AdminDashboardComponent {
 
-  booksArr!: Book[];
   usersArr!: User[];
+  totalBookCount: number = 0;
+  borrowedBookCount: number = 0;
   constructor(private bookService: BookService,
               private userService: UserService) {
-    // this.bookService.fetchBooksFromServer();
-    this.bookService.books.subscribe(books => this.booksArr = books)
+    
+    
+  }
+
+  ngOnInit(){
+    this.bookService.books.subscribe(books => {
+      // this.borrowedBookCount = 0;
+      books.map(book=> {
+        
+        if(book){
+          this.totalBookCount += book.totalCount;
+        }
+        if(book.borrowedBy){
+          this.borrowedBookCount += book.borrowedBy.length;
+        }
+        
+
+        
+        
+      })
+    })
     this.userService.users.subscribe(users => this.usersArr = users
     )
-    
   }
 }

@@ -75,7 +75,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-md-6 col-lg-3">
-                            <app-total-card [total]="booksArr.length" [title]="'Total Books'">
+                            <app-total-card [total]="totalBookCount" [title]="'Total Books'">
                                 <i class="fas fa-chart-line fa-2x"></i>
                             </app-total-card>
                         </div>
@@ -85,7 +85,7 @@
                             </app-total-card>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-3">
-                            <app-total-card [total]="410" [title]="'Borrowed Books'">
+                            <app-total-card [total]="borrowedBookCount" [title]="'Borrowed Books'">
                                 <i class="fas fa-chart-line fa-2x"></i>
                             </app-total-card>
                         </div>

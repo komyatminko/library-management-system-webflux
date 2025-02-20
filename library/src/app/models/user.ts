@@ -3,7 +3,7 @@ import { BorrowedBook } from "./borrowed-book";
 import { Role } from "./role";
 
 export interface User {
-    userId?: string;
+    id?: string;
     username: string;
     password: string;
     email: string;

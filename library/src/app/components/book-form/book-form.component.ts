@@ -233,9 +233,10 @@ get isFormValid(): boolean | undefined{
   if(!this.editMode){
     const isExistingAuthorSelected = !!this.bookForm.get('existingAuthor')?.value;
     
+    const isPriceValid = this.bookForm.get('price')?.valid;
     const isFileValid = this.bookForm.get('image')?.valid; // Ensure file input is valid
 
-    return (isFormValid || isExistingAuthorSelected) && isFileValid;
+    return (isFormValid || isExistingAuthorSelected) && isFileValid && isPriceValid;
   }
   else{
     this.bookForm.get('image')?.clearValidators();
@@ -267,6 +268,7 @@ formatFormDataForUpdateBook(book:Book | undefined): Book{
         },
         rating: formData.rating,
         isAvailable: true,
+        totalCount: formData.availableCount,
         availableCount: formData.availableCount,
         borrowedBy: book.borrowedBy
 
@@ -294,6 +296,7 @@ formatFormData(): Book{
       },
       rating: formData.rating,
       isAvailable: true,
+      totalCount: formData.availableCount,
       availableCount: formData.availableCount
     
 

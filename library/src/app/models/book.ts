@@ -13,6 +13,7 @@ export interface Book {
     author?: Author;
     rating: number;
     isAvailable?: boolean;
+    totalCount: number;
     availableCount: number;
     borrowedBy?: Array<BorrowedUser>;
 

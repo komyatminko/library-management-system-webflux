@@ -20,6 +20,7 @@ export class BookDetailsComponent{
 
 flagForContentHeight = false;
 book!: Book;
+totalBookCount: number = 0;
 availableBookCount: number = 0;
 issueBookCount: number = 0;
 authorBirthday: string | undefined = '';
@@ -76,8 +77,13 @@ fromPage: string | null= '';
   
 
   calculateAvailableBookCount(): void{
+    this.totalBookCount = this.book.totalCount;
+    console.log('total book count ', this.totalBookCount);
+
     let borrowedCount = this.book.borrowedBy?.length || 0;
-    this.availableBookCount = this.book.availableCount - borrowedCount;
+    console.log('borrowed count ', borrowedCount);
+
+    this.availableBookCount = this.totalBookCount - borrowedCount;
   }
 
   calculateIssueBookCount(): void{

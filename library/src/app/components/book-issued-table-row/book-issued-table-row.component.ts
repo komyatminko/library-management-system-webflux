@@ -41,7 +41,7 @@ export class BookIssuedTableRowComponent {
   constructor(private bookService: BookService){}
   
   ngOnInit(){
-    console.log(this.book);
+    // console.log(this.book);
   }
 
   deleteBookIssued(){

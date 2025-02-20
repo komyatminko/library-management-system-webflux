@@ -71,51 +71,37 @@ export class IssuedBookFormComponent {
 
   onSubmit(){
     let formData = this.issuedBookForm.value;
+    // console.log(formData);
+    //formatting new user to save
+    let issuedBook: Book | undefined;
+    let userToSave = this.formatUserToSave(formData);
     
 
-    //formatting new user to save
-    let userTosave = {
-      username: formData.newUser.username,
-      password: '',
-      email: '',
-      roles: [ 
-        {
-          role: 'USER',
-          authority: 'USER'
+    if(this.userType == 'new'){
+      forkJoin({
+        savedUser: this.userService.saveUser(userToSave), 
+        books: this.bookService.books.pipe(take(1)) 
+      }).subscribe(({ savedUser, books }) => {
+        issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId);
+        if(issuedBook){
+          this.formatBookWithBorrowedUserAndUpdate(issuedBook, savedUser, formData);
         }
-      ],
-      phone: formData.newUser.phone,
-      address: formData.newUser.address,
+  
+        
+      });
     }
-
-    let borrowedUser: BorrowedUser;
-    let issuedBook: Book | undefined;
-
-    forkJoin({
-      savedUser: this.userService.saveUser(userTosave), 
-      books: this.bookService.books.pipe(take(1)) 
-    }).subscribe(({ savedUser, books }) => {
-      console.log('Saved user:', savedUser);
-
-      borrowedUser = this.setBorrowedBy(savedUser);
-      console.log('Borrowed user:', borrowedUser);
-
-      issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId);
-      console.log('Issued book before adding borrowedUser:', issuedBook);
-
-      if (issuedBook) {
-        if (!issuedBook.borrowedBy) {
-          issuedBook.borrowedBy = []; 
+    else if(this.userType == 'existing'){
+      let user = this.existingUsers.find(user=> user.id == formData.existingUser)
+      console.log('borrowed user ', user);
+      this.bookService.books.subscribe(books=>{
+        issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId);
+        console.log('issued book befor pushing borrowed user ', issuedBook);
+        // console.log('save ....')
+        if(issuedBook){
+          this.formatBookWithBorrowedUserAndUpdate(issuedBook, user, formData);
         }
-
-
-        issuedBook.borrowedBy.push(borrowedUser);
-        this.bookService.updateBook(issuedBook);
-        console.log('Issued book after adding borrowedUser:', issuedBook);
-      } else {
-        console.warn('No matching book found!');
-      }
-    });
+      })
+    }
 
 
     this.modalDialog.close();
@@ -126,6 +112,7 @@ export class IssuedBookFormComponent {
     const issueDate = new Date(); // Get the current date
     const returnDate = new Date(issueDate); // Create a copy of currentDate
     returnDate.setDate(returnDate.getDate() + this.daysToReturn);
+
     let borrowedBy!: BorrowedUser ;
     if(savedUser.id){
       borrowedBy = {
@@ -139,4 +126,47 @@ export class IssuedBookFormComponent {
     }
     return borrowedBy;
   }  
+
+  formatUserToSave(formData: any){
+    return {
+      username: formData.newUser.username,
+      password: '',
+      email: '',
+      roles: [ 
+        {
+          role: 'USER',
+          authority: 'USER'
+        }
+      ],
+      phone: formData.newUser.phone,
+      address: formData.newUser.address,
+    }
+  }
+
+  formatBookWithBorrowedUserAndUpdate(issuedBook: Book, savedUser: any,formData: any) {
+    let borrowedUser: BorrowedUser;
+    
+    borrowedUser = this.setBorrowedBy(savedUser);
+
+    
+
+    if (issuedBook) {
+      if (!issuedBook.borrowedBy) {
+        issuedBook.borrowedBy = [];
+      }
+ 
+
+      const userExists = issuedBook.borrowedBy.some(user => user.userId === borrowedUser.userId);
+
+      if (!userExists) {
+        issuedBook.borrowedBy.push(borrowedUser);
+        console.log('Updated issued book:', issuedBook);
+        this.bookService.updateBook(issuedBook);
+      } else {
+        console.warn('User already exists in borrowedBy, skipping duplicate update.');
+      }
+    } else {
+      console.warn('No matching book found!');
+    }
+  }
 }
