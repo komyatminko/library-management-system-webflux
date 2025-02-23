@@ -25,8 +25,9 @@ export class IssuedBookFormComponent {
   modalDialog!: NgbModalRef;
   userType: string = 'existing';
   existingUsers: User[] = [];
+  saveFlag: boolean = true;
 
-  daysToReturn: number = 5;
+  
   @ViewChild('content', { static: false }) private content:any;
 
   constructor(private modalService: NgbModal,
@@ -50,34 +51,32 @@ export class IssuedBookFormComponent {
 
   ngOnInit(){
     this.userService.users.subscribe(users=>{
-      this.existingUsers = []
       this.existingUsers = users;
     })
   }
 
   openDialogForNew(){
     this.open(this.content);
-    console.log('open dialog for new ')
+    this.resetFormIfDismiss();
   }
 
   updateUserType(type: string){
     this.userType = type;
-    console.log(this.userType); 
   }
 
   open(content: TemplateRef<any>) {
     this.modalDialog = this.modalService.open(content, {  size: 'lg' ,ariaLabelledBy: 'modal-basic-title' });
   }
 
-  onSubmit(){
-    let formData = this.issuedBookForm.value;
-    // console.log(formData);
-    //formatting new user to save
+
+  save(){
+      let formData = this.issuedBookForm.value;
     let issuedBook: Book | undefined;
-    let userToSave = this.formatUserToSave(formData);
+    
     
 
     if(this.userType == 'new'){
+      let userToSave = this.formatUserToSave(formData);
       forkJoin({
         savedUser: this.userService.saveUser(userToSave), 
         books: this.bookService.books.pipe(take(1)) 
@@ -92,40 +91,23 @@ export class IssuedBookFormComponent {
     }
     else if(this.userType == 'existing'){
       let user = this.existingUsers.find(user=> user.id == formData.existingUser)
-      console.log('borrowed user ', user);
-      this.bookService.books.subscribe(books=>{
+      // console.log('borrowed user ', user);
+      this.bookService.books.pipe(take(1)).subscribe(books=>{
         issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId);
-        console.log('issued book befor pushing borrowed user ', issuedBook);
-        // console.log('save ....')
+        // console.log('issued book befor pushing borrowed user ', issuedBook);
         if(issuedBook){
           this.formatBookWithBorrowedUserAndUpdate(issuedBook, user, formData);
         }
       })
     }
-
-
+    this.saveFlag =false;
+    this.issuedBookForm.reset({userType: 'existing'});
     this.modalDialog.close();
+    
     
   }
 
-  setBorrowedBy(savedUser: any){
-    const issueDate = new Date(); // Get the current date
-    const returnDate = new Date(issueDate); // Create a copy of currentDate
-    returnDate.setDate(returnDate.getDate() + this.daysToReturn);
-
-    let borrowedBy!: BorrowedUser ;
-    if(savedUser.id){
-      borrowedBy = {
-        userId: savedUser.id,
-        username: savedUser.username,
-        issueDate: issueDate,
-        returnDate: returnDate,
-        isOverdue: false
   
-      }
-    }
-    return borrowedBy;
-  }  
 
   formatUserToSave(formData: any){
     return {
@@ -146,8 +128,7 @@ export class IssuedBookFormComponent {
   formatBookWithBorrowedUserAndUpdate(issuedBook: Book, savedUser: any,formData: any) {
     let borrowedUser: BorrowedUser;
     
-    borrowedUser = this.setBorrowedBy(savedUser);
-
+    borrowedUser = this.bookService.setBorrowedBy(savedUser, issuedBook);
     
 
     if (issuedBook) {
@@ -159,14 +140,20 @@ export class IssuedBookFormComponent {
       const userExists = issuedBook.borrowedBy.some(user => user.userId === borrowedUser.userId);
 
       if (!userExists) {
+        let flag = true;
         issuedBook.borrowedBy.push(borrowedUser);
         console.log('Updated issued book:', issuedBook);
         this.bookService.updateBook(issuedBook);
-      } else {
-        console.warn('User already exists in borrowedBy, skipping duplicate update.');
+        
       }
     } else {
       console.warn('No matching book found!');
     }
+  }
+
+  resetFormIfDismiss(){
+    this.modalDialog.dismissed.subscribe(()=>{
+      this.issuedBookForm.reset();
+    })
   }
 }

@@ -133,6 +133,7 @@ public class BookServiceImpl implements BookService{
 		System.out.println(uniqueBookId);
 		bookDto.setUniqueBookId(uniqueBookId);
 		Book book = this.bookDtoToEntity(bookDto);
+		book.setBorrowing(new ArrayList<>());
 //		System.out.println(book);
 		return Mono.zip(this.detailsDao.save(book.getBookDetails()), this.authorDao.save(book.getAuthor()))
 				.flatMap(tuple -> {
@@ -182,19 +183,21 @@ public class BookServiceImpl implements BookService{
 	                oldBook.setRating(bookDto.getRating());
 	                oldBook.setTotalCount(bookDto.getTotalCount());
 	                
+	               //delete borrowed user from issued book when borrowed user is deleted
+		           removeBorrowedUserAndUpdateIssuedBook(bookDto, oldBook);
+		           
 	               //save and update borrowed user
 	               updateIssuedBook(bookDto, oldBook);
 	               
-	               //delete borrowed user from issued book when borrowed user is deleted
-	               removeBorrowedUserAndUpdateIssuedBook(bookDto, oldBook);
+	               
 	                
 	               if(oldBook.getAvailableCount() == 0) {
 	            	   oldBook.setIsAvailable(false);
 	               }
 	               else {
-	            	   oldBook.setIsAvailable(bookDto.getIsAvailable());
+	            	   oldBook.setIsAvailable(true);
 	               }
-
+	               System.out.println("old book before save to db " + oldBook);
 	                return this.authorDao.save(oldBook.getAuthor())  
 	                        .then(this.detailsDao.save(oldBook.getBookDetails())) 
 	                        .then(this.bookDao.save(oldBook)); 
@@ -212,9 +215,9 @@ public class BookServiceImpl implements BookService{
 	}
 	
 	private void removeBorrowedUserAndUpdateIssuedBook(BookDto bookDto, Book oldBook) {
-		
 		if (oldBook.getBorrowing().size() > bookDto.getBorrowedBy().size()) {
-			oldBook.setAvailableCount(oldBook.getAvailableCount() + 1);
+			 oldBook.setAvailableCount(oldBook.getTotalCount() - bookDto.getBorrowedBy().size());
+			
 			List<Borrowing> removedUsers = oldBook.getBorrowing()
 					.stream()
 					.filter(oldUser -> bookDto.getBorrowedBy()
@@ -223,23 +226,25 @@ public class BookServiceImpl implements BookService{
 					)
 					.collect(Collectors.toList());
 		
-			for (Borrowing removedUser : removedUsers) {
-	//			System.out.println("borrowed users to be deleted " + removedUser);
-		        this.borrowingDao.delete(removedUser).subscribe();
-		        oldBook.getBorrowing().remove(removedUser); 
-		    }
-		}
-		
-		
+			 Flux.fromIterable(removedUsers)
+		            .flatMap(user -> this.borrowingDao.delete(user))
+		            .doOnComplete(() -> {
+		                oldBook.getBorrowing().removeAll(removedUsers);
+		            })
+		            .subscribe();
+			
+		}	
 
 	}
 
 	private void updateIssuedBook(BookDto bookDto, Book oldBook) {
-		if(bookDto.getBorrowedBy().size() > 0) {
+		
+		if(bookDto.getBorrowedBy().size() > 0 && bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size()) {
 			   
-			   oldBook.setAvailableCount(bookDto.getAvailableCount() - 1);
+			oldBook.setAvailableCount(Math.max(0, oldBook.getAvailableCount() - 1));
+
 			   //check whether book has borrowing in db, if not, create new list
-			   if(oldBook.getBorrowing() == null) {
+			   if(oldBook.getBorrowing() == null || oldBook.getBorrowing().size() == 0) {
 				   List<Borrowing> borrowings = new ArrayList<>();
 				   
 				   bookDto.getBorrowedBy().stream().forEach(user-> {
@@ -265,18 +270,19 @@ public class BookServiceImpl implements BookService{
 						   			return this.borrowingDao.save(oldUser);
 						   		})
 						   		.map(savedUser -> {
-//	            				   			 oldBook.getBorrowing().clear();
-						   			existingBorrowings.removeIf(b -> b.getUserId().equals(savedUser.getUserId()));
+						   			existingBorrowings.removeIf(b -> b.getId().equals(savedUser.getId()));
+//						   			existingBorrowings.clear();
 						   			return existingBorrowings.add(savedUser);
 						   		})
-						   		.then(
-						   				
-						   				this.userDao.findById(borrowedUser.getUserId())
-		        				   		.flatMap(user -> {
-		        				   			user.setUsername(borrowedUser.getUsername());
-		        				   			return this.userDao.save(user);
-		        				   		})
-						   		).subscribe();
+//						   		.then(
+//						   				
+//						   				this.userDao.findById(borrowedUser.getUserId())
+//		        				   		.flatMap(user -> {
+//		        				   			user.setUsername(borrowedUser.getUsername());
+//		        				   			return this.userDao.save(user);
+//		        				   		})
+//						   		)
+						   		.subscribe();
 						   	
 						   
 					   }
@@ -298,7 +304,6 @@ public class BookServiceImpl implements BookService{
 				.flatMap(bookDto -> {
 					return Mono
 							.when(this.detailsDao.deleteById(bookDto.getBookDetails().getId()),
-//									this.authorDao.deleteById(bookDto.getAuthor().getId()), 
 									this.borrowingDao.deleteByBookId(id),
 									this.bookDao.deleteById(id))
 							.thenReturn(bookDto);

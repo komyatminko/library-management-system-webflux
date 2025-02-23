@@ -4,7 +4,7 @@
       <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
-      <form [formGroup]="issuedBookForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="issuedBookForm">
 
          <!-- Author Section -->
          <div class="border p-3 mt-3">
@@ -69,7 +69,7 @@
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="onSubmit()">
+      <button type="button" class="btn btn-primary" (click)="save()">
        Save
       </button>
     </div>

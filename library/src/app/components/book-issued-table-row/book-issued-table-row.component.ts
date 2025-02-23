@@ -1,9 +1,12 @@
 import { Book } from '@/app/models/book';
 import { BorrowedUser } from '@/app/models/borrowed-user';
+import { User } from '@/app/models/user';
 import { BookService } from '@/app/services/book/book.service';
+import { UserService } from '@/app/services/user/user.service';
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'tr[app-book-issued-table-row]',
@@ -15,11 +18,11 @@ import { RouterLink } from '@angular/router';
   styleUrl: './book-issued-table-row.component.css'
 })
 export class BookIssuedTableRowComponent {
+
   private _user!: BorrowedUser;
-
-
+  
   @Input()
-  book!: Book;
+  book: Book | undefined;
 
   @Input()
   set user(value: BorrowedUser) {
@@ -41,11 +44,25 @@ export class BookIssuedTableRowComponent {
   constructor(private bookService: BookService){}
   
   ngOnInit(){
-    // console.log(this.book);
+    
+    this.bookService.books.pipe(take(1)).subscribe(books => {
+      if(this.book){
+        this.book = books.find(book => book.id === this.book?.id);
+      }
+      
+    });
+
+
   }
 
   deleteBookIssued(){
-   console.log('borrowed user to be deleted ', this._user);
+   
+    if(this.book){
+      
+      let borrowedUserToRemove = this.book.borrowedBy?.filter(user=> user.userId != this._user.userId);
+      this.book.borrowedBy = borrowedUserToRemove;
+      this.bookService.updateBook(this.book);
+      
+    }
   }
-
 }

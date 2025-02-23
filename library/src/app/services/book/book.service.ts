@@ -1,7 +1,8 @@
 import { Book } from '@/app/models/book';
+import { BorrowedUser } from '@/app/models/borrowed-user';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { ChangeDetectorRef, Injectable } from '@angular/core';
+import { BehaviorSubject, map, Observable, take } from 'rxjs';
 import { BASE_URL } from '../Api';
 
 const URL = BASE_URL + '/v1/books';
@@ -39,7 +40,7 @@ export class BookService {
   }
 
   saveBook(book:Book){
-    this.http.post<{data: Book}>(URL+'/save',book).subscribe(res=> {
+    this.http.post<{data: Book}>(URL+'/save',book).pipe(take(1)).subscribe(res=> {
       this._saveBook(res.data);
     });
   }
@@ -50,13 +51,14 @@ export class BookService {
   }
 
   updateBook(book:Book){
-    this.http.put<{data: Book}>(URL + '/' + book.id, book).subscribe((res) => {
+    this.http.put<{data: Book}>(URL + '/' + book.id, book).pipe(take(1)).subscribe((res) => {
+      // console.log('response after updated book ', res.data);
       this._updateBook(res.data);
     })
   }
 
   _updateBook(book: Book){
-    this._booksData = this._booksData.map(oldBook => oldBook.id == book.id ? book : oldBook)
+    this._booksData = this._booksData.map(oldBook => oldBook.id === book.id ? book : oldBook);
     this.emitChange();
   }
 
@@ -75,7 +77,8 @@ export class BookService {
   }
 
   private emitChange() {
-    this._books.next(this._booksData);
+      this._books.next(this._booksData);
+    
   }
 
   //saving book cover img before saving a new book
@@ -107,4 +110,24 @@ export class BookService {
     }
     return;
   }
+
+  setBorrowedBy(user: any, book: Book | undefined): BorrowedUser{
+    // console.log('user before format ', user);
+    const daysToReturn: number = 5;
+    const issueDate = new Date(); // Get the current date
+    const returnDate = new Date(issueDate); // Create a copy of currentDate
+    returnDate.setDate(returnDate.getDate() + daysToReturn);
+
+    let borrowedBy!: BorrowedUser ;
+    if(user.id && book){
+      borrowedBy = {
+        userId: user.id,
+        username: user.username,
+        issueDate: issueDate,
+        returnDate: returnDate,
+        isOverdue: false
+      }
+    }
+    return borrowedBy;
+  }  
 }

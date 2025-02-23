@@ -57,8 +57,10 @@ public class QueryTest {
 	
 	@Test
 	void borrowingTest() {
-		String bookId = "67b6d7e74e61305bf3996da6";
+		String bookId = "67b6bcaa2ee1925b4ca0e15c";
+		String userID = "6797932ec6c8e2529fb09dcf";
 		this.borrowingDao.deleteByBookId(bookId).subscribe();
+//		this.borrowingDao.deleteByUserId(userID).subscribe();
 		try {
 			Thread.sleep(2000);
 		}catch (Exception e) {

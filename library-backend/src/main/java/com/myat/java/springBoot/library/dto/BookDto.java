@@ -179,6 +179,13 @@ public class BookDto {
 	public void setTotalCount(Integer totalCount) {
 		this.totalCount = totalCount;
 	}
+
+	@Override
+	public String toString() {
+		return "BookDto [id=" + id + ", uniqueBookId=" + uniqueBookId + ", name=" + name + ", imgUrl=" + imgUrl
+				+ ", bookDetails=" + bookDetails + ", isAvailable=" + isAvailable + ", totalCount=" + totalCount
+				+ ", availableCount=" + availableCount + ", borrowedBy=" + borrowedBy + "]";
+	}
 	
 	
 	
