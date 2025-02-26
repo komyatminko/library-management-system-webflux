@@ -9,6 +9,7 @@ import { BorrowedUser } from '@/app/models/borrowed-user';
 import { IssuedBookFormComponent } from '@/app/components/issued-book-form/issued-book-form.component';
 import { map, Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { NotFoundComponent } from '@/app/components/not-found/not-found.component';
 
 @Component({
   selector: 'app-books-issued-list',
@@ -16,7 +17,8 @@ import { FormsModule } from '@angular/forms';
             FormsModule,
             RouterLink,
             BookIssuedTableRowComponent,
-            IssuedBookFormComponent
+            IssuedBookFormComponent,
+            NotFoundComponent
           ],
   templateUrl: './books-issued-list.component.html',
   styleUrl: './books-issued-list.component.css'
@@ -27,6 +29,7 @@ export class BooksIssuedListComponent {
   originBooks !: Book[];
   borrowedUsers : BorrowedUser[] = [];
   searchKeyword :string = '';
+  nothingToShow: boolean = false;
 
   isClickFilter : boolean = false;
   filterStatus: string = 'all';
@@ -96,7 +99,12 @@ export class BooksIssuedListComponent {
           
         }); 
         this.borrowedUsers = this.allBooks.flatMap(book => book.borrowedBy || []);
-
+        //showing nothing to show text when keyword is not equal
+        if(this.allBooks.length == 0 ){
+          this.nothingToShow = true;
+        }else{
+          this.nothingToShow = false;
+        }
     } else {
       this.allBooks = [...this.originBooks];
       this.borrowedUsers = this.originBooks.flatMap(book => book.borrowedBy || []);
@@ -108,13 +116,15 @@ export class BooksIssuedListComponent {
   }
 
   filterBooks() {
-    console.log('status', this.filterStatus);
     if (this.filterStatus === 'all') {
       this.allBooks = this.originBooks;
+      this.borrowedUsers = this.allBooks.flatMap(book => book.borrowedBy || []);
     } else if (this.filterStatus === 'notOverdue') {
       this.allBooks = this.originBooks.filter(book => book.borrowedBy?.every(user => !user.isOverdue));
+      this.borrowedUsers = this.allBooks.flatMap(book => book.borrowedBy || []);
     } else if (this.filterStatus === 'overdue') {
       this.allBooks = this.originBooks.filter(book => book.borrowedBy?.some(user => user.isOverdue));
+      this.borrowedUsers = this.allBooks.flatMap(book => book.borrowedBy || []);
     }
   }
 }

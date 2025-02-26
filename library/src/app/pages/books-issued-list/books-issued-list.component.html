@@ -7,7 +7,7 @@
         <div class="col-sm-12 col-md-7 col-lg-6 d-flex d-row justify-content-end my-2">
             <div class="input-group">
                 <input type="text" name="bookSearch" id="bookSearch" 
-                        placeholder="Search name ..." class="form-control" 
+                        placeholder="Search username ..." class="form-control" 
                         [(ngModel)] = "searchKeyword" (input)="showSearchResult()" 
                     
                 />
@@ -53,16 +53,20 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        
         <tbody>
             <ng-container *ngFor="let book of allBooks">
                 <ng-content *ngFor="let user of book.borrowedBy">
-                    <tr app-book-issued-table-row [book]="book" [user]="user">
+                    <tr app-book-issued-table-row [book]="book" [user]="user"
+                    [ngClass]="{
+                        'border-success': !user.isOverdue, 
+                        'border-danger': user.isOverdue
+                    }"  >
 
                     </tr>
                 </ng-content>
             </ng-container>
         </tbody>
-        
     </table>
+
+    <app-not-found *ngIf="nothingToShow"></app-not-found>
 </div>

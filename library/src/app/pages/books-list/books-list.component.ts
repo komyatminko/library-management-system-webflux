@@ -1,3 +1,4 @@
+import { NotFoundComponent } from '@/app/components/not-found/not-found.component';
 import { TableRowComponent } from '@/app/components/table-row/table-row.component';
 import { Book } from '@/app/models/book';
 import { BookService } from '@/app/services/book/book.service';
@@ -11,10 +12,11 @@ import { BookFormComponent } from "../../components/book-form/book-form.componen
   selector: 'app-books-list',
   imports: [
     CommonModule,
+    RouterLink,
+    FormsModule,
+    NotFoundComponent,
     TableRowComponent,
     BookFormComponent,
-    RouterLink,
-    FormsModule
 ],
   templateUrl: './books-list.component.html',
   styleUrl: './books-list.component.css'
@@ -27,7 +29,8 @@ export class BooksListComponent implements OnInit{
   originBooks: Book[] = [];
   allBooks!: Book[];
 
-  isClickFilter = false;
+  isClickFilter: boolean = false;
+  nothingToShow: boolean = false;
   selectedGenres: string[] = [];
   genres : string[] = [
     'action',
@@ -70,6 +73,11 @@ export class BooksListComponent implements OnInit{
   showSearchResult(){
     if(this.searchKeyword.length > 0){
       this.filterBooks = this.allBooks.filter(book => book.name.toLowerCase().includes(this.searchKeyword.toLowerCase()));   
+      if(this.filterBooks.length == 0 ){
+        this.nothingToShow = true;
+      }else{
+        this.nothingToShow = false;
+      }
     }
     else this.filterBooks = this.originBooks;
 
@@ -82,9 +90,12 @@ export class BooksListComponent implements OnInit{
 
   filterBooksBaseOnGenres(){
     if(this.selectedGenres.length > 0){
-      this.filterBooks = this.allBooks.filter(book => book.bookDetails.genres.some(genre => this.selectedGenres.includes(genre.toLowerCase()))
-        
-      )  
+      this.filterBooks = this.allBooks.filter(book => book.bookDetails.genres.some(genre => this.selectedGenres.includes(genre.toLowerCase())));
+      if(this.filterBooks.length == 0 ){
+        this.nothingToShow = true;
+      }else{
+        this.nothingToShow = false;
+      }  
     }
     else this.filterBooks = this.originBooks;
   }
@@ -94,6 +105,7 @@ export class BooksListComponent implements OnInit{
       this.selectedGenres.push(genre.toLowerCase());
     } else {
       this.selectedGenres = this.selectedGenres.filter(g => g !== genre);
+      this.nothingToShow = false;
     }
     localStorage.setItem('selectedGenres', JSON.stringify(this.selectedGenres));
     
