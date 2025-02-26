@@ -1,8 +1,9 @@
+import { environment } from '@/app/environment';
 import { Book } from '@/app/models/book';
 import { BorrowedUser } from '@/app/models/borrowed-user';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ChangeDetectorRef, Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, take } from 'rxjs';
+import { BehaviorSubject, iif, map, Observable, take } from 'rxjs';
 import { BASE_URL } from '../Api';
 
 const URL = BASE_URL + '/v1/books';
@@ -11,6 +12,7 @@ const URL = BASE_URL + '/v1/books';
   providedIn: 'root'
 })
 export class BookService {
+  private overdueRate = environment.overdueFeePerDay; 
   public borrowedBooks: Array<Book> = [];
   private _booksData:Array<Book> = [];
   private _books: BehaviorSubject<Array<Book>> = new BehaviorSubject<Array<Book>>([]);
@@ -130,4 +132,31 @@ export class BookService {
     }
     return borrowedBy;
   }  
+
+  isOverdue(borrowing: BorrowedUser): boolean{
+    let currentDate = new Date();
+    let returnDate = borrowing.returnDate;
+    return currentDate > returnDate;
+  }
+
+  getOverdueFee(daysOverdue: number): number {
+    return daysOverdue * this.overdueRate;
+  }
+
+  updateBookWhenOverdue(book: Book, borrowing: BorrowedUser){
+    if(book && borrowing){
+      if(!borrowing.isOverdue){
+        console.log('isOverdue', borrowing.isOverdue);
+        borrowing.isOverdue = true;
+
+        let borrowedBy = book.borrowedBy?.map(user=> user.id == borrowing.id? borrowing : user);
+        // console.log('borrowed by ', borrowedBy)
+        book.borrowedBy = borrowedBy;
+        this.updateBook(book);
+      }
+    }
+  }
+
+  
+
 }

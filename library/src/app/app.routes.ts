@@ -7,6 +7,7 @@ import { BooksListComponent } from './pages/books-list/books-list.component';
 import { IssuedBookDetailsComponent } from './pages/issued-book-details/issued-book-details.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotFoundPageComponent } from './pages/not-found-page/not-found-page.component';
+import { OverdueBooksListComponent } from './pages/overdue-books-list/overdue-books-list.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
 
 export const routes: Routes = [
@@ -18,6 +19,7 @@ export const routes: Routes = [
     { path: 'admin/books/:id/details', component: BookDetailsComponent},
     { path: 'admin/issuedBooks', component: BooksIssuedListComponent},
     { path: 'admin/issuedBooks/:id/details', component: IssuedBookDetailsComponent},
+    { path: 'admin/overdueBooks', component: OverdueBooksListComponent},
     { path: '',   redirectTo: '/login', pathMatch: 'full' },
     { path: '**', component: NotFoundPageComponent },
 ];

@@ -1,0 +1,5 @@
+tbody {
+    font-size: 11px;
+    vertical-align: middle;  /* Centers text vertically */
+    padding: 8px;  /* Adds some spacing inside cells */
+  }

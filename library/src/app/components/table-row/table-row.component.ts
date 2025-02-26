@@ -72,7 +72,6 @@ export class TableRowComponent {
   
 
   showEditDialog(){
-    // console.log('show edit dialog');
     this.onEditClick.emit(this.data);
   }
 

@@ -4,7 +4,7 @@ import { User } from '@/app/models/user';
 import { BookService } from '@/app/services/book/book.service';
 import { UserService } from '@/app/services/user/user.service';
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { take } from 'rxjs';
 
@@ -20,6 +20,7 @@ import { take } from 'rxjs';
 export class BookIssuedTableRowComponent {
 
   private _user!: BorrowedUser;
+  hasInjectedButton : boolean = false;
   
   @Input()
   book: Book | undefined;
@@ -31,7 +32,8 @@ export class BookIssuedTableRowComponent {
 
   get formattedUser() {
     return {
-      id: this._user?.userId || '',
+      id: this._user.id,
+      userId: this._user?.userId || '',
       username: this._user?.username || '',
       issueDate: this.bookService.formatDate(this._user?.issueDate),
       returnDate: this.bookService.formatDate(this._user?.returnDate),
@@ -41,7 +43,15 @@ export class BookIssuedTableRowComponent {
 
 
 
-  constructor(private bookService: BookService){}
+  constructor(
+    private bookService: BookService,
+    private elementRef: ElementRef,
+    ){}
+
+  ngAfterContentInit() {
+    
+    this.hasInjectedButton = !!this.elementRef.nativeElement.querySelector('[details-btn]');
+  }
   
   ngOnInit(){
     
@@ -65,4 +75,5 @@ export class BookIssuedTableRowComponent {
       
     }
   }
+
 }

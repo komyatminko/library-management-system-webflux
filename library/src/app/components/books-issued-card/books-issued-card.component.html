@@ -5,14 +5,27 @@
         </div>
     </div>
 
-    <table class="table table-stripted">
-        <tr>
-            <th>User ID</th>
-            <th>Book</th>
-            <th>Issue Date</th>
-            <th>Return Date</th>
-            <th>Details</th>
-        </tr>
+    <table class="table table-striped">
+       <thead>
+            <tr>
+                <th class="d-none d-md-table-cell">User</th>
+                <th>Book</th>
+                <th class="d-none d-md-table-cell">Issue Date</th>
+                <th class="d-none d-md-table-cell">Return Date</th>
+                <th>Details</th>
+            </tr>
+       </thead>
+        <tbody>
+            <ng-container *ngFor="let book of allBooks">
+                <ng-content *ngFor="let user of book.borrowedBy">
+                    <tr app-book-issued-table-row [book]="book" [user]="user">
+                        <button class="btn" [routerLink]="['/admin/issuedBooks', user.id, 'details']" [queryParams]="{ from: '/admin/' }" details-btn>
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
+                    </tr>
+                </ng-content>
+            </ng-container>
+        </tbody>
         
     </table>
     <div class="text-end">

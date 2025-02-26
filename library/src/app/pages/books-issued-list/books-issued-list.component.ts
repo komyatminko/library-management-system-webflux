@@ -8,10 +8,12 @@ import { BookIssuedTableRowComponent } from '@/app/components/book-issued-table-
 import { BorrowedUser } from '@/app/models/borrowed-user';
 import { IssuedBookFormComponent } from '@/app/components/issued-book-form/issued-book-form.component';
 import { map, Observable } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-books-issued-list',
   imports: [CommonModule,
+            FormsModule,
             RouterLink,
             BookIssuedTableRowComponent,
             IssuedBookFormComponent
@@ -22,8 +24,15 @@ import { map, Observable } from 'rxjs';
 export class BooksIssuedListComponent {
 
   allBooks !: Book[];
+  originBooks !: Book[];
   borrowedUsers : BorrowedUser[] = [];
+  searchKeyword :string = '';
 
+  isClickFilter : boolean = false;
+  filterStatus: string = 'all';
+  filteredBooks: Book[] = [];
+
+  private processedUsers = new Set<string>();
 
   constructor(private bookService: BookService,
               private router: Router,
@@ -34,6 +43,7 @@ export class BooksIssuedListComponent {
   ngOnInit() {
     this.bookService.getBorrowedBooks().subscribe(data => {
       this.allBooks = data; 
+      this.originBooks = data;
 
       this.borrowedUsers = [];
       
@@ -44,7 +54,67 @@ export class BooksIssuedListComponent {
           }
         });
       });
+
+      // set true to isOverdue and update book 
+      this.allBooks.forEach(book=>{
+        if(book.borrowedBy){
+          book.borrowedBy.forEach(borrowedUser=> {
+            //check whether return date is overdue or not
+            if(this.bookService.isOverdue(borrowedUser) && !borrowedUser.isOverdue){
+              //if yes, call fun updateBookWhenOverdue from service to update the book
+              if(borrowedUser.id){
+                if (!this.processedUsers.has(borrowedUser.id)) {
+                  this.bookService.updateBookWhenOverdue(book, borrowedUser);
+                  this.processedUsers.add(borrowedUser.id);
+                } else {
+                  console.log(`Skipping already processed user ${borrowedUser.id}`);
+                }
+              }
+            }
+          })
+        }
+      })
+
     });
   }
 
+  showSearchResult() {
+    
+    if (this.searchKeyword.length > 0) {
+      this.allBooks = this.originBooks
+        .map(book => ({
+          ...book,
+          borrowedBy: book.borrowedBy?.filter(user =>
+            user?.username?.toLowerCase().includes(this.searchKeyword.toLowerCase())
+          )
+        }))
+        .filter(book => {
+          if(book.borrowedBy){
+            return book.borrowedBy?.length > 0
+          }
+          return 'book does not have borrowed user';
+          
+        }); 
+        this.borrowedUsers = this.allBooks.flatMap(book => book.borrowedBy || []);
+
+    } else {
+      this.allBooks = [...this.originBooks];
+      this.borrowedUsers = this.originBooks.flatMap(book => book.borrowedBy || []);
+    }
+  }
+  
+  showFilterBox(){
+    this.isClickFilter = !this.isClickFilter;
+  }
+
+  filterBooks() {
+    console.log('status', this.filterStatus);
+    if (this.filterStatus === 'all') {
+      this.allBooks = this.originBooks;
+    } else if (this.filterStatus === 'notOverdue') {
+      this.allBooks = this.originBooks.filter(book => book.borrowedBy?.every(user => !user.isOverdue));
+    } else if (this.filterStatus === 'overdue') {
+      this.allBooks = this.originBooks.filter(book => book.borrowedBy?.some(user => user.isOverdue));
+    }
+  }
 }

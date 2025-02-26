@@ -1,19 +1,21 @@
 <div class="container-fluid mt-4">
     <div class="row">
         <div class="col-sm-12 col-md-5 col-lg-6 my-2">
-            <span class="card-title border-start border-5 border-primary h4 ps-3">BooksIssued List</span>
+            <span class="card-title border-start border-5 border-primary h4 ps-3">Borrowed User List</span>
             <span class="badge bg-primary rounded-pill ms-2">{{borrowedUsers.length}}</span>
         </div>
         <div class="col-sm-12 col-md-7 col-lg-6 d-flex d-row justify-content-end my-2">
             <div class="input-group">
-                <input type="text" name="bookSearch" id="bookSearch" placeholder="Search name ..." class="form-control" 
+                <input type="text" name="bookSearch" id="bookSearch" 
+                        placeholder="Search name ..." class="form-control" 
+                        [(ngModel)] = "searchKeyword" (input)="showSearchResult()" 
                     
                 />
                 <button class="btn text-primary me-2 input-group-text bg-light" disabled>
                     <i class="fa fa-search"></i>
                 </button>
             </div>
-            <button class="btn text-primary me-2" >
+            <button class="btn text-primary me-2" (click)="showFilterBox()">
                 <i class="fa fa-filter"></i>
             </button>
             <app-issued-book-form class="me-2"></app-issued-book-form>
@@ -23,22 +25,28 @@
         </div>
     </div>
 
-    <!-- to show check boxs for filtering -->
-    <!-- <div *ngIf="isClickFilter">
-        <div class="row my-2">
-            <div *ngFor="let genre of genres" class="col-3">
-                <input type="checkbox" [checked]="isChecked(genre)" 
-                                        (change)="onGenreChange($event, genre)" 
-                                        [value]="genre"/> {{ genre }}
-            </div>
+    <!-- radio btns -->
+    <div *ngIf="isClickFilter" class="row">
+        <div class="col-12 col-md-4 d-flex align-items-center">
+            <input type="radio" id="all" name="filter" value="all" [(ngModel)]="filterStatus" (change)="filterBooks()" checked>
+            <label for="all" class="ms-2">All</label>
         </div>
-    </div> -->
+        <div class="col-12 col-md-4 d-flex align-items-center mt-2 mt-md-0">
+            <input type="radio" id="not-overdue" name="filter" value="notOverdue" [(ngModel)]="filterStatus" (change)="filterBooks()">
+            <label for="not-overdue" class="ms-2">Not Overdue</label>
+        </div>
+        <div class="col-12 col-md-4 d-flex align-items-center mt-2 mt-md-0">
+            <input type="radio" id="overdue" name="filter" value="overdue" [(ngModel)]="filterStatus" (change)="filterBooks()">
+            <label for="overdue" class="ms-2">Overdue</label>
+        </div>     
+    </div>
     
 
+    <!-- borrowed users table -->
     <table class="table table-striped">
         <thead>
             <tr>
-                <th class="d-none d-md-table-cell">User ID</th>
+                <th class="d-none d-md-table-cell">User</th>
                 <th>Book</th>
                 <th class="d-none d-md-table-cell">Issue Date</th>
                 <th class="d-none d-md-table-cell">Return Date</th>

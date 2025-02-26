@@ -130,11 +130,11 @@ public class BookServiceImpl implements BookService{
 	public Mono<BookDto> saveBook(BookDto bookDto) {
 		Mono<List<BorrowedUserDto>> userList = getBorrowedUsersDto(bookDto.getId());
 		String uniqueBookId = this.generateBookId(bookDto.getBookDetails().getGenres(), bookDto.getName());
-		System.out.println(uniqueBookId);
+
 		bookDto.setUniqueBookId(uniqueBookId);
 		Book book = this.bookDtoToEntity(bookDto);
 		book.setBorrowing(new ArrayList<>());
-//		System.out.println(book);
+		
 		return Mono.zip(this.detailsDao.save(book.getBookDetails()), this.authorDao.save(book.getAuthor()))
 				.flatMap(tuple -> {
 					book.setBookDetails(tuple.getT1());
@@ -172,6 +172,7 @@ public class BookServiceImpl implements BookService{
 	
 	@Override
 	public Mono<BookDto> updateBook(BookDto bookDto) {
+		System.out.println("request body " + bookDto);
 	    return this.bookDao.findById(bookDto.getId())
 	            .switchIfEmpty(Mono.error(new BookNotFoundException("Book not found.")))
 	            .flatMap(oldBook -> {
@@ -197,7 +198,7 @@ public class BookServiceImpl implements BookService{
 	               else {
 	            	   oldBook.setIsAvailable(true);
 	               }
-	               System.out.println("old book before save to db " + oldBook);
+	               
 	                return this.authorDao.save(oldBook.getAuthor())  
 	                        .then(this.detailsDao.save(oldBook.getBookDetails())) 
 	                        .then(this.bookDao.save(oldBook)); 
@@ -239,8 +240,9 @@ public class BookServiceImpl implements BookService{
 
 	private void updateIssuedBook(BookDto bookDto, Book oldBook) {
 		
-		if(bookDto.getBorrowedBy().size() > 0 && bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size()) {
-			   
+		if(bookDto.getBorrowedBy().size() > 0 
+//		&& bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size()
+		) {
 			oldBook.setAvailableCount(Math.max(0, oldBook.getAvailableCount() - 1));
 
 			   //check whether book has borrowing in db, if not, create new list
@@ -258,6 +260,7 @@ public class BookServiceImpl implements BookService{
 			   else {
 				   List<Borrowing> existingBorrowings = oldBook.getBorrowing();
 				   for(BorrowedUserDto borrowedUser: bookDto.getBorrowedBy()) {
+					   System.out.println("isOverdue " + borrowedUser.getUsername() + ' ' + borrowedUser.getIsOverdue());
 					   if(borrowedUser.getId() != null) {
 						   this.borrowingDao.findByUserId(borrowedUser.getUserId())
 						   		.flatMap(oldUser -> {
