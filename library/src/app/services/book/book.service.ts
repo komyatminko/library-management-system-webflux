@@ -13,6 +13,7 @@ const URL = BASE_URL + '/v1/books';
 })
 export class BookService {
   private overdueRate = environment.overdueFeePerDay; 
+  private daysToReturn: number = environment.dayToReturn;;
   public borrowedBooks: Array<Book> = [];
   private _booksData:Array<Book> = [];
   private _books: BehaviorSubject<Array<Book>> = new BehaviorSubject<Array<Book>>([]);
@@ -115,10 +116,10 @@ export class BookService {
 
   setBorrowedBy(user: any, book: Book | undefined): BorrowedUser{
     // console.log('user before format ', user);
-    const daysToReturn: number = 5;
+    
     const issueDate = new Date(); // Get the current date
     const returnDate = new Date(issueDate); // Create a copy of currentDate
-    returnDate.setDate(returnDate.getDate() + daysToReturn);
+    returnDate.setDate(returnDate.getDate() + this.daysToReturn);
 
     let borrowedBy!: BorrowedUser ;
     if(user.id && book){
@@ -143,14 +144,18 @@ export class BookService {
     return daysOverdue * this.overdueRate;
   }
 
+  getOverdueDays(returnDateTimestamp: Date): number{
+    const currentDate = new Date();
+      const returnDate = new Date(returnDateTimestamp);
+      return currentDate.getTime() - returnDate?.getTime();
+  }
+
   updateBookWhenOverdue(book: Book, borrowing: BorrowedUser){
     if(book && borrowing){
       if(!borrowing.isOverdue){
-        console.log('isOverdue', borrowing.isOverdue);
         borrowing.isOverdue = true;
 
         let borrowedBy = book.borrowedBy?.map(user=> user.id == borrowing.id? borrowing : user);
-        // console.log('borrowed by ', borrowedBy)
         book.borrowedBy = borrowedBy;
         this.updateBook(book);
       }

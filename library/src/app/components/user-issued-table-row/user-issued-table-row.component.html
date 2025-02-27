@@ -1,0 +1,20 @@
+    <td>{{user.username}}</td>
+    <td class="d-none d-md-table-cell">{{user.phone}}</td>
+    <td class="d-none d-md-table-cell">{{user.address}}</td>
+    <td>
+        <ng-content select = "[details-btn]"></ng-content>
+   
+        <div class="" *ngIf="!hasInjectedButton">
+            <button type="button" class="btn p-0 me-2">
+                <i class="fa-solid fa-pen-to-square text-success" (click)="showEditDialog()"></i>
+            </button>
+            <button type="button" class="btn p-0 me-2" [routerLink]="['/admin/issuedUsers', user.id,'details']" [queryParams]="{ from: '/admin/issuedUsers' }">
+                <i class="fas fa-info-circle text-primary"></i>
+            </button>
+            <button type="button" class="btn p-0 me-2" (click)="showDeleteConfirmDailog()">
+                <i class="fas fa-trash-alt text-danger"></i>
+            </button>
+        </div>
+        
+        
+    </td>

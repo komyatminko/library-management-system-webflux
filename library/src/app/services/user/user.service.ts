@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { User } from '../../models/user';
 import { BASE_URL } from '../Api';
 
@@ -39,10 +39,19 @@ export class UserService {
     return this.http.post<User>(URL+'/save',user);
   }
 
-  _saveUser(user: User){
+  private _saveUser(user: User){
     this._usersData.push(user);
     this.emitChange();
   }
+
+  getBorrowedUsers(): Observable<User[]> {
+    return this.users.pipe(
+      map(users => 
+        users.filter(user => user.borrowedBooks && user.borrowedBooks.length > 0) 
+      )
+    );
+  }
+  
 
   private emitChange() {
     this._users.next(this._usersData);

@@ -1,29 +1,32 @@
+import { UserIssuedTableRowComponent } from '@/app/components/user-issued-table-row/user-issued-table-row.component';
 import { User } from '@/app/models/user';
 import { UserService } from '@/app/services/user/user.service';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { UserIssuedTableRowComponent } from '../user-issued-table-row/user-issued-table-row.component';
 
 @Component({
-  selector: 'app-user-list-card',
+  selector: 'app-users-issued-list',
   imports: [
     CommonModule,
     RouterLink,
-    UserIssuedTableRowComponent,
+    UserIssuedTableRowComponent
   ],
-  templateUrl: './user-list-card.component.html',
-  styleUrl: './user-list-card.component.css'
+  templateUrl: './users-issued-list.component.html',
+  styleUrl: './users-issued-list.component.css'
 })
-export class UserListCardComponent {
+export class UsersIssuedListComponent {
 
-  users!: User[];
+  users: User[] = [];
 
-  constructor(private userService: UserService){}
+  constructor(private userService: UserService){
+    
+  }
 
   ngOnInit(){
 
     this.userService.getBorrowedUsers().subscribe(users=> this.users = users)
 
   }
+
 }

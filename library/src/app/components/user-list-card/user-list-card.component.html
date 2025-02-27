@@ -2,24 +2,29 @@
     
     <div class="row my-3">
         <div class="col-6">
-            <h4 class="card-title">Users List</h4>
-        </div>
-        <div class="col-6 text-end">
-            <button type="button" class="btn btn-outline-primary btn-sm">Add New User</button>
+            <h4 class="card-title">Borrowed Users List</h4>
         </div>
     </div>
 
-    <table class="table table-stripted">
-        <tr>
-            <th>User ID</th>
-            <th>Name</th>
-            <th>Books Issued</th>
-            <th>Department</th>
-            <th>Actions</th>
-        </tr>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="d-none d-md-table-cell">Address</th>
+                <th class="d-none d-md-table-cell">Phone</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr app-user-issued-table-row *ngFor="let user of users" [user]="user">
+                <button class="btn" [routerLink]="['/admin/issuedUsers', user.id,'details']" [queryParams]="{ from: '/admin/' }" details-btn>
+                    <i class="fa-solid fa-ellipsis"></i>
+                </button>
+            </tr>
+        </tbody>
         
     </table>
     <div class="text-end">
-        <a href="#" class="btn text-primary">see all</a>
+        <a class="btn text-primary" routerLink="/admin/issuedUsers">see all</a>
     </div>
 </div>

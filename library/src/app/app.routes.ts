@@ -5,10 +5,12 @@ import { BookDetailsComponent } from './pages/book-details/book-details.componen
 import { BooksIssuedListComponent } from './pages/books-issued-list/books-issued-list.component';
 import { BooksListComponent } from './pages/books-list/books-list.component';
 import { IssuedBookDetailsComponent } from './pages/issued-book-details/issued-book-details.component';
+import { IssuedUsersDetailsComponent } from './pages/issued-users-details/issued-users-details.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotFoundPageComponent } from './pages/not-found-page/not-found-page.component';
 import { OverdueBooksListComponent } from './pages/overdue-books-list/overdue-books-list.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
+import { UsersIssuedListComponent } from './pages/users-issued-list/users-issued-list.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent},
@@ -19,7 +21,8 @@ export const routes: Routes = [
     { path: 'admin/books/:id/details', component: BookDetailsComponent},
     { path: 'admin/issuedBooks', component: BooksIssuedListComponent},
     { path: 'admin/issuedBooks/:id/details', component: IssuedBookDetailsComponent},
-    { path: 'admin/overdueBooks', component: OverdueBooksListComponent},
+    { path: 'admin/issuedUsers', component: UsersIssuedListComponent},
+    { path: 'admin/issuedUsers/:id/details', component: IssuedUsersDetailsComponent},
     { path: '',   redirectTo: '/login', pathMatch: 'full' },
     { path: '**', component: NotFoundPageComponent },
 ];

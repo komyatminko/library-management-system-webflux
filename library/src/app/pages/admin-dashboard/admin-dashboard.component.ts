@@ -10,6 +10,7 @@ import { Book } from '@/app/models/book';
 import { UserService } from '@/app/services/user/user.service';
 import { User } from '@/app/models/user';
 import { OverdueBooksListCardComponent } from '@/app/components/overdue-books-list-card/overdue-books-list-card.component';
+import { BorrowedUser } from '@/app/models/borrowed-user';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -26,10 +27,11 @@ import { OverdueBooksListCardComponent } from '@/app/components/overdue-books-li
 })
 export class AdminDashboardComponent {
 
-  usersArr!: User[];
+  borrowedUsers: BorrowedUser[] = [];
   totalBookCount: number = 0;
   borrowedBookCount: number = 0;
   totalOverdueBookCount: number = 0;
+  totalBorrowedUserCount: number = 0;
   constructor(private bookService: BookService,
               private userService: UserService) {
     
@@ -42,21 +44,36 @@ export class AdminDashboardComponent {
         
         if(book){
           this.totalBookCount += book.totalCount;
-        }
-        if(book.borrowedBy){
-          this.borrowedBookCount += book.borrowedBy.length;
 
-          if(book.borrowedBy.length > 0){
-            book.borrowedBy.forEach(borrowedUser => {
-              if(borrowedUser.isOverdue){
-                this.totalOverdueBookCount += 1;
-              }
-            })
+          if(book.borrowedBy){
+            this.borrowedBookCount += book.borrowedBy.length;
+  
+            if(book.borrowedBy.length > 0){
+              book.borrowedBy.forEach(borrowedUser => {
+                if(borrowedUser.isOverdue){
+                  this.totalOverdueBookCount += 1;
+                }
+  
+                // console.log('borrowed users', borrowedUser)
+                if(borrowedUser){
+                  this.borrowedUsers.push(borrowedUser);
+                }
+                
+              })
+            }
+            this.totalBorrowedUserCount = this.borrowedUsers
+                                                .reduce((unique, user) => {
+                                                  if (!unique.some(u => u.userId === user.userId)) {
+                                                    unique.push(user);
+                                                  }
+                                                  return unique;
+                                                }, [] as BorrowedUser[])
+                                                .length;
           }
         }
+        
       })
     })
-    this.userService.users.subscribe(users => this.usersArr = users
-    )
+    // this.userService.users.subscribe(users => this.borrowedUsers = users)
   }
 }
