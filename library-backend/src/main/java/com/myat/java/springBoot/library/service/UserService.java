@@ -10,5 +10,5 @@ public interface UserService {
 
 	public Flux<UserDto> getAllUsers();
 	public Mono<UserDto> saveUser(UserDto userDto);
-	
+	public Mono<UserDto> updateUser(UserDto userDto);
 }

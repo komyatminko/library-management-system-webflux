@@ -14,6 +14,7 @@ import com.myat.java.springBoot.library.dto.BorrowedBookDto;
 import com.myat.java.springBoot.library.dto.UserDto;
 import com.myat.java.springBoot.library.exception.AuthorNotFoundException;
 import com.myat.java.springBoot.library.exception.BookDetailsNotFoundException;
+import com.myat.java.springBoot.library.exception.UserNotFoundException;
 import com.myat.java.springBoot.library.model.Borrowing;
 import com.myat.java.springBoot.library.model.User;
 import com.myat.java.springBoot.library.service.UserService;
@@ -83,6 +84,26 @@ public class UserServiceImpl implements UserService{
 				.map(userEntity-> this.modelMapper.map(userEntity, UserDto.class));
 				
 	}
+
+	@Override
+	public Mono<UserDto> updateUser(UserDto userDto) {
+		Mono<List<BorrowedBookDto>> borrowings = this.getBorrowedBooksDto(userDto.getId());
+		return this.userDao.findById(userDto.getId())
+			.switchIfEmpty(Mono.error(new UserNotFoundException("User not found.")))
+			.flatMap(userEntity->{
+				userEntity.setUsername(userDto.getUsername());
+				userEntity.setPhone(userDto.getPhone());
+				userEntity.setAddress(userDto.getAddress());
+				return this.userDao.save(userEntity);
+			})
+			.map(user -> this.modelMapper.map(user, UserDto.class))
+			.flatMap(dto -> this.getBorrowedBooksDto(dto.getId())
+								.map(books -> {
+									dto.setBorrowedBooks(books);
+									return dto;  
+								})
+			);
+		}
 
 
 	

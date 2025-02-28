@@ -218,11 +218,8 @@ public class BookServiceImpl implements BookService{
 	
 	private void removeBorrowedUserAndUpdateIssuedBook(BookDto bookDto, Book oldBook) {
 		if (oldBook.getBorrowing().size() > bookDto.getBorrowedBy().size()) {
-			System.out.println("old book total count " + oldBook.getTotalCount());
-			System.out.println("request body borrowed book count " + bookDto.getBorrowedBy().size());
-			Integer sub= oldBook.getTotalCount() - bookDto.getBorrowedBy().size();
-			System.out.println("after sub "+ sub);
-			 oldBook.setAvailableCount(oldBook.getTotalCount() - bookDto.getBorrowedBy().size());
+			
+			oldBook.setAvailableCount(oldBook.getTotalCount() - bookDto.getBorrowedBy().size());
 			
 			List<Borrowing> removedUsers = oldBook.getBorrowing()
 					.stream()

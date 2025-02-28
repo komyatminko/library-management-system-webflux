@@ -5,12 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myat.java.springBoot.library.dto.UserDto;
 import com.myat.java.springBoot.library.exception.BookNotFoundException;
+import com.myat.java.springBoot.library.exception.UserNotFoundException;
 import com.myat.java.springBoot.library.response.ApiResponse;
 import com.myat.java.springBoot.library.service.UserService;
 
@@ -33,10 +35,19 @@ public class UserController {
 	
 	@PostMapping("/save")
 	public Mono<UserDto> saveUser(@RequestBody UserDto userDto){
-		System.out.println("user controller ..." + userDto.getUsername());
 		return this.userService.saveUser(userDto);
 //				.onErrorResume(System.out.println("user controller ..."));
 		
 	}
 	
+	@PutMapping("/{id}")
+	public Mono<ResponseEntity<ApiResponse>> updateUser(@RequestBody UserDto userDto){
+		return this.userService.updateUser(userDto)
+				.map(user -> {
+					return ResponseEntity.ok().body(ApiResponse.success("User updated successfully.", 200, user));
+				})
+				.onErrorResume(UserNotFoundException.class,err -> {
+					return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(404, "User not found to update.", err.getMessage())));
+				});
+	}
 }

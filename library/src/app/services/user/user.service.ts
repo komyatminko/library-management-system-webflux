@@ -1,7 +1,7 @@
 import { Book } from '@/app/models/book';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, take } from 'rxjs';
 import { User } from '../../models/user';
 import { BASE_URL } from '../Api';
 import { BookService } from '../book/book.service';
@@ -48,6 +48,18 @@ export class UserService {
     this._usersData.push(user);
     this.emitChange();
   }
+
+  updateUser(user:User){
+    this.http.put<{data: User}>(URL + '/' + user.id, user).pipe(take(1)).subscribe((res) => {
+      this._updateUser(res.data);
+    })
+  }
+
+  _updateUser(user: User){
+    this._usersData = this._usersData.map(oldUser => oldUser.id === user.id ? user : oldUser);
+    this.emitChange();
+  }
+
 
   getBorrowedUsers(): Observable<User[]> {
     return this.users.pipe(
