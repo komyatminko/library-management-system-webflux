@@ -3,7 +3,7 @@ import { Book } from '@/app/models/book';
 import { BorrowedUser } from '@/app/models/borrowed-user';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ChangeDetectorRef, Injectable } from '@angular/core';
-import { BehaviorSubject, iif, map, Observable, take } from 'rxjs';
+import { BehaviorSubject, iif, map, Observable, Subject, take } from 'rxjs';
 import { BASE_URL } from '../Api';
 
 const URL = BASE_URL + '/v1/books';
@@ -18,6 +18,9 @@ export class BookService {
   private _booksData:Array<Book> = [];
   private _books: BehaviorSubject<Array<Book>> = new BehaviorSubject<Array<Book>>([]);
   public readonly books: Observable<Array<Book>> = this._books.asObservable();
+
+  private bookUpdatedSubject = new Subject<Book>(); // Subject to notify about book updates
+  public readonly bookUpdated$ = this.bookUpdatedSubject.asObservable();
 
   constructor(private http: HttpClient) { 
     this.fetchBooksFromServer();
@@ -55,8 +58,8 @@ export class BookService {
 
   updateBook(book:Book){
     this.http.put<{data: Book}>(URL + '/' + book.id, book).pipe(take(1)).subscribe((res) => {
-      // console.log('response after updated book ', res.data);
       this._updateBook(res.data);
+      this.bookUpdatedSubject.next(res.data);
     })
   }
 

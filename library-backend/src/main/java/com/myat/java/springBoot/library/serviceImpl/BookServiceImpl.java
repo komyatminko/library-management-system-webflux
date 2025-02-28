@@ -184,20 +184,21 @@ public class BookServiceImpl implements BookService{
 	                oldBook.setRating(bookDto.getRating());
 	                oldBook.setTotalCount(bookDto.getTotalCount());
 	                
+					
+	                
 	               //delete borrowed user from issued book when borrowed user is deleted
 		           removeBorrowedUserAndUpdateIssuedBook(bookDto, oldBook);
 		           
 	               //save and update borrowed user
 	               updateIssuedBook(bookDto, oldBook);
 	               
-	               
+	               if (oldBook.getAvailableCount() == 0) {
+						oldBook.setIsAvailable(false);
+					} else {
+						oldBook.setIsAvailable(true);
+					}
 	                
-	               if(oldBook.getAvailableCount() == 0) {
-	            	   oldBook.setIsAvailable(false);
-	               }
-	               else {
-	            	   oldBook.setIsAvailable(true);
-	               }
+	               
 	               
 	                return this.authorDao.save(oldBook.getAuthor())  
 	                        .then(this.detailsDao.save(oldBook.getBookDetails())) 
@@ -217,6 +218,10 @@ public class BookServiceImpl implements BookService{
 	
 	private void removeBorrowedUserAndUpdateIssuedBook(BookDto bookDto, Book oldBook) {
 		if (oldBook.getBorrowing().size() > bookDto.getBorrowedBy().size()) {
+			System.out.println("old book total count " + oldBook.getTotalCount());
+			System.out.println("request body borrowed book count " + bookDto.getBorrowedBy().size());
+			Integer sub= oldBook.getTotalCount() - bookDto.getBorrowedBy().size();
+			System.out.println("after sub "+ sub);
 			 oldBook.setAvailableCount(oldBook.getTotalCount() - bookDto.getBorrowedBy().size());
 			
 			List<Borrowing> removedUsers = oldBook.getBorrowing()
@@ -241,7 +246,7 @@ public class BookServiceImpl implements BookService{
 	private void updateIssuedBook(BookDto bookDto, Book oldBook) {
 		
 		if(bookDto.getBorrowedBy().size() > 0 
-//		&& bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size()
+		&& bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size()
 		) {
 			oldBook.setAvailableCount(Math.max(0, oldBook.getAvailableCount() - 1));
 
@@ -260,7 +265,6 @@ public class BookServiceImpl implements BookService{
 			   else {
 				   List<Borrowing> existingBorrowings = oldBook.getBorrowing();
 				   for(BorrowedUserDto borrowedUser: bookDto.getBorrowedBy()) {
-					   System.out.println("isOverdue " + borrowedUser.getUsername() + ' ' + borrowedUser.getIsOverdue());
 					   if(borrowedUser.getId() != null) {
 						   this.borrowingDao.findByUserId(borrowedUser.getUserId())
 						   		.flatMap(oldUser -> {

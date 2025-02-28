@@ -1,8 +1,10 @@
+import { Book } from '@/app/models/book';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { User } from '../../models/user';
 import { BASE_URL } from '../Api';
+import { BookService } from '../book/book.service';
 
 const URL = BASE_URL + '/v1/users';
 
@@ -15,8 +17,13 @@ export class UserService {
   private _users: BehaviorSubject<Array<User>> = new BehaviorSubject<Array<User>>([]);
   public readonly users: Observable<Array<User>> = this._users.asObservable();
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient, private bookService: BookService) { 
     this.fetchUsersFromServer();
+
+    this.bookService.bookUpdated$.subscribe((updatedBook) => {
+  
+      this.fetchUsersFromServer();
+    });
   }
 
   getAllUsers(): Observable<User[]> {
@@ -24,12 +31,10 @@ export class UserService {
   }
 
   fetchUsersFromServer(): void {
-    console.log('users fetching ...')
     this.getAllUsers().subscribe(
       (response: User[]) => {
         this._usersData = response.map(item => item);
         this.emitChange();
-        // console.log('users ', this._usersData)
       }
     );
   }
@@ -51,6 +56,11 @@ export class UserService {
       )
     );
   }
+
+  
+
+
+  
   
 
   private emitChange() {

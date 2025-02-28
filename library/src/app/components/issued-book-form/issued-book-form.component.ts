@@ -142,7 +142,6 @@ export class IssuedBookFormComponent {
       if (!userExists) {
         let flag = true;
         issuedBook.borrowedBy.push(borrowedUser);
-        console.log('Updated issued book:', issuedBook);
         this.bookService.updateBook(issuedBook);
         
       }
