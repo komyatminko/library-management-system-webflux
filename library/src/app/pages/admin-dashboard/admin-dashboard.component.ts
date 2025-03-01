@@ -11,16 +11,21 @@ import { UserService } from '@/app/services/user/user.service';
 import { User } from '@/app/models/user';
 import { OverdueBooksListCardComponent } from '@/app/components/overdue-books-list-card/overdue-books-list-card.component';
 import { BorrowedUser } from '@/app/models/borrowed-user';
+import { RouterLink } from '@angular/router';
+import { BookFormComponent } from '@/app/components/book-form/book-form.component';
+import { IssuedBookFormComponent } from '@/app/components/issued-book-form/issued-book-form.component';
+import { IssuedUserFormComponent } from '@/app/components/issued-user-form/issued-user-form.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   imports: [
+    RouterLink,
     TotalCardComponent,
     UserListCardComponent,
     BookListCardComponent,
-    OverdueBooksListCardComponent,
     BooksIssuedCardComponent,
-    BooksAvailableCardComponent
+    BookFormComponent,
+    IssuedBookFormComponent,
 ],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
@@ -29,7 +34,7 @@ export class AdminDashboardComponent {
 
   borrowedUsers: BorrowedUser[] = [];
   totalBookCount: number = 0;
-  borrowedBookCount: number = 0;
+  totalBorrowedBookCount: number = 0;
   totalOverdueBookCount: number = 0;
   totalBorrowedUserCount: number = 0;
   constructor(private bookService: BookService,
@@ -46,7 +51,7 @@ export class AdminDashboardComponent {
           this.totalBookCount += book.totalCount;
 
           if(book.borrowedBy){
-            this.borrowedBookCount += book.borrowedBy.length;
+            this.totalBorrowedBookCount += book.borrowedBy.length;
   
             if(book.borrowedBy.length > 0){
               book.borrowedBy.forEach(borrowedUser => {

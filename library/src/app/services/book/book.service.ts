@@ -13,8 +13,9 @@ const URL = BASE_URL + '/v1/books';
 })
 export class BookService {
   private overdueRate = environment.overdueFeePerDay; 
-  private daysToReturn: number = environment.dayToReturn;;
+  private daysToReturn: number = environment.dayToReturn;
   public borrowedBooks: Array<Book> = [];
+
   private _booksData:Array<Book> = [];
   private _books: BehaviorSubject<Array<Book>> = new BehaviorSubject<Array<Book>>([]);
   public readonly books: Observable<Array<Book>> = this._books.asObservable();
@@ -24,6 +25,9 @@ export class BookService {
 
   constructor(private http: HttpClient) { 
     this.fetchBooksFromServer();
+  }
+  ngOnInit(){
+    
   }
 
   getAllBooks(): Observable<{ data: Book }[]> {

@@ -1,8 +1,6 @@
-<div class="card card-body">
+<div class="card card-body shadow-lg border-0">
     <div class="row my-3">
-        <div class="col-6">
-            <h4 class="card-title">Issued Books List</h4>
-        </div>
+        <h4 class="card-title">Issued Books List</h4>
     </div>
 
     <table class="table table-striped">
@@ -16,9 +14,9 @@
             </tr>
        </thead>
         <tbody>
-            <ng-container *ngFor="let book of allBooks">
-                <ng-content *ngFor="let user of book.borrowedBy">
-                    <tr app-book-issued-table-row [book]="book" [user]="user">
+            <ng-container *ngFor="let book of allBooks; let bookIndex = index">
+                <ng-content *ngFor="let user of book.borrowedBy; let userIndex = index">
+                    <tr *ngIf="((bookIndex * 3) + userIndex) < 5" app-book-issued-table-row [book]="book" [user]="user">
                         <button class="btn" [routerLink]="['/admin/issuedBooks', user.id, 'details']" [queryParams]="{ from: '/admin/' }" details-btn>
                             <i class="fa-solid fa-ellipsis"></i>
                         </button>

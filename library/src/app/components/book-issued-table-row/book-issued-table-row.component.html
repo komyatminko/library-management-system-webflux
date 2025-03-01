@@ -1,8 +1,6 @@
 
     <td class="d-none d-md-table-cell">
-        
-            {{formattedUser.username}}
-   
+        {{formattedUser.username}}
     </td>
     <td>{{book?.name}}</td>
     <td class="d-none d-md-table-cell">{{formattedUser.issueDate}}</td>
@@ -11,9 +9,7 @@
         <ng-content select = "[details-btn]"></ng-content>
    
         <div class="" *ngIf="!hasInjectedButton">
-            <button type="button" class="btn p-0 me-2">
-                <i class="fa-solid fa-pen-to-square text-success" ></i>
-            </button>
+            <app-issued-book-update-form [user]="formattedUser" [book]="book"></app-issued-book-update-form>
             <button type="button" class="btn p-0 me-2" [routerLink]="['/admin/issuedBooks',formattedUser.id,'details']" [queryParams]="{ from: '/admin/issuedBooks' }">
                 <i class="fas fa-info-circle text-primary"></i>
             </button>

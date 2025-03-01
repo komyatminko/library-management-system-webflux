@@ -5,7 +5,7 @@ import { BookService } from '@/app/services/book/book.service';
 import { UserService } from '@/app/services/user/user.service';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin, take } from 'rxjs';
@@ -26,12 +26,14 @@ export class IssuedBookFormComponent {
   userType: string = 'existing';
   existingUsers: User[] = [];
   saveFlag: boolean = true;
+  hasInjectedButton: boolean = false;
 
   
   @ViewChild('content', { static: false }) private content:any;
 
   constructor(private modalService: NgbModal,
               private fb: FormBuilder,
+              private elementRef: ElementRef,
               private userService: UserService,
               private bookService: BookService) 
   {
@@ -53,6 +55,10 @@ export class IssuedBookFormComponent {
     this.userService.users.subscribe(users=>{
       this.existingUsers = users;
     })
+  }
+
+  ngAfterContentInit() {
+    this.hasInjectedButton = !!this.elementRef.nativeElement.querySelector('[add-issued-book]');
   }
 
   openDialogForNew(){
@@ -81,7 +87,7 @@ export class IssuedBookFormComponent {
         savedUser: this.userService.saveUser(userToSave), 
         books: this.bookService.books.pipe(take(1)) 
       }).subscribe(({ savedUser, books }) => {
-        issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId);
+        issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId.trim());
         if(issuedBook){
           this.formatBookWithBorrowedUserAndUpdate(issuedBook, savedUser, formData);
         }
@@ -93,7 +99,8 @@ export class IssuedBookFormComponent {
       let user = this.existingUsers.find(user=> user.id == formData.existingUser)
       // console.log('borrowed user ', user);
       this.bookService.books.pipe(take(1)).subscribe(books=>{
-        issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId);
+        // console.log('books ', books)
+        issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId.trim());
         // console.log('issued book befor pushing borrowed user ', issuedBook);
         if(issuedBook){
           this.formatBookWithBorrowedUserAndUpdate(issuedBook, user, formData);
@@ -103,7 +110,6 @@ export class IssuedBookFormComponent {
     this.saveFlag =false;
     this.issuedBookForm.reset({userType: 'existing'});
     this.modalDialog.close();
-    
     
   }
 
@@ -142,6 +148,7 @@ export class IssuedBookFormComponent {
       if (!userExists) {
         let flag = true;
         issuedBook.borrowedBy.push(borrowedUser);
+        console.log('issued book to update ', issuedBook);
         this.bookService.updateBook(issuedBook);
         
       }

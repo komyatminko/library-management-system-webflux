@@ -5,9 +5,6 @@
     </div>
     <div class="modal-body">
       <form [formGroup]="issuedUserForm">
-
-          <!-- New Author Fields -->
-
             <div class="mb-3">
               <label class="form-label">User Name</label>
               <input type="text" class="form-control" formControlName="username" />
@@ -39,9 +36,12 @@
     </div>
 </ng-template>
 
-    <button type="button" class="btn p-0 me-2">
-        <i class="fa-solid fa-pen-to-square text-success" (click)="showEditDialog()"></i>
-    </button>
+
+<button type="button" class="btn p-0 me-2">
+  <i class="fa-solid fa-pen-to-square text-success" (click)="showEditDialog()"></i>
+</button>
+
+    
 
 
 

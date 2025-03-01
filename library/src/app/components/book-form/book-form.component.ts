@@ -3,7 +3,7 @@ import { Book } from '@/app/models/book';
 import { AuthorService } from '@/app/services/author/author.service';
 import { BookService } from '@/app/services/book/book.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
 import { retryWhen, take } from 'rxjs';
@@ -28,6 +28,7 @@ export class BookFormComponent implements OnInit{
   authorType: string = 'existing'; // Default to existing author
   editMode: boolean = false;
   bookToEdit: Book | undefined;
+  hasInjectedButton: boolean = false;
 
   existingAuthors: Author[] = [];
 
@@ -37,6 +38,7 @@ export class BookFormComponent implements OnInit{
               private modalService: NgbModal, 
               private bookService: BookService,
               private authorService: AuthorService,
+              private elementRef: ElementRef,
               private datePipe: DatePipe ){
                 
     this.bookForm = this.fb.group({
@@ -63,7 +65,10 @@ export class BookFormComponent implements OnInit{
   ngOnInit(): void {
 
     this.loadAllAuthor();
-      
+  }
+
+  ngAfterContentInit() {
+    this.hasInjectedButton = !!this.elementRef.nativeElement.querySelector('[add-book]');
   }
 
   openDialogForNew(){
@@ -76,7 +81,6 @@ export class BookFormComponent implements OnInit{
   openDialogForUpdate(book:Book){
     this.editMode = true;
     this.bookToEdit = book;
-    // let img = book.imgUrl.substring(21,book.imgUrl.length);
    
     this.patchGenres(book);
     this.bookForm.patchValue({

@@ -1,8 +1,6 @@
-<div class="card card-body">
+<div class="card card-body shadow-lg border-0">
     <div class="row my-3">
-        <div class="col-6">
-            <h4 class="card-title">Books List</h4>
-        </div>
+        <h4 class="card-title">Books List</h4>
     </div>
 
     <table class="table table-striped">
@@ -16,11 +14,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr app-table-row *ngFor="let book of books" [data]="book">
-                <button class="btn" [routerLink]="['/admin/books', book.id, 'details']" [queryParams]="{ from: '/admin' }" details-btn>
-                    <i class="fa-solid fa-ellipsis"></i>
-                </button>
-            </tr>
+            <ng-container *ngFor="let book of books; let bookIndex = index">
+                <tr app-table-row *ngIf="(bookIndex < 5)" [data]="book">
+                    <button class="btn" [routerLink]="['/admin/books', book.id, 'details']" [queryParams]="{ from: '/admin' }" details-btn>
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </tr>
+            </ng-container>
+            
         </tbody>
     </table>
     <div class="text-end">

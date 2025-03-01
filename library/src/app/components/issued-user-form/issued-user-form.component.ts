@@ -1,7 +1,7 @@
 import { User } from '@/app/models/user';
 import { UserService } from '@/app/services/user/user.service';
 import { CommonModule } from '@angular/common';
-import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -27,6 +27,7 @@ export class IssuedUserFormComponent {
   constructor(
     private fb: FormBuilder,
     private modalService: NgbModal,
+    private elementRef: ElementRef,
     private userService: UserService,
     )
   {
@@ -40,7 +41,7 @@ export class IssuedUserFormComponent {
   }
 
   ngOnInit(){
-    // console.log('user to update ', this.user);
+   
   }
 
   showEditDialog(){

@@ -75,8 +75,15 @@
     </div>
 </ng-template>
   <div>
+    <a type="button"
+        class="list-group-item list-group-item-action text-center text-lg-start"
+        (click)="openDialogForNew()">
+          <ng-content select = "[add-issued-book]"></ng-content>
+    </a>
+
     <button type="button"
             class="btn btn-outline-primary"
+            *ngIf="!hasInjectedButton"
             (click)="openDialogForNew()">
             <span class="">
               <i class="fa-solid fa-plus"></i>

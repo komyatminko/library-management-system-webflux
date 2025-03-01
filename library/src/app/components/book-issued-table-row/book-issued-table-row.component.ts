@@ -5,19 +5,25 @@ import { BookService } from '@/app/services/book/book.service';
 import { UserService } from '@/app/services/user/user.service';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { take } from 'rxjs';
+import { IssuedBookUpdateFormComponent } from '../issued-book-update-form/issued-book-update-form.component';
 
 @Component({
   selector: 'tr[app-book-issued-table-row]',
   imports: [
+    ReactiveFormsModule,
     CommonModule,
-    RouterLink
+    RouterLink,
+    IssuedBookUpdateFormComponent
   ],
   templateUrl: './book-issued-table-row.component.html',
   styleUrl: './book-issued-table-row.component.css'
 })
 export class BookIssuedTableRowComponent {
+  
 
   private _user!: BorrowedUser;
   hasInjectedButton : boolean = false;
@@ -30,39 +36,26 @@ export class BookIssuedTableRowComponent {
       this._user = value;
   }
 
-  get formattedUser() {
-    return {
-      id: this._user.id,
-      userId: this._user?.userId || '',
-      username: this._user?.username || '',
-      issueDate: this.bookService.formatDate(this._user?.issueDate),
-      returnDate: this.bookService.formatDate(this._user?.returnDate),
-      isOverdue: this._user?.isOverdue || false,
-    };
-  }
-
-
-
   constructor(
     private bookService: BookService,
     private elementRef: ElementRef,
-    ){}
+    )
+  {
 
-  ngAfterContentInit() {
-    
-    this.hasInjectedButton = !!this.elementRef.nativeElement.querySelector('[details-btn]');
   }
+
   
   ngOnInit(){
-    
     this.bookService.books.pipe(take(1)).subscribe(books => {
       if(this.book){
         this.book = books.find(book => book.id === this.book?.id);
       }
       
     });
+  }
 
-
+  ngAfterContentInit() {
+    this.hasInjectedButton = !!this.elementRef.nativeElement.querySelector('[details-btn]');
   }
 
   deleteBookIssued(){
@@ -74,6 +67,17 @@ export class BookIssuedTableRowComponent {
       this.bookService.updateBook(this.book);
       
     }
+  }
+
+  get formattedUser() {
+    return {
+      id: this._user.id,
+      userId: this._user?.userId || '',
+      username: this._user?.username || '',
+      issueDate: this.bookService.formatDate(this._user?.issueDate),
+      returnDate: this.bookService.formatDate(this._user?.returnDate),
+      isOverdue: this._user?.isOverdue || false,
+    };
   }
 
 }
