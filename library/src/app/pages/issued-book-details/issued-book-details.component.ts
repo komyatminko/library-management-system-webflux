@@ -51,7 +51,7 @@ export class IssuedBookDetailsComponent {
           this.borrowedUser = book.borrowedBy?.find(borrowedUser => borrowedUser.id == this.borrowingId);
           // console.log('borrowed user', this.borrowedUser)
           if(this.borrowedUser){
-            this.isOverdue = this.bookService.isOverdue(this.borrowedUser);
+            this.isOverdue = this.bookService.isOverdue(this.borrowedUser.returnDate);
             // call fun about overdue
             this.showOverdueDetails(this.isOverdue)
 

@@ -243,7 +243,7 @@ public class BookServiceImpl implements BookService{
 	private void updateIssuedBook(BookDto bookDto, Book oldBook) {
 		
 		if(bookDto.getBorrowedBy().size() > 0 
-		&& bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size()
+//		&& bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size() comment to update user
 		) {
 			oldBook.setAvailableCount(Math.max(0, oldBook.getAvailableCount() - 1));
 
@@ -275,17 +275,16 @@ public class BookServiceImpl implements BookService{
 						   		})
 						   		.map(savedUser -> {
 						   			existingBorrowings.removeIf(b -> b.getId().equals(savedUser.getId()));
-//						   			existingBorrowings.clear();
 						   			return existingBorrowings.add(savedUser);
 						   		})
-//						   		.then(
-//						   				
-//						   				this.userDao.findById(borrowedUser.getUserId())
-//		        				   		.flatMap(user -> {
-//		        				   			user.setUsername(borrowedUser.getUsername());
-//		        				   			return this.userDao.save(user);
-//		        				   		})
-//						   		)
+						   		.then(
+						   				
+						   				this.userDao.findById(borrowedUser.getUserId())
+		        				   		.flatMap(user -> {
+		        				   			user.setUsername(borrowedUser.getUsername());
+		        				   			return this.userDao.save(user);
+		        				   		})
+						   		)
 						   		.subscribe();
 						   	
 						   

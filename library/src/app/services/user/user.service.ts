@@ -21,7 +21,7 @@ export class UserService {
     this.fetchUsersFromServer();
 
     this.bookService.bookUpdated$.subscribe((updatedBook) => {
-  
+
       this.fetchUsersFromServer();
     });
   }

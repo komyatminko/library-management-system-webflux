@@ -60,11 +60,14 @@ export class BookService {
     this.emitChange();
   }
 
-  updateBook(book:Book){
-    this.http.put<{data: Book}>(URL + '/' + book.id, book).pipe(take(1)).subscribe((res) => {
-      this._updateBook(res.data);
-      this.bookUpdatedSubject.next(res.data);
-    })
+  updateBook(book:Book): Observable<Book>{
+    return this.http.put<{data: Book}>(URL + '/' + book.id, book).pipe(
+      take(1),
+      map(res=>{
+        this._updateBook(res.data);
+        this.bookUpdatedSubject.next(res.data);
+        return res.data;
+      }))
   }
 
   _updateBook(book: Book){
@@ -141,9 +144,8 @@ export class BookService {
     return borrowedBy;
   }  
 
-  isOverdue(borrowing: BorrowedUser): boolean{
+  isOverdue(returnDate: Date): boolean{
     let currentDate = new Date();
-    let returnDate = borrowing.returnDate;
     return currentDate > returnDate;
   }
 

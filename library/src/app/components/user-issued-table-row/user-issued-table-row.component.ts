@@ -51,7 +51,7 @@ export class UserIssuedTableRowComponent {
               ...bookToUpdate,
               borrowedBy: bookToUpdate.borrowedBy?.filter(bu=> bu.userId != this.user.id)
             }
-            this.bookService.updateBook(formatBookToUpdate);
+            this.bookService.updateBook(formatBookToUpdate).subscribe();
           })
         }
        })

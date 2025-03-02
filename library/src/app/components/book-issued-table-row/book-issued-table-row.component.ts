@@ -52,6 +52,13 @@ export class BookIssuedTableRowComponent {
       }
       
     });
+
+    // this.bookService.bookUpdated$.pipe(take(1)).subscribe((updatedBook) => {
+    //   const updatedUser = updatedBook.borrowedBy?.find(bu => bu.id === this._user.id);
+    //   console.log(updatedUser);
+    // });
+    
+    
   }
 
   ngAfterContentInit() {
@@ -64,7 +71,7 @@ export class BookIssuedTableRowComponent {
       
       let borrowedUserToRemove = this.book.borrowedBy?.filter(user=> user.userId != this._user.userId);
       this.book.borrowedBy = borrowedUserToRemove;
-      this.bookService.updateBook(this.book);
+      this.bookService.updateBook(this.book).subscribe(data=> this.book = data);
       
     }
   }

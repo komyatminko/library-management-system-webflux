@@ -7,7 +7,7 @@ import { TableRowComponent } from '@/app/components/table-row/table-row.componen
 import { BookIssuedTableRowComponent } from '@/app/components/book-issued-table-row/book-issued-table-row.component';
 import { BorrowedUser } from '@/app/models/borrowed-user';
 import { IssuedBookFormComponent } from '@/app/components/issued-book-form/issued-book-form.component';
-import { map, Observable } from 'rxjs';
+import { map, Observable, take } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { NotFoundComponent } from '@/app/components/not-found/not-found.component';
 
@@ -63,7 +63,7 @@ export class BooksIssuedListComponent {
         if(book.borrowedBy){
           book.borrowedBy.forEach(borrowedUser=> {
             //check whether return date is overdue or not
-            if(this.bookService.isOverdue(borrowedUser) && !borrowedUser.isOverdue){
+            if(this.bookService.isOverdue(borrowedUser.returnDate) && !borrowedUser.isOverdue){
               //if yes, call fun updateBookWhenOverdue from service to update the book
               if(borrowedUser.id){
                 if (!this.processedUsers.has(borrowedUser.id)) {
@@ -77,8 +77,17 @@ export class BooksIssuedListComponent {
           })
         }
       })
-
     });
+
+    
+    
+    // this.bookService.bookUpdated$.pipe(take(1)).subscribe((updatedBook) => {
+    //   this.bookService.getBorrowedBooks().subscribe(data => {
+    //     this.allBooks = data; 
+    //     this.originBooks = data;
+    //   })
+    // });
+    
   }
 
   showSearchResult() {

@@ -176,9 +176,7 @@ export class BookFormComponent implements OnInit{
     }
     else {
       let modifiedBook = this.formatFormDataForUpdateBook(this.bookToEdit);
-      console.log('modified book ', modifiedBook);
-      this.bookService.updateBook(modifiedBook);
-      console.log('successfully modified')
+      this.bookService.updateBook(modifiedBook).subscribe();
     }
     this.modalDialog.close();
     

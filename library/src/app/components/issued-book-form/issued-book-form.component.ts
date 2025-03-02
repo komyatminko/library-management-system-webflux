@@ -96,12 +96,9 @@ export class IssuedBookFormComponent {
       });
     }
     else if(this.userType == 'existing'){
-      let user = this.existingUsers.find(user=> user.id == formData.existingUser)
-      // console.log('borrowed user ', user);
+      let user = this.existingUsers.find(user=> user.id == formData.existingUser);
       this.bookService.books.pipe(take(1)).subscribe(books=>{
-        // console.log('books ', books)
         issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId.trim());
-        // console.log('issued book befor pushing borrowed user ', issuedBook);
         if(issuedBook){
           this.formatBookWithBorrowedUserAndUpdate(issuedBook, user, formData);
         }
@@ -148,8 +145,7 @@ export class IssuedBookFormComponent {
       if (!userExists) {
         let flag = true;
         issuedBook.borrowedBy.push(borrowedUser);
-        console.log('issued book to update ', issuedBook);
-        this.bookService.updateBook(issuedBook);
+        this.bookService.updateBook(issuedBook).subscribe();
         
       }
     } else {

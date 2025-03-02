@@ -13,10 +13,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label">Title</label>
-              <input type="text" class="form-control" formControlName="title" />
-              <div *ngIf="issuedBookForm.get('title')?.invalid && issuedBookForm.get('title')?.touched">
-                <small *ngIf="issuedBookForm.get('title')?.errors?.['required']" class="text-danger">Phone number is required.</small>
+              <label class="form-label">Book ID</label>
+              <input type="text" class="form-control" formControlName="uniqueBookId" />
+              <div *ngIf="issuedBookForm.get('uniqueBookId')?.invalid && issuedBookForm.get('uniqueBookId')?.touched">
+                <small *ngIf="issuedBookForm.get('uniqueBookId')?.errors?.['required']" class="text-danger">Phone number is required.</small>
                 <!-- <small *ngIf="issuedUserForm.get('phone')?.errors?.['minlength']" class="text-danger">Phone number must be at least 9 digits.</small> -->
               </div>
             </div>
