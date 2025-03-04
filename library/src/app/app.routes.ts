@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authRouteGuard } from './auth-route.guard';
 import { HomeComponent } from './components/home/home.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { BookDetailsComponent } from './pages/book-details/book-details.component';
@@ -14,15 +15,15 @@ import { UsersIssuedListComponent } from './pages/users-issued-list/users-issued
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent},
-    { path: 'home', component: HomeComponent },
-    { path: 'admin', component: AdminDashboardComponent},
-    { path: 'user', component: UserDashboardComponent},
-    { path: 'admin/books', component: BooksListComponent},
-    { path: 'admin/books/:id/details', component: BookDetailsComponent},
-    { path: 'admin/issuedBooks', component: BooksIssuedListComponent},
-    { path: 'admin/issuedBooks/:id/details', component: IssuedBookDetailsComponent},
-    { path: 'admin/issuedUsers', component: UsersIssuedListComponent},
-    { path: 'admin/issuedUsers/:id/details', component: IssuedUsersDetailsComponent},
+    { path: 'home', component: HomeComponent, canActivate : [authRouteGuard] },
+    { path: 'admin', component: AdminDashboardComponent,canActivate : [authRouteGuard]},
+    { path: 'user', component: UserDashboardComponent,canActivate : [authRouteGuard]},
+    { path: 'admin/books', component: BooksListComponent,canActivate : [authRouteGuard]},
+    { path: 'admin/books/:id/details', component: BookDetailsComponent,canActivate : [authRouteGuard]},
+    { path: 'admin/issuedBooks', component: BooksIssuedListComponent,canActivate : [authRouteGuard]},
+    { path: 'admin/issuedBooks/:id/details', component: IssuedBookDetailsComponent,canActivate : [authRouteGuard]},
+    { path: 'admin/issuedUsers', component: UsersIssuedListComponent,canActivate : [authRouteGuard]},
+    { path: 'admin/issuedUsers/:id/details', component: IssuedUsersDetailsComponent,canActivate : [authRouteGuard]},
     { path: '',   redirectTo: '/login', pathMatch: 'full' },
-    { path: '**', component: NotFoundPageComponent },
+    { path: '**', component: NotFoundPageComponent, },
 ];

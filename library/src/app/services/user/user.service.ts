@@ -27,8 +27,8 @@ export class UserService {
   }
 
   getAllUsers(): Observable<User[]> {
-    return this.http.get<User[]>(URL); 
-  }
+    return this.http.get<User[]>(URL, { withCredentials: true }); 
+  } 
 
   fetchUsersFromServer(): void {
     this.getAllUsers().subscribe(
@@ -68,12 +68,6 @@ export class UserService {
       )
     );
   }
-
-  
-
-
-  
-  
 
   private emitChange() {
     this._users.next(this._usersData);

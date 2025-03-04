@@ -1,6 +1,7 @@
 ng generate component components/name
 ng generate component pages/name
 ng generate service services/name
+ng generate guard auth-route-guard
 ng generate module modules/name
 ng generate interface models/name
 ng generate class models/name

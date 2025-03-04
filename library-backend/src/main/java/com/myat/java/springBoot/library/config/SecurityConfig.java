@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
@@ -22,6 +23,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import com.myat.java.springBoot.library.jwt.JWTHeadersExchangeMatcher;
 import com.myat.java.springBoot.library.jwt.JWTReactiveAuthenticationManager;
+import com.myat.java.springBoot.library.jwt.JwtAuthenticationFilter;
 import com.myat.java.springBoot.library.jwt.JwtUtil;
 import com.myat.java.springBoot.library.jwt.TokenAuthenticationConverter;
 import com.myat.java.springBoot.library.serviceImpl.ReactiveUserDetailsServiceImpl;
@@ -36,6 +38,9 @@ public class SecurityConfig {
 	@Autowired
 	ReactiveUserDetailsServiceImpl reactiveUserDetailsService;
 	
+//	@Autowired
+//	JwtAuthenticationFilter jwtAuthenticationFilter;
+	
 	@Autowired
 	private JwtUtil jwtUtil;
 	
@@ -48,23 +53,47 @@ public class SecurityConfig {
             "/admin/books/**",
     };
 	
+//	@Bean
+//    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+//		
+//        return http
+//        		.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+//                .csrf(csrf -> csrf.disable())
+//                .authorizeExchange()
+//                .pathMatchers("/api/auth/register", "/api/auth/login").permitAll()
+////                .pathMatchers(AUTH_WHITELIST).permitAll()
+//                .anyExchange().authenticated()
+//                .and()
+//                .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+//                .addFilterAt(webFilter(), SecurityWebFiltersOrder.AUTHORIZATION)
+//                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) // Disable Basic Auth
+//                .formLogin(ServerHttpSecurity.FormLoginSpec::disable) // Disable Form Login
+//                .build();
+//    }
+	
 	@Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-		
-        return http
-        		.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
-                .csrf(csrf -> csrf.disable())
-                .authorizeExchange()
-                .pathMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                .pathMatchers(AUTH_WHITELIST).permitAll()
-                .anyExchange().authenticated()
-                .and()
-                .addFilterAt(webFilter(), SecurityWebFiltersOrder.AUTHORIZATION)
-                .httpBasic().disable()
-                .formLogin().disable()
-                .build();
-    }
-
+	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+	    return http
+	        .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Fix CORS
+	        .csrf(ServerHttpSecurity.CsrfSpec::disable) // ✅ Disable CSRF
+	        .authorizeExchange(exchanges -> exchanges
+	            .pathMatchers("/api/auth/register", "/api/auth/login").permitAll()
+//	            .pathMatchers(AUTH_WHITELIST).permitAll()
+	            .anyExchange().authenticated()
+	        )
+	        .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION) // ✅ Ensure JWT filter is used
+	        .addFilterAt(webFilter(), SecurityWebFiltersOrder.AUTHORIZATION) // ✅ Ensure auth filter is used
+	        .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) // ✅ Disable Basic Auth
+	        .formLogin(ServerHttpSecurity.FormLoginSpec::disable) // ✅ Disable Form Login
+	        .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()) // ✅ Fix session handling
+	        .build();
+	}
+	
+	@Bean
+	public JwtAuthenticationFilter jwtAuthenticationFilter() {
+	    return new JwtAuthenticationFilter(jwtUtil);
+	}
+	
 	@Bean
     public JWTReactiveAuthenticationManager repositoryReactiveAuthenticationManager() {
         JWTReactiveAuthenticationManager repositoryReactiveAuthenticationManager = new JWTReactiveAuthenticationManager(reactiveUserDetailsService, passwordEncoder());
@@ -76,22 +105,31 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
     
+//    @Bean
+//    public AuthenticationWebFilter webFilter() {
+//        AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(repositoryReactiveAuthenticationManager());
+//        authenticationWebFilter.setAuthenticationConverter(new TokenAuthenticationConverter(jwtUtil));
+//        authenticationWebFilter.setRequiresAuthenticationMatcher(new JWTHeadersExchangeMatcher());
+//        authenticationWebFilter.setSecurityContextRepository(new WebSessionServerSecurityContextRepository());
+//        return authenticationWebFilter;
+//    }
+    
     @Bean
     public AuthenticationWebFilter webFilter() {
         AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(repositoryReactiveAuthenticationManager());
         authenticationWebFilter.setAuthenticationConverter(new TokenAuthenticationConverter(jwtUtil));
         authenticationWebFilter.setRequiresAuthenticationMatcher(new JWTHeadersExchangeMatcher());
-        authenticationWebFilter.setSecurityContextRepository(new WebSessionServerSecurityContextRepository());
+        authenticationWebFilter.setSecurityContextRepository(NoOpServerSecurityContextRepository.getInstance()); // ✅ Fix session storage
         return authenticationWebFilter;
     }
     
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200")); // Allow Angular frontend
+        config.setAllowedOrigins(List.of("http://localhost:4200")); // ✅ Allow frontend origin
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*")); // Allow all headers
-        config.setAllowCredentials(true); // Allow credentials (cookies, authentication headers)
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true); // ✅ Allow credentials (cookies)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

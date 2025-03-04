@@ -6,6 +6,7 @@ import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin, take } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-issued-book-update-form',
@@ -40,8 +41,8 @@ export class IssuedBookUpdateFormComponent {
   )
   {
       this.issuedBookForm = this.fb.group({
-        username: ['', Validators.required],
-        uniqueBookId: ['', [Validators.required]],
+        username: ['', [Validators.required, Validators.minLength(5)]],
+        uniqueBookId: ['', [Validators.required, Validators.minLength(7)]],
         issuedDate: ['', Validators.required],
         returnDate: ['', Validators.required],
     });
@@ -60,61 +61,8 @@ export class IssuedBookUpdateFormComponent {
     let formData = this.issuedBookForm.value;
 
     //format book to update
-    if(this.book){
-      if(formData.uniqueBookId == this.book?.uniqueBookId){
-
-        let bookToUpdate: Book ={
-          ...this.book,
-          borrowedBy: this.book?.borrowedBy?.map(bu=> {
-            return bu.userId == this.user.userId ? {
-              id: bu.id,
-              userId: bu.userId,
-              username: formData.username,
-              issueDate: formData.issuedDate,
-              returnDate: formData.returnDate,
-              isOverdue: this.bookService.isOverdue(formData.returnDate)
-            } : bu;
-          })
-        }
-        this.bookService.updateBook(bookToUpdate).subscribe();
-      } 
-      else if(formData.uniqueBookId != this.book?.uniqueBookId){
-  
-        this.bookService.books.pipe(take(1)).subscribe((books: Book[])=> this.books = books);
-        let bookToAddBorrowedUser = this.books.find(book=> book.uniqueBookId == formData.uniqueBookId.trim());
-  
-        let bookRemovedBorrowedUser = {
-          ...this.book,
-          borrowedBy: this.book?.borrowedBy?.filter(bu => bu.userId != this.user.userId)
-        }
-        console.log('book to update after removing borrowed user', bookRemovedBorrowedUser);
-        
-       bookToAddBorrowedUser?.borrowedBy?.push({
-          id: this.user.id,
-          userId: this.user.userId,
-          username: formData.username,
-          issueDate: formData.issuedDate,
-          returnDate: formData.returnDate,
-          isOverdue: this.bookService.isOverdue(formData.returnDate)
-       })
-  
-       console.log('book after add borrowed user', bookToAddBorrowedUser);
-       if(bookRemovedBorrowedUser && bookToAddBorrowedUser){
-        forkJoin([
-          this.bookService.updateBook(bookRemovedBorrowedUser),
-          this.bookService.updateBook(bookToAddBorrowedUser)
-        ]).subscribe({
-          next: ([updatedBook1, updatedBook2]) => {
-            console.log('Both books updated successfully');
-          },
-          error: (err) => {
-            console.error('One of the updates failed, so both are considered failed:', err);
-          }
-        });
-       }
-       
-      }
-    }
+    this.updateAlertBox(formData);
+    this.onEditClick.emit(this.user);
     this.modalDialog.close();
   }
 
@@ -127,12 +75,79 @@ export class IssuedBookUpdateFormComponent {
     })
   }
 
-  formatBookToUpdate(data: any){
+  formatUser(formData:any):BorrowedUser{
+    return {
+              id: this.user.id,
+              userId: this.user.userId,
+              username: formData.username,
+              issueDate: formData.issuedDate,
+              returnDate: formData.returnDate,
+              isOverdue: this.bookService.isOverdue(formData.returnDate)
+    }
+  }
 
+  updateAlertBox(formData: any){
+    Swal.fire({
+      title: "Do you want to update an issued book?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+       
+        if(this.book){
+          if(formData.uniqueBookId == this.book?.uniqueBookId){
+    
+            let bookToUpdate: Book ={
+              ...this.book,
+              borrowedBy: this.book?.borrowedBy?.map(bu=> {
+                return bu.userId == this.user.userId ? this.formatUser(formData) : bu;
+              })
+            }
+            this.bookService.updateBook(bookToUpdate).subscribe();
+          } 
+          else if(formData.uniqueBookId != this.book?.uniqueBookId){
+      
+            this.bookService.books.pipe(take(1)).subscribe((books: Book[])=> this.books = books);
+            let bookToAddBorrowedUser = this.books.find(book=> book.uniqueBookId == formData.uniqueBookId.trim());
+      
+            let bookRemovedBorrowedUser = {
+              ...this.book,
+              borrowedBy: this.book?.borrowedBy?.filter(bu => bu.userId != this.user.userId)
+            }
+            
+           bookToAddBorrowedUser?.borrowedBy?.push(this.formatUser(formData))
+      
+           if(bookRemovedBorrowedUser && bookToAddBorrowedUser){
+            forkJoin([
+              this.bookService.updateBook(bookRemovedBorrowedUser),
+              this.bookService.updateBook(bookToAddBorrowedUser)
+            ]).subscribe({
+              next: ([updatedBook1, updatedBook2]) => {
+                // console.log('Both books updated successfully');
+              },
+              error: (err) => {
+                // console.error('One of the updates failed, so both are considered failed:', err);
+              }
+            });
+           }
+           
+          }
+        }
+        Swal.fire("Updated!", "", "success");
+      } else if (result.isDenied) {
+        Swal.fire("Issued book is not updated", "", "info");
+      }
+    });
   }
 
   open(content: TemplateRef<any>) {
     this.modalDialog = this.modalService.open(content, {  size: 'lg' ,ariaLabelledBy: 'modal-basic-title' });
+  }
+
+  get isFormValid(): boolean{
+    return this.issuedBookForm.valid;
   }
 
 }

@@ -9,7 +9,7 @@
         <ng-content select = "[details-btn]"></ng-content>
    
         <div class="" *ngIf="!hasInjectedButton">
-            <app-issued-book-update-form [user]="formattedUser" [book]="book"></app-issued-book-update-form>
+            <app-issued-book-update-form [user]="formattedUser" [book]="book" (onEditClick)="editDialogEvent($event)"></app-issued-book-update-form>
             <button type="button" class="btn p-0 me-2" [routerLink]="['/admin/issuedBooks',formattedUser.id,'details']" [queryParams]="{ from: '/admin/issuedBooks' }">
                 <i class="fas fa-info-circle text-primary"></i>
             </button>

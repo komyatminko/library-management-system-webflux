@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.myat.java.springBoot.library.dao.UserDao;
 import com.myat.java.springBoot.library.dto.JWTToken;
@@ -59,7 +61,6 @@ public class AuthServiceImpl implements AuthService{
 
 	@Override
 	public Mono<JWTToken> login(User user) {
-		System.out.println("login auth service impl");
 		Authentication authenticationToken =
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
 
@@ -75,6 +76,7 @@ public class AuthServiceImpl implements AuthService{
             return new JWTToken(jwt);
         });
 	}
+	
 
 	 Mono<User> registerUser(User user)
 	    {

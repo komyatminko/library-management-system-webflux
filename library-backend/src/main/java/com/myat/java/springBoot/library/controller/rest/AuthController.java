@@ -1,7 +1,11 @@
 package com.myat.java.springBoot.library.controller.rest;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.server.ServerResponse;
+
 import reactor.core.publisher.Mono;
 import com.myat.java.springBoot.library.dao.UserDao;
 import com.myat.java.springBoot.library.dto.JWTToken;
@@ -44,13 +50,36 @@ public class AuthController {
     
    
     @PostMapping("/login")
-    public Mono<JWTToken> login(@Valid @RequestBody User user) {
-    	System.out.println("login");
-        if (!this.validation.validate(user).isEmpty()) {
-            return Mono.error(new RuntimeException("Bad request"));
-        }
+    public Mono<ResponseEntity<JWTToken>> login(@RequestBody User user) {
+        return authService.login(user)
+            .flatMap(token -> {
+                ResponseCookie jwtCookie = ResponseCookie.from("jwt", token.getToken()) // Store JWT in cookie
+                        .httpOnly(true)
+                        .secure(true) // Set to false for local testing if needed
+                        .path("/")
+                        .maxAge(86400) // 1 day expiration
+                        .build();
+                
+                
 
-        return this.authService.login(user);
+                return Mono.just(ResponseEntity.ok()
+                        .header("Set-Cookie", jwtCookie.toString())
+                        .body(token));
+            });
     }
+    
+    @PostMapping("/logout")
+	public Mono<ResponseEntity<String>> logout() {
+	    ResponseCookie jwtCookie = ResponseCookie.from("jwt", "") // Clear the JWT cookie
+	            .httpOnly(true)
+	            .secure(false)
+	            .path("/")
+	            .maxAge(0) // 👈 Expire immediately
+	            .build();
+
+	    return Mono.just(ResponseEntity.ok()
+	            .header("Set-Cookie", jwtCookie.toString()) // 👈 Must include this!
+	            .body("Logged out successfully"));
+	}
 	
 }

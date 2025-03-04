@@ -136,25 +136,33 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> 
             
             <!-- contents -->
             <div class="row mt-2 mx-1" >
-                <div class="col-12  bg-light rounded-2 shadow-sm w-100">
-                    <div class="content" id="content">
+                <div class="col-12">
+                    <div class="content mt-3" id="content">
                         <div *ngIf="activeTab === 'overview'" class="scrollable-content" id="scrollable-content">
                           <p>{{book.bookDetails.details}}</p>
                         </div>
                         <div *ngIf="activeTab === 'author'" class="scrollable-content">
-                          <div>
-                            FirstName : {{book.author?.firstName}}
-                          </div>
-                          <div>
-                            LastName : {{book.author?.lastName}}
-                          </div>
-                          <div>
-                            Birthday : {{authorBirthday}}
-                          </div>
+
+                            <table class="table table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>FirstName</th>
+                                        <td>{{book.author?.firstName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>LastName</th>
+                                        <td>{{book.author?.lastName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Birthday</th>
+                                        <td>{{authorBirthday}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

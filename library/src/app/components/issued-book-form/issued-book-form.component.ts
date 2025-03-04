@@ -9,6 +9,7 @@ import { Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin, take } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-issued-book-form',
@@ -39,14 +40,14 @@ export class IssuedBookFormComponent {
   {
 
     this.issuedBookForm = this.fb.group({
-      userType: ['existing'], // Radio button selection
-      existingUser: [null], // Holds the selected existing author
+      userType: ['existing'],
+      existingUser: [null],
       newUser: this.fb.group({
         username: ['', Validators.required],
-        phone: ['', [Validators.required, Validators.maxLength(9)]],
+        phone: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
         address: ['', Validators.required]
       }),
-      uniqueBookId: ['', [Validators.required, Validators.minLength(5)]]
+      uniqueBookId: ['', [Validators.required, Validators.minLength(7)]]
     });
 
   }
@@ -63,11 +64,14 @@ export class IssuedBookFormComponent {
 
   openDialogForNew(){
     this.open(this.content);
+    this.updateFormValidation();
     this.resetFormIfDismiss();
   }
 
   updateUserType(type: string){
     this.userType = type;
+    console.log('user type', type)
+    this.updateFormValidation();
   }
 
   open(content: TemplateRef<any>) {
@@ -76,11 +80,9 @@ export class IssuedBookFormComponent {
 
 
   save(){
-      let formData = this.issuedBookForm.value;
+    let formData = this.issuedBookForm.value;
     let issuedBook: Book | undefined;
     
-    
-
     if(this.userType == 'new'){
       let userToSave = this.formatUserToSave(formData);
       forkJoin({
@@ -101,11 +103,14 @@ export class IssuedBookFormComponent {
         issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId.trim());
         if(issuedBook){
           this.formatBookWithBorrowedUserAndUpdate(issuedBook, user, formData);
+        }else{
+          console.log('book not found to issued')
         }
       })
     }
     this.saveFlag =false;
     this.issuedBookForm.reset({userType: 'existing'});
+    this.userType = 'existing';
     this.modalDialog.close();
     
   }
@@ -129,6 +134,7 @@ export class IssuedBookFormComponent {
   }
 
   formatBookWithBorrowedUserAndUpdate(issuedBook: Book, savedUser: any,formData: any) {
+    // console.log('save issued book')
     let borrowedUser: BorrowedUser;
     
     borrowedUser = this.bookService.setBorrowedBy(savedUser, issuedBook);
@@ -143,9 +149,9 @@ export class IssuedBookFormComponent {
       const userExists = issuedBook.borrowedBy.some(user => user.userId === borrowedUser.userId);
 
       if (!userExists) {
-        let flag = true;
+        // let flag = true;
         issuedBook.borrowedBy.push(borrowedUser);
-        this.bookService.updateBook(issuedBook).subscribe();
+        this.saveIssuedBook(issuedBook);
         
       }
     } else {
@@ -155,7 +161,64 @@ export class IssuedBookFormComponent {
 
   resetFormIfDismiss(){
     this.modalDialog.dismissed.subscribe(()=>{
-      this.issuedBookForm.reset();
+      this.issuedBookForm.reset({userType: 'existing'});
+      this.userType = 'existing'
     })
   }
+
+  saveIssuedBook(issuedBook: Book){
+    Swal.fire({
+      title: "Do you want to save an issued book?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // this.bookService.updateBook(issuedBook).subscribe();
+        
+        Swal.fire("Saved!", "", "success");
+      } else if (result.isDenied) {
+        Swal.fire("Issued book is not saved", "", "info");
+      }
+    });
+  }
+
+  get isFormValid(): boolean{
+    // this.updateFormValidation();
+    // this.userType = 'existing';
+    console.log('form valid ', this.issuedBookForm.valid)
+    const isExistingAuthorSelected = !!this.issuedBookForm.get('existingUser')?.value;
+    return this.issuedBookForm.valid;
+
+  }
+
+  updateFormValidation() {
+    if (this.issuedBookForm.get('userType')?.value === 'existing') {
+      // Clear new author fields' validators
+      this.issuedBookForm.get('newUser')?.reset();
+      this.issuedBookForm.get('newUser.username')?.clearValidators();
+      this.issuedBookForm.get('newUser.phone')?.clearValidators();
+      this.issuedBookForm.get('newUser.address')?.clearValidators();
+  
+      // Ensure existing author selection is required
+      this.issuedBookForm.get('existingUser')?.setValidators([Validators.required]);
+    } else {
+      // Clear existing author validator
+      this.issuedBookForm.get('existingUser')?.reset();
+      this.issuedBookForm.get('existingUser')?.clearValidators();
+  
+      // Set validators for new author fields
+      this.issuedBookForm.get('newUser.username')?.setValidators([Validators.required]);
+      this.issuedBookForm.get('newUser.phone')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
+      this.issuedBookForm.get('newUser.address')?.setValidators([Validators.required]);
+    }
+  
+    // Reset touched & pristine states to ensure UI updates
+    this.issuedBookForm.get('existingUser')?.updateValueAndValidity();
+    this.issuedBookForm.get('newUser.username')?.updateValueAndValidity();
+    this.issuedBookForm.get('newUser.phone')?.updateValueAndValidity();
+    this.issuedBookForm.get('newUser.address')?.updateValueAndValidity();
+  }
+
 }

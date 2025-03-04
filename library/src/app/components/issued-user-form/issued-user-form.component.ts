@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-issued-user-form',
@@ -33,8 +34,8 @@ export class IssuedUserFormComponent {
   {
 
       this.issuedUserForm = this.fb.group({
-          username: ['', Validators.required],
-          phone: ['', [Validators.required, Validators.maxLength(9)]],
+          username: ['', [Validators.required, Validators.minLength(5)]],
+          phone: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
           address: ['', Validators.required]
       });
 
@@ -60,14 +61,30 @@ export class IssuedUserFormComponent {
   }
 
   updateIssuedUser(){
-    let formData = this.issuedUserForm.value;
-    let issuedUserToUpdate = {
-      ...this.user,
-      username: formData.username,
-      phone: formData.phone,
-      address: formData.address
-    }
-    this.userService.updateUser(issuedUserToUpdate);
+    Swal.fire({
+      title: "Do you want to update an issued user?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+       
+        let formData = this.issuedUserForm.value;
+        let issuedUserToUpdate = {
+          ...this.user,
+          username: formData.username,
+          phone: formData.phone,
+          address: formData.address
+        }
+        this.userService.updateUser(issuedUserToUpdate);
+
+        Swal.fire("Updated!", "", "success");
+      } else if (result.isDenied) {
+        Swal.fire("Issued user is not updated", "", "info");
+      }
+    });
+    
     this.modalDialog.close();
   }
 
@@ -81,5 +98,10 @@ export class IssuedUserFormComponent {
       this.issuedUserForm.reset();
     })
   }
+
+  get isFormValid(): boolean{
+    return this.issuedUserForm.valid;
+  }
+  
 
 }

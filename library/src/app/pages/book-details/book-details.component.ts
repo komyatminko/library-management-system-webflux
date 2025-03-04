@@ -66,13 +66,13 @@ fromPage: string | null= '';
   }
   
   ngAfterViewChecked() {
-    if (!this.flagForContentHeight) {
+    // if (!this.flagForContentHeight) {
       
-      setTimeout(() => {
-        this.calculateHeightForContent();
-        this.flagForContentHeight = true;  
-      }, 100);
-    }
+    //   setTimeout(() => {
+    //     this.calculateHeightForContent();
+    //     this.flagForContentHeight = true;  
+    //   }, 100);
+    // }
   }
   
 

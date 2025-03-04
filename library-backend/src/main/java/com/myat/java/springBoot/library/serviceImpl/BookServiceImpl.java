@@ -183,7 +183,7 @@ public class BookServiceImpl implements BookService{
 	                oldBook.setAuthor(modelMapper.map(bookDto.getAuthor(), Author.class));
 	                oldBook.setRating(bookDto.getRating());
 	                oldBook.setTotalCount(bookDto.getTotalCount());
-	                
+	                oldBook.setAvailableCount(bookDto.getTotalCount() - oldBook.getBorrowing().size());
 					
 	                
 	               //delete borrowed user from issued book when borrowed user is deleted
@@ -243,9 +243,12 @@ public class BookServiceImpl implements BookService{
 	private void updateIssuedBook(BookDto bookDto, Book oldBook) {
 		
 		if(bookDto.getBorrowedBy().size() > 0 
-//		&& bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size() comment to update user
+//		&& bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size() //comment to update user
 		) {
-			oldBook.setAvailableCount(Math.max(0, oldBook.getAvailableCount() - 1));
+			if(bookDto.getBorrowedBy().size() > oldBook.getBorrowing().size()) {
+				oldBook.setAvailableCount(Math.max(0, oldBook.getAvailableCount() - 1));
+			}
+			
 
 			   //check whether book has borrowing in db, if not, create new list
 			   if(oldBook.getBorrowing() == null || oldBook.getBorrowing().size() == 0) {

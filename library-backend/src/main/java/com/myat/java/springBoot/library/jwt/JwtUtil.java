@@ -6,6 +6,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,7 +29,7 @@ import jakarta.annotation.PostConstruct;
 public class JwtUtil {
 
     private static final String SALT_KEY = "JpxM4e858rc673syopdZnMFb*ExeqJtUc0HJ_iOxu~jiSYu+yPdPw93OBBjF";
-    private static final int TOKEN_VALIDITY = 86400; // Value in second
+    private static final int TOKEN_VALIDITY = 86400; // Value in second 1day
 
     private static final String AUTHORITIES_KEY = "auth";
 
@@ -51,7 +52,7 @@ public class JwtUtil {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        System.out.println("roles "  + authorities);
+//        System.out.println("roles "  + authorities);
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
@@ -91,6 +92,18 @@ public class JwtUtil {
             System.err.println("Invalid JWT signature." + e);
         } 
         return false;
+    }
+    
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+    
+    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return claimsResolver.apply(claims);
     }
 
 }

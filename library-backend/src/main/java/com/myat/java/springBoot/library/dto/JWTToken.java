@@ -5,8 +5,7 @@ public class JWTToken {
 	
 	
 
-	public JWTToken(String token) {
-		super();
+	public JWTToken(String token) {	
 		this.token = token;
 	}
 

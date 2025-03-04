@@ -20,7 +20,7 @@ export class AuthorService {
   }
 
   getAllAuthors(): Observable<Author[]> {
-    return this.http.get<Author[]>(URL); 
+    return this.http.get<Author[]>(URL,{ withCredentials: true }); 
   }
 
   fetchAuthorsFromServer(): void {

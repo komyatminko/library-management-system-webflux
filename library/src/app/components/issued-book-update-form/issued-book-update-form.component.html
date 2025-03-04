@@ -10,14 +10,15 @@
               <input type="text" class="form-control" formControlName="username" />
               <div *ngIf="issuedBookForm.get('username')?.invalid && issuedBookForm.get('username')?.touched">
                 <small *ngIf="issuedBookForm.get('username')?.errors?.['required']" class="text-danger">Username is required.</small>
+                <small *ngIf="issuedBookForm.get('username')?.errors?.['minlength']" class="text-danger">Username must be at least 5 characters.</small>
               </div>
             </div>
             <div class="mb-3">
               <label class="form-label">Book ID</label>
               <input type="text" class="form-control" formControlName="uniqueBookId" />
               <div *ngIf="issuedBookForm.get('uniqueBookId')?.invalid && issuedBookForm.get('uniqueBookId')?.touched">
-                <small *ngIf="issuedBookForm.get('uniqueBookId')?.errors?.['required']" class="text-danger">Phone number is required.</small>
-                <!-- <small *ngIf="issuedUserForm.get('phone')?.errors?.['minlength']" class="text-danger">Phone number must be at least 9 digits.</small> -->
+                <small *ngIf="issuedBookForm.get('uniqueBookId')?.errors?.['required']" class="text-danger">Book id is required.</small>
+                <small *ngIf="issuedBookForm.get('uniqueBookId')?.errors?.['minlength']" class="text-danger">Book id must be at least 7 characters.</small>
               </div>
             </div>
             <div class="mb-3">
@@ -37,7 +38,7 @@
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="updateIssuedBook()">
+      <button type="button" class="btn btn-primary" (click)="updateIssuedBook()" [disabled]="!this.isFormValid">
        Update
       </button>
     </div>

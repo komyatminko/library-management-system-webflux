@@ -4,6 +4,7 @@ import { BookService } from '@/app/services/book/book.service';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
 import { IssuedUserFormComponent } from '../issued-user-form/issued-user-form.component';
 
 @Component({
@@ -51,16 +52,27 @@ export class UserIssuedTableRowComponent {
               ...bookToUpdate,
               borrowedBy: bookToUpdate.borrowedBy?.filter(bu=> bu.userId != this.user.id)
             }
-            this.bookService.updateBook(formatBookToUpdate).subscribe();
+            this.deleteIssuedUser(formatBookToUpdate);
           })
         }
        })
       }
-      
     })
-    
+  }
 
-    
-    
+  deleteIssuedUser(formatBookToUpdate: Book){
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.bookService.updateBook(formatBookToUpdate).subscribe();
+      }
+    });
   }
 }

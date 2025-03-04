@@ -10,6 +10,7 @@
               <input type="text" class="form-control" formControlName="username" />
               <div *ngIf="issuedUserForm.get('username')?.invalid && issuedUserForm.get('username')?.touched">
                 <small *ngIf="issuedUserForm.get('username')?.errors?.['required']" class="text-danger">Username is required.</small>
+                <small *ngIf="issuedUserForm.get('username')?.errors?.['minlength']" class="text-danger">Username must be at least 5 characters.</small>
               </div>
             </div>
             <div class="mb-3">
@@ -17,7 +18,8 @@
               <input type="phone" class="form-control" formControlName="phone" />
               <div *ngIf="issuedUserForm.get('phone')?.invalid && issuedUserForm.get('phone')?.touched">
                 <small *ngIf="issuedUserForm.get('phone')?.errors?.['required']" class="text-danger">Phone number is required.</small>
-                <!-- <small *ngIf="issuedUserForm.get('phone')?.errors?.['minlength']" class="text-danger">Phone number must be at least 9 digits.</small> -->
+                <small *ngIf="issuedUserForm.get('phone')?.errors?.['minlength']" class="text-danger">Phone number must be at least 11 digits.</small>
+                <small *ngIf="issuedUserForm.get('phone')?.errors?.['maxlength']" class="text-danger">Phone number must not be greater than 11 digits.</small>
               </div>
             </div>
             <div class="mb-3">
@@ -30,7 +32,7 @@
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="updateIssuedUser()">
+      <button type="button" class="btn btn-primary" (click)="updateIssuedUser()" [disabled]="!this.isFormValid">
        Update
       </button>
     </div>

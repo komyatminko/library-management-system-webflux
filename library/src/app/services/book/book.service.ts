@@ -31,8 +31,7 @@ export class BookService {
   }
 
   getAllBooks(): Observable<{ data: Book }[]> {
-    console.log('get all books ...')
-    return this.http.get<{ data: Book }[]>(URL); 
+    return this.http.get<{ data: Book }[]>(URL,{ withCredentials: true }); 
   }
 
   fetchBooksFromServer(): void {

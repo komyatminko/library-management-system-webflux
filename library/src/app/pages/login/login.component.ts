@@ -47,7 +47,7 @@ export class LoginComponent {
       // alert('Login Successful!');
       this.authService.login(userData)
         .subscribe(data => {
-          console.log('token', data);
+          console.log('data after login ', data)
           this.loginSuccess(data);
         },
         err => console.log('ERROR ', err))

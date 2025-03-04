@@ -25,7 +25,6 @@ public class JWTReactiveAuthenticationManager implements ReactiveAuthenticationM
 	
 	@Override
 	public Mono<Authentication> authenticate(Authentication authentication) {
-		System.out.println("auth manager auth method");
 		if(authentication.isAuthenticated()) {
             return Mono.just(authentication);
         }

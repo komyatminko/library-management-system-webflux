@@ -80,14 +80,6 @@ export class BooksIssuedListComponent {
     });
 
     
-    
-    // this.bookService.bookUpdated$.pipe(take(1)).subscribe((updatedBook) => {
-    //   this.bookService.getBorrowedBooks().subscribe(data => {
-    //     this.allBooks = data; 
-    //     this.originBooks = data;
-    //   })
-    // });
-    
   }
 
   showSearchResult() {
