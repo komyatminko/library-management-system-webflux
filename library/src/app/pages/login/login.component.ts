@@ -57,7 +57,8 @@ export class LoginComponent {
   }
 
   loginSuccess(data:any){
-    this.authService.setAuthentication(data.token)
+    this.authService.setAuthentication(true);
+    this.authService.setToken(data.token);
     let role = this.authService.getUserRole();
     if(role === 'ADMIN'){
       this.router.navigate(['/admin']);

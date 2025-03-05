@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 import { BookFormComponent } from '@/app/components/book-form/book-form.component';
 import { IssuedBookFormComponent } from '@/app/components/issued-book-form/issued-book-form.component';
 import { IssuedUserFormComponent } from '@/app/components/issued-user-form/issued-user-form.component';
+import { AuthService } from '@/app/services/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -38,7 +39,8 @@ export class AdminDashboardComponent {
   totalOverdueBookCount: number = 0;
   totalBorrowedUserCount: number = 0;
   constructor(private bookService: BookService,
-              private userService: UserService) {
+              private userService: UserService,
+              private authService: AuthService) {
     
     
   }
@@ -80,5 +82,10 @@ export class AdminDashboardComponent {
       })
     })
     // this.userService.users.subscribe(users => this.borrowedUsers = users)
+  }
+
+
+  logout(){
+    return this.authService.logout();
   }
 }

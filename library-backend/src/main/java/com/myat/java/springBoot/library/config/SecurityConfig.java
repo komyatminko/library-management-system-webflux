@@ -77,7 +77,7 @@ public class SecurityConfig {
 	        .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Fix CORS
 	        .csrf(ServerHttpSecurity.CsrfSpec::disable) // ✅ Disable CSRF
 	        .authorizeExchange(exchanges -> exchanges
-	            .pathMatchers("/api/auth/register", "/api/auth/login").permitAll()
+	            .pathMatchers("/api/auth/register", "/api/auth/login", "/api/auth/me").permitAll()
 //	            .pathMatchers(AUTH_WHITELIST).permitAll()
 	            .anyExchange().authenticated()
 	        )
@@ -85,7 +85,6 @@ public class SecurityConfig {
 	        .addFilterAt(webFilter(), SecurityWebFiltersOrder.AUTHORIZATION) // ✅ Ensure auth filter is used
 	        .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) // ✅ Disable Basic Auth
 	        .formLogin(ServerHttpSecurity.FormLoginSpec::disable) // ✅ Disable Form Login
-	        .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()) // ✅ Fix session handling
 	        .build();
 	}
 	
@@ -128,7 +127,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:4200")); // ✅ Allow frontend origin
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowedHeaders(List.of("Set-Cookie", "Content-Type"));
         config.setAllowCredentials(true); // ✅ Allow credentials (cookies)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -3,6 +3,7 @@ package com.myat.java.springBoot.library.serviceImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.myat.java.springBoot.library.dao.UserDao;
 import com.myat.java.springBoot.library.dto.JWTToken;
+import com.myat.java.springBoot.library.dto.UserDto;
 import com.myat.java.springBoot.library.jwt.JWTReactiveAuthenticationManager;
 import com.myat.java.springBoot.library.jwt.JwtUtil;
 import com.myat.java.springBoot.library.model.Role;
@@ -31,6 +33,7 @@ public class AuthServiceImpl implements AuthService{
 	
 	private final JwtUtil tokenProvider;
     private final JWTReactiveAuthenticationManager authenticationManager;
+    ModelMapper modelMapper = new ModelMapper();
     
     @Autowired
 	private UserDao userRepository;
@@ -86,5 +89,12 @@ public class AuthServiceImpl implements AuthService{
 	    	newUser.setEmail(user.getEmail());
 	    	newUser.setRoles(user.getRoles());
 	    	return this.userRepository.save(newUser);
+	    }
+	 
+	 public Mono<UserDto> getUserFromToken(String token) {
+	        return Mono.justOrEmpty(tokenProvider.validateToken(token))
+	        	.map(isTokenValid-> tokenProvider.getUsernameFromToken(token))
+	            .flatMap(username -> userRepository.findByUsername(username))
+	            .map(user-> this.modelMapper.map(user, UserDto.class));
 	    }
 }

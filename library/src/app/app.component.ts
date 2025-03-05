@@ -14,19 +14,27 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent {
   title = 'Library Web';
+
+  // isAuthenticated = false;
   constructor(private authService: AuthService, private router: Router){}
   
+  
   ngOnInit(){
+
+    
+
     let isAuthenticated = this.authService.getAuthentication();
     if(isAuthenticated){
       if(this.authService.isAdmin()){
         this.router.navigate(['/admin']);
-        console.log('user is authenticated')
+        // console.log('user is authenticated')
       }
       else {
         this.router.navigate(['/user']);
       }
     }
+
+    
   }
   
 
