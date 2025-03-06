@@ -175,7 +175,7 @@ export class IssuedBookFormComponent {
       denyButtonText: `Don't save`
     }).then((result) => {
       if (result.isConfirmed) {
-        // this.bookService.updateBook(issuedBook).subscribe();
+        this.bookService.updateBook(issuedBook).subscribe();
         
         Swal.fire("Saved!", "", "success");
       } else if (result.isDenied) {

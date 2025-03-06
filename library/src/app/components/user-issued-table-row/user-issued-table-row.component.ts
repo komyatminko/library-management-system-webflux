@@ -41,6 +41,7 @@ export class UserIssuedTableRowComponent {
 
   showDeleteConfirmDailog(){
     let bookToUpdate!: Book;
+    let booksToUpdate: Book[] = [];
     this.books.forEach(book=> {
 
       if(book.borrowedBy){
@@ -52,15 +53,21 @@ export class UserIssuedTableRowComponent {
               ...bookToUpdate,
               borrowedBy: bookToUpdate.borrowedBy?.filter(bu=> bu.userId != this.user.id)
             }
-            this.deleteIssuedUser(formatBookToUpdate);
+            booksToUpdate.push(formatBookToUpdate)
+            // this.deleteIssuedUser(formatBookToUpdate);
           })
         }
        })
+       
       }
     })
+
+    this.deleteIssuedUser(booksToUpdate)
   }
 
-  deleteIssuedUser(formatBookToUpdate: Book){
+  deleteIssuedUser(booksToUpdate: Book[]){
+    
+    console.log('delecting ...', booksToUpdate)
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -71,7 +78,10 @@ export class UserIssuedTableRowComponent {
       confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        this.bookService.updateBook(formatBookToUpdate).subscribe();
+        console.log('ready to delete', booksToUpdate)
+        booksToUpdate.forEach(data=> this.bookService.updateBook(data).subscribe())
+        // console.log('book to update', formatBookToUpdate)
+        // this.bookService.updateBook(formatBookToUpdate).subscribe();
       }
     });
   }

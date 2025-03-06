@@ -39,6 +39,7 @@ export class BookIssuedTableRowComponent {
 
   constructor(
     private bookService: BookService,
+    private userService: UserService,
     private elementRef: ElementRef,
     )
   {
@@ -52,14 +53,18 @@ export class BookIssuedTableRowComponent {
       }
       
     }); 
-
-    this.bookService.bookUpdated$.pipe(take(1)).subscribe(updatedBook => {
+    this.bookService.bookUpdated$.subscribe(updatedBook => {
       updatedBook.borrowedBy?.forEach(bu=> {
         if(bu.userId == this._user.userId){
           this._user.username = bu.username;
         }
       })
     })
+
+    this.userService.userUpdated$.subscribe(updatedUser => {
+      this._user.username = updatedUser.username;
+    })
+    
   }
 
   ngAfterContentInit() {

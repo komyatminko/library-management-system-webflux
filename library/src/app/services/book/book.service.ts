@@ -45,11 +45,11 @@ export class BookService {
 
   getAllBooksByKeyword(keyword: string):Observable<Book[]>{
     const params = new HttpParams().set('keyword', keyword);
-    return this.http.get<Book[]>(URL + '/find?', {params})
+    return this.http.get<Book[]>(URL + '/find?', {params, withCredentials: true})
   }
 
   saveBook(book:Book){
-    this.http.post<{data: Book}>(URL+'/save',book).pipe(take(1)).subscribe(res=> {
+    this.http.post<{data: Book}>(URL+'/save',book,{ withCredentials: true }).pipe(take(1)).subscribe(res=> {
       this._saveBook(res.data);
     });
   }
@@ -60,7 +60,7 @@ export class BookService {
   }
 
   updateBook(book:Book): Observable<Book>{
-    return this.http.put<{data: Book}>(URL + '/' + book.id, book).pipe(
+    return this.http.put<{data: Book}>(URL + '/' + book.id, book,{ withCredentials: true }).pipe(
       take(1),
       map(res=>{
         this._updateBook(res.data);
@@ -76,7 +76,7 @@ export class BookService {
 
   deleteBook(book:Book,callback:()=>void )
   {
-    this.http.delete<Book>(URL+"/delete/"+book.id).subscribe(()=>{
+    this.http.delete<Book>(URL+"/delete/"+book.id,{ withCredentials: true }).subscribe(()=>{
       this._deleteBook(book);
       callback();
     });
@@ -98,13 +98,13 @@ export class BookService {
   uploadBookCover(bookCoverFile:File){
     const formData = new FormData();
     formData.append('file', bookCoverFile);
-    return this.http.post<{imgUrl: string}>(URL + '/upload/bookCover', formData);
+    return this.http.post<{imgUrl: string}>(URL + '/upload/bookCover', formData,{ withCredentials: true });
   }
 
   deleteBookCover(filePath: string): Observable<void> {
     const params = new HttpParams().set('filePath', filePath);
-    console.log(URL + '/delete/bookCover?' + params);
-    return this.http.delete<void>(URL + '/delete/bookCover?', { params });
+    // console.log(URL + '/delete/bookCover?' + params);
+    return this.http.delete<void>(URL + '/delete/bookCover?', { params, withCredentials: true });
   }
 
   getBorrowedBooks(): Observable<Book[]> {

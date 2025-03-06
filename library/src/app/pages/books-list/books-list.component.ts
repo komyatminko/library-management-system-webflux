@@ -63,8 +63,7 @@ export class BooksListComponent implements OnInit{
     
     
   }
-
-
+  
   editDialogEvent(book:Book)
   {
     this.bookFrom.openDialogForUpdate(book);

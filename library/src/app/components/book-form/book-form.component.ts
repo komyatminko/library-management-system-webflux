@@ -160,8 +160,9 @@ export class BookFormComponent implements OnInit{
   onSubmit() {
 
     if(!this.editMode){
+      console.log('before upload book cover')
         this.bookService.uploadBookCover(this.bookCoverFile).subscribe(response => {
-          // console.log(response.imgUrl); 
+          console.log('inside upload book cover'); 
           this.bookForm.value.image = response.imgUrl;
           let book: Book = this.formatFormData();
           this.saveBook(book);
@@ -183,6 +184,7 @@ export class BookFormComponent implements OnInit{
 }
 
 saveBook(data: any) {
+  console.log('book to save', data);
   Swal.fire({
     title: "Do you want to save a new book?",
     showDenyButton: true,
