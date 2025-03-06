@@ -76,8 +76,9 @@ export class BookService {
 
   deleteBook(book:Book,callback:()=>void )
   {
-    this.http.delete<Book>(URL+"/delete/"+book.id,{ withCredentials: true }).subscribe(()=>{
+    this.http.delete<Book>(URL+"/delete/"+book.id,{ withCredentials: true }).subscribe((res)=>{
       this._deleteBook(book);
+      this.bookUpdatedSubject.next(res);
       callback();
     });
   }

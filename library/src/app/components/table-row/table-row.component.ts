@@ -54,7 +54,7 @@ export class TableRowComponent {
             error: (err) => console.error('Error deleting book cover:', err),
           }
         );
-        this.authorService._deleteAuthor(this.data.author? this.data.author : undefined);
+        // this.authorService._deleteAuthor(this.data.author? this.data.author : undefined);
       }
     });
   }
