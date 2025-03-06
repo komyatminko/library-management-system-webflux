@@ -16,6 +16,7 @@ import { BookFormComponent } from '@/app/components/book-form/book-form.componen
 import { IssuedBookFormComponent } from '@/app/components/issued-book-form/issued-book-form.component';
 import { IssuedUserFormComponent } from '@/app/components/issued-user-form/issued-user-form.component';
 import { AuthService } from '@/app/services/auth.service';
+import { MenuIconBtnComponent } from '@/app/components/menu-icon-btn/menu-icon-btn.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -27,6 +28,7 @@ import { AuthService } from '@/app/services/auth.service';
     BooksIssuedCardComponent,
     BookFormComponent,
     IssuedBookFormComponent,
+    MenuIconBtnComponent,
 ],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
@@ -38,6 +40,7 @@ export class AdminDashboardComponent {
   totalBorrowedBookCount: number = 0;
   totalOverdueBookCount: number = 0;
   totalBorrowedUserCount: number = 0;
+  isCol2Hidden = true;
   constructor(private bookService: BookService,
               private userService: UserService,
               private authService: AuthService) {
@@ -87,5 +90,11 @@ export class AdminDashboardComponent {
 
   logout(){
     return this.authService.logout();
+  }
+
+  
+
+  handleToggleCol2(isHidden: boolean): void {
+    this.isCol2Hidden = isHidden; // Update the visibility based on the child's event
   }
 }

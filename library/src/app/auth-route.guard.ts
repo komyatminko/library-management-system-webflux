@@ -11,7 +11,7 @@ export const authRouteGuard: CanActivateFn = (route: ActivatedRouteSnapshot, sta
   return authService.isLoggedIn().pipe(
     take(1), 
     tap(isLoggedIn => {
-      console.log('isloggedIn', isLoggedIn)
+      // console.log('isloggedIn', isLoggedIn)
       authService.setAuthentication(isLoggedIn);
     }),
     map(isLoggedIn => {
@@ -24,20 +24,5 @@ export const authRouteGuard: CanActivateFn = (route: ActivatedRouteSnapshot, sta
       }
     })
   );
-
-  //  authService.isLoggedIn().subscribe(isLoggedIn=>{
-  //   authService.setAuthentication(isLoggedIn)
-  //  })
-  //  console.log('isLoggedIn', authService.getAuthentication())
-  //  if(authService.getAuthentication())
-  // {
-  //   return true;
-  // }
-  // else
-  // {
-  //   router.navigate(['/login']);
-  //   // authService.setAuthentication(false);
-  //   return false;
-  // }
  
 };
