@@ -43,6 +43,13 @@ export class BookService {
     );
   }
 
+  get10Books(page: number, size: number): Observable<any> {
+    const params = new HttpParams()
+                            .set('page', page)
+                            .set('size', size);
+    return this.http.get(URL + '/limit?',{ params, withCredentials: true })
+  }
+
   getAllBooksByKeyword(keyword: string):Observable<Book[]>{
     const params = new HttpParams().set('keyword', keyword);
     return this.http.get<Book[]>(URL + '/find?', {params, withCredentials: true})

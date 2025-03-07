@@ -88,6 +88,28 @@ public class BookServiceImpl implements BookService{
 	}	
 	
 	@Override
+	public Flux<BookDto> get10Books() {
+		return this.bookDao.findFirst10By()
+				.map(book-> this.bookEntityToDto(book))
+				.flatMap(bookDto -> this.getBorrowedUsersDto(bookDto.getId())
+						.map(users -> {
+							bookDto.setBorrowedBy(users);  
+							return bookDto;  
+						})
+				);
+	}
+	
+	@Override
+	public Flux<BookDto> getBooksWithLimit(int page, int size) {
+	    int skip = page * size; // Calculate how many records to skip
+	    return this.bookDao.findAll()
+	                         .skip(skip) // Skip records based on the current page
+	                         .take(size) // Limit the results to the page size
+	                         .map(book -> this.bookEntityToDto(book)); // Map to DTO
+	}
+
+	
+	@Override
 	public Mono<BookDto> getBookById(String id) {
 		Mono<List<BorrowedUserDto>> userList = getBorrowedUsersDto(id);
 		return this.bookDao.findById(id)
@@ -316,7 +338,10 @@ public class BookServiceImpl implements BookService{
 				});
 	}
 	
-	
+	@Override
+	public Mono<Long> getTotalBookCount() {
+	    return this.bookDao.count(); // Reactive MongoDB's count() method
+	}
 	
 	
 	
@@ -443,11 +468,6 @@ public class BookServiceImpl implements BookService{
 				);
 	}
 
-
 	
-
-
-	
-
 	
 }

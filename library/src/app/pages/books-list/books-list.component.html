@@ -1,4 +1,4 @@
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 pagination-container">
     <div class="row">
         <div class="col-sm-12 col-md-5 col-lg-6 my-2">
             <span class="card-title border-start border-5 border-primary h4 ps-3">Books List</span>
@@ -53,4 +53,14 @@
         
     </table>
     <app-not-found *ngIf="nothingToShow"></app-not-found>
+
+    <div class="pagination-bar">
+        <ngb-pagination 
+        class=""
+        [pageSize] = "pageSize" 
+        [collectionSize]="totalItems" 
+        [(page)]="currentPage"
+        (pageChange)="onPageChange($event)">
+    </ngb-pagination>
+    </div>
 </div>

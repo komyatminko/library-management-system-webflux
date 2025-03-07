@@ -17,6 +17,8 @@ import reactor.core.publisher.Mono;
 public interface BookService {
 
 	public Flux<BookDto> getAllBook();
+	public Flux<BookDto> get10Books();
+	public Flux<BookDto> getBooksWithLimit(int page, int size);
 	public Mono<BookDto> getBookByName(String name);
 	public Mono<BookDto> getBookById(String id);
 	public Mono<BookDto> getBookByIdWithBorrowedUsers(String id);
@@ -24,6 +26,7 @@ public interface BookService {
 	public Mono<BookDto> updateBook(BookDto bookDto);
 	public Mono<BookDto> deleteBookById(String id);
 	public Flux<BookDto> searchBooks(String keyword);
+	public Mono<Long> getTotalBookCount();
 	
 	public Mono<String> uploadImage(FilePart filePart, String uploadFolderName);
 	public Mono<Boolean> deleteImage(String filePath);

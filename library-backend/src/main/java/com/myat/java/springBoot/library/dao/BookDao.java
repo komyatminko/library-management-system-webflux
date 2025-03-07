@@ -19,5 +19,7 @@ public interface BookDao extends ReactiveMongoRepository<Book, String>{
 
 	public Mono<Book> findByName(String name);
 	
+	public Flux<Book> findFirst10By();
+	
 	
 }

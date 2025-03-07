@@ -6,12 +6,14 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { BookFormComponent } from "../../components/book-form/book-form.component";
 
 @Component({
   selector: 'app-books-list',
   imports: [
     CommonModule,
+    NgbPaginationModule,
     RouterLink,
     FormsModule,
     NotFoundComponent,
@@ -29,6 +31,11 @@ export class BooksListComponent implements OnInit{
   originBooks: Book[] = [];
   allBooks!: Book[];
 
+  // book10: Book[] = [];
+  totalItems: number = 0;
+  pageSize: number = 10;
+  currentPage: number = 1
+
   isClickFilter: boolean = false;
   nothingToShow: boolean = false;
   selectedGenres: string[] = [];
@@ -45,10 +52,28 @@ export class BooksListComponent implements OnInit{
     
   }
   ngOnInit(): void {
-    this.bookService.books.subscribe(data => {
-      this.allBooks = data;
+    // this.bookService.books.subscribe(data => {
+    //   this.allBooks = data;
+    //   this.filterBooks = this.allBooks;
+    //   this.originBooks = this.allBooks;
+
+    //   const storedGenres = localStorage.getItem('selectedGenres');
+    // if (storedGenres) {
+    //   this.selectedGenres = JSON.parse(storedGenres);
+    //   this.filterBooksBaseOnGenres();
+    // }else {
+    //   this.selectedGenres = [];
+    //   this.filterBooksBaseOnGenres();
+    // }
+    // });
+  
+    this.bookService.get10Books(this.currentPage - 1, this.pageSize).subscribe(obj=>{
+      this.allBooks = []
+      this.allBooks = obj.data.bookList;
       this.filterBooks = this.allBooks;
       this.originBooks = this.allBooks;
+      this.totalItems = obj.data.collectionSize;
+      console.log(this.totalItems)
 
       const storedGenres = localStorage.getItem('selectedGenres');
     if (storedGenres) {
@@ -58,15 +83,23 @@ export class BooksListComponent implements OnInit{
       this.selectedGenres = [];
       this.filterBooksBaseOnGenres();
     }
-    });
-  
-    
+    })
     
   }
   
   editDialogEvent(book:Book)
   {
     this.bookFrom.openDialogForUpdate(book);
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.bookService.get10Books(this.currentPage-1, this.pageSize).subscribe(obj => {
+      this.allBooks = obj.data.bookList;
+      this.filterBooks = this.allBooks;
+      this.originBooks = this.allBooks;
+      this.totalItems = obj.data.collectionSize;
+    });
   }
   
   showSearchResult(){

@@ -48,6 +48,25 @@ public class BookController {
 	            .body(books.map(book -> ApiResponse.success("Books have been retrieved successfully.", 200, book)));
 	}
 	
+	@GetMapping("/limit")
+	public Mono<ResponseEntity<ApiResponse>> getBooksWithLimit(
+							@RequestParam(value = "page", defaultValue = "0") int page,
+						    @RequestParam(value = "size", defaultValue = "10") int size) {
+	    Flux<BookDto> books = this.bookService.getBooksWithLimit(page, size);
+	    Mono<Long> totalBooks = this.bookService.getTotalBookCount();
+
+	    return totalBooks.flatMap(count -> {
+	        return books.collectList().map(bookList -> 
+	            ApiResponse.success("10 books have been retrieved successfully.", 200, 
+	                Map.of(
+	                    "bookList", bookList, 
+	                    "collectionSize", count // Include total count
+	                )
+	            )
+	        );
+	    }).map(response -> ResponseEntity.ok().body(response));
+	}
+	
 	@GetMapping("/find")
 	public Flux<BookDto> getAllBooksByKeyword(@RequestParam("keyword") String keyword){
 		return this.bookService.searchBooks(keyword);
