@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  isLoginError: boolean = false
 
   constructor(private fb: FormBuilder, 
               private authService: AuthService,
@@ -42,21 +43,25 @@ export class LoginComponent {
 
 
     if (this.loginForm.valid) {
-      console.log('Form Submitted:', this.loginForm.value);
       const userData = this.loginForm.value;
-      // alert('Login Successful!');
       this.authService.login(userData)
-        .subscribe(data => {
-          console.log('data after login ', data)
-          this.loginSuccess(data);
-        },
-        err => console.log('ERROR ', err))
+        .subscribe(
+          data => {
+            // console.log('data after login ', data)
+            this.loginSuccess(data.data);
+            this.isLoginError = false;
+          },
+          err => {
+            this.isLoginError = true;
+          }
+        )
     } else {
       alert('Please correct the errors in the form.');
     }
   }
 
   loginSuccess(data:any){
+    // console.log('token', data.token)
     this.authService.setAuthentication(true);
     this.authService.setToken(data.token);
     let role = this.authService.getUserRole();

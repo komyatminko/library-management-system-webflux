@@ -73,7 +73,6 @@ export class BooksListComponent implements OnInit{
       this.filterBooks = this.allBooks;
       this.originBooks = this.allBooks;
       this.totalItems = obj.data.collectionSize;
-      console.log(this.totalItems)
 
       const storedGenres = localStorage.getItem('selectedGenres');
     if (storedGenres) {

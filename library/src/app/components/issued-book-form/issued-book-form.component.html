@@ -31,7 +31,7 @@
             </select>
           </div>
 
-          <!-- New Author Fields -->
+          <!-- New User Fields -->
           <div formGroupName="newUser" *ngIf="userType === 'new'">
             <div class="mb-3">
               <label class="form-label">User Name</label>
@@ -42,11 +42,15 @@
             </div>
             <div class="mb-3">
               <label class="form-label">Phone</label>
-              <input type="phone" class="form-control" formControlName="phone" />
+              <input type="text" class="form-control" formControlName="phone" 
+              />
               <div *ngIf="issuedBookForm.get('newUser.phone')?.invalid && issuedBookForm.get('newUser.phone')?.touched">
                 <small *ngIf="issuedBookForm.get('newUser.phone')?.errors?.['required']" class="text-danger">Phone number is required.</small>
                 <small *ngIf="issuedBookForm.get('newUser.phone')?.errors?.['minlength']" class="text-danger">Phone number must be at least 11 digits.</small>
                 <small *ngIf="issuedBookForm.get('newUser.phone')?.errors?.['maxlength']" class="text-danger">Phone number must be at least 11 digits.</small>
+                <small *ngIf="issuedBookForm.get('newUser.phone')?.errors?.['phoneNumberInvalid']" class="text-danger">
+                  Phone number must start with "09".
+                </small>
               </div>
             </div>
             <div class="mb-3">

@@ -3,10 +3,11 @@ import { BorrowedUser } from '@/app/models/borrowed-user';
 import { User } from '@/app/models/user';
 import { BookService } from '@/app/services/book/book.service';
 import { UserService } from '@/app/services/user/user.service';
+import { phoneNumberValidator } from '@/app/Validator/phoneValidator';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin, take } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -26,6 +27,7 @@ export class IssuedBookFormComponent {
   modalDialog!: NgbModalRef;
   userType: string = 'existing';
   existingUsers: User[] = [];
+  phoneNumber!: string;
   saveFlag: boolean = true;
   hasInjectedButton: boolean = false;
 
@@ -42,11 +44,16 @@ export class IssuedBookFormComponent {
     this.issuedBookForm = this.fb.group({
       userType: ['existing'],
       existingUser: [null],
-      newUser: this.fb.group({
-        username: ['', Validators.required],
-        phone: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
-        address: ['', Validators.required]
-      }),
+        newUser: this.fb.group({
+          username: ['', Validators.required],
+          phone: ['', [
+            Validators.required, 
+            Validators.minLength(11), 
+            Validators.maxLength(11),
+            phoneNumberValidator()
+          ]],
+          address: ['', Validators.required]
+        }),
       uniqueBookId: ['', [Validators.required, Validators.minLength(7)]]
     });
 
@@ -70,7 +77,7 @@ export class IssuedBookFormComponent {
 
   updateUserType(type: string){
     this.userType = type;
-    console.log('user type', type)
+    // console.log('user type', type)
     this.updateFormValidation();
   }
 
@@ -89,9 +96,13 @@ export class IssuedBookFormComponent {
         savedUser: this.userService.saveUser(userToSave), 
         books: this.bookService.books.pipe(take(1)) 
       }).subscribe(({ savedUser, books }) => {
+       
         issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId.trim());
         if(issuedBook){
           this.formatBookWithBorrowedUserAndUpdate(issuedBook, savedUser, formData);
+        }
+        else {
+          Swal.fire("Book Not Found!", "", "warning");
         }
   
         
@@ -104,7 +115,7 @@ export class IssuedBookFormComponent {
         if(issuedBook){
           this.formatBookWithBorrowedUserAndUpdate(issuedBook, user, formData);
         }else{
-          console.log('book not found to issued')
+          Swal.fire("Book Not Found!", "", "warning");
         }
       })
     }
@@ -175,9 +186,16 @@ export class IssuedBookFormComponent {
       denyButtonText: `Don't save`
     }).then((result) => {
       if (result.isConfirmed) {
-        this.bookService.updateBook(issuedBook).subscribe();
+        this.bookService.updateBook(issuedBook).subscribe(
+          data => {
+            if(data) Swal.fire("Saved!", "", "success");
+          },
+          err => {
+            Swal.fire("Something went wrong!", "", "warning");
+          }
+        );
         
-        Swal.fire("Saved!", "", "success");
+        
       } else if (result.isDenied) {
         Swal.fire("Issued book is not saved", "", "info");
       }
@@ -187,7 +205,7 @@ export class IssuedBookFormComponent {
   get isFormValid(): boolean{
     // this.updateFormValidation();
     // this.userType = 'existing';
-    console.log('form valid ', this.issuedBookForm.valid)
+    // console.log('form valid ', this.issuedBookForm.valid)
     const isExistingAuthorSelected = !!this.issuedBookForm.get('existingUser')?.value;
     return this.issuedBookForm.valid;
 
@@ -210,7 +228,7 @@ export class IssuedBookFormComponent {
   
       // Set validators for new author fields
       this.issuedBookForm.get('newUser.username')?.setValidators([Validators.required]);
-      this.issuedBookForm.get('newUser.phone')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11)]);
+      this.issuedBookForm.get('newUser.phone')?.setValidators([Validators.required, Validators.minLength(11), Validators.maxLength(11), phoneNumberValidator()]);
       this.issuedBookForm.get('newUser.address')?.setValidators([Validators.required]);
     }
   
@@ -220,5 +238,5 @@ export class IssuedBookFormComponent {
     this.issuedBookForm.get('newUser.phone')?.updateValueAndValidity();
     this.issuedBookForm.get('newUser.address')?.updateValueAndValidity();
   }
-
+  
 }

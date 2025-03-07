@@ -1,5 +1,6 @@
 import { User } from '@/app/models/user';
 import { UserService } from '@/app/services/user/user.service';
+import { phoneNumberValidator } from '@/app/Validator/phoneValidator';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -35,7 +36,12 @@ export class IssuedUserFormComponent {
 
       this.issuedUserForm = this.fb.group({
           username: ['', [Validators.required, Validators.minLength(5)]],
-          phone: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
+          phone: ['', [
+            Validators.required, 
+            Validators.minLength(11), 
+            Validators.maxLength(11),
+            phoneNumberValidator()
+          ]],
           address: ['', Validators.required]
       });
 

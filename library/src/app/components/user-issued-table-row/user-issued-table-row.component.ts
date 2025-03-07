@@ -67,7 +67,6 @@ export class UserIssuedTableRowComponent {
 
   deleteIssuedUser(booksToUpdate: Book[]){
     
-    console.log('delecting ...', booksToUpdate)
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -78,7 +77,6 @@ export class UserIssuedTableRowComponent {
       confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log('ready to delete', booksToUpdate)
         booksToUpdate.forEach(data=> this.bookService.updateBook(data).subscribe())
         // console.log('book to update', formatBookToUpdate)
         // this.bookService.updateBook(formatBookToUpdate).subscribe();

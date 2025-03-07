@@ -38,7 +38,6 @@ fromPage: string | null= '';
 
     this.route.queryParamMap.subscribe(params => {
       this.fromPage = params.get('from');
-      console.log(this.fromPage);
     })
 
     this.route.paramMap.subscribe(params => {
@@ -78,10 +77,8 @@ fromPage: string | null= '';
 
   calculateAvailableBookCount(): void{
     this.totalBookCount = this.book.totalCount;
-    console.log('total book count ', this.totalBookCount);
 
     let borrowedCount = this.book.borrowedBy?.length || 0;
-    console.log('borrowed count ', borrowedCount);
 
     this.availableBookCount = this.totalBookCount - borrowedCount;
   }

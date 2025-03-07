@@ -20,6 +20,9 @@
                 <small *ngIf="issuedUserForm.get('phone')?.errors?.['required']" class="text-danger">Phone number is required.</small>
                 <small *ngIf="issuedUserForm.get('phone')?.errors?.['minlength']" class="text-danger">Phone number must be at least 11 digits.</small>
                 <small *ngIf="issuedUserForm.get('phone')?.errors?.['maxlength']" class="text-danger">Phone number must not be greater than 11 digits.</small>
+                <small *ngIf="issuedUserForm.get('phone')?.errors?.['phoneNumberInvalid']" class="text-danger">
+                  Phone number must start with "09".
+                </small>
               </div>
             </div>
             <div class="mb-3">

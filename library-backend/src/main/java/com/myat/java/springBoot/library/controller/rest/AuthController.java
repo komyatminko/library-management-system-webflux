@@ -9,6 +9,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import reactor.core.publisher.Mono;
 import com.myat.java.springBoot.library.dao.UserDao;
 import com.myat.java.springBoot.library.dto.JWTToken;
 import com.myat.java.springBoot.library.dto.UserDto;
+import com.myat.java.springBoot.library.exception.BookNotFoundException;
 import com.myat.java.springBoot.library.jwt.JwtUtil;
 import com.myat.java.springBoot.library.model.User;
 import com.myat.java.springBoot.library.response.ApiResponse;
@@ -55,7 +57,7 @@ public class AuthController {
     
    
     @PostMapping("/login")
-    public Mono<ResponseEntity<JWTToken>> login(@RequestBody User user) {
+    public Mono<ResponseEntity<ApiResponse>> login(@RequestBody User user) {
         return authService.login(user)
             .flatMap(token -> {
                 ResponseCookie jwtCookie = ResponseCookie.from("jwt", token.getToken()) // Store JWT in cookie
@@ -69,8 +71,11 @@ public class AuthController {
 
                 return Mono.just(ResponseEntity.ok()
                         .header("Set-Cookie", jwtCookie.toString())
-                        .body(token));
-            });
+                        .body(ApiResponse.success("login success", 200, token)));
+            })
+            .onErrorResume(BadCredentialsException.class,err -> {
+				return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(401, "incorrect username or password", err.getMessage())));
+			});
     }
     
     @PostMapping("/logout")

@@ -17,6 +17,7 @@ import { IssuedBookFormComponent } from '@/app/components/issued-book-form/issue
 import { IssuedUserFormComponent } from '@/app/components/issued-user-form/issued-user-form.component';
 import { AuthService } from '@/app/services/auth.service';
 import { MenuIconBtnComponent } from '@/app/components/menu-icon-btn/menu-icon-btn.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -89,7 +90,20 @@ export class AdminDashboardComponent {
 
 
   logout(){
-    return this.authService.logout();
+    Swal.fire({
+      title: "Are you sure to logout?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        return this.authService.logout();
+      } else {
+        Swal.fire("Logout Canceled.", "", "info");
+      }
+    });
+    
   }
 
   
