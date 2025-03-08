@@ -96,6 +96,11 @@ export class AuthService {
     return decodeToken?.auth[0];
   }
 
+  getUsername(): string {
+    const decodeToken = this.getDecodeToken();
+    return decodeToken?.sub || 'Unknown';
+  }
+
   isAdmin(): boolean {
     return this.getUserRole() === 'ADMIN'
   }

@@ -11,7 +11,7 @@ import { UserService } from '@/app/services/user/user.service';
 import { User } from '@/app/models/user';
 import { OverdueBooksListCardComponent } from '@/app/components/overdue-books-list-card/overdue-books-list-card.component';
 import { BorrowedUser } from '@/app/models/borrowed-user';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { BookFormComponent } from '@/app/components/book-form/book-form.component';
 import { IssuedBookFormComponent } from '@/app/components/issued-book-form/issued-book-form.component';
 import { IssuedUserFormComponent } from '@/app/components/issued-user-form/issued-user-form.component';
@@ -41,15 +41,22 @@ export class AdminDashboardComponent {
   totalBorrowedBookCount: number = 0;
   totalOverdueBookCount: number = 0;
   totalBorrowedUserCount: number = 0;
+  username!: string;
   isCol2Hidden = true;
   constructor(private bookService: BookService,
               private userService: UserService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private route: ActivatedRoute) {
     
     
   }
 
   ngOnInit(){
+    this.route.queryParamMap.subscribe(params => {
+      this.username = params.get('username') || 'Unknown';
+      console.log('this.user', this.username)
+    })
+
     this.bookService.books.subscribe(books => {
       books.map(book=> {
         
@@ -91,7 +98,7 @@ export class AdminDashboardComponent {
 
   logout(){
     Swal.fire({
-      title: "Are you sure to logout?",
+      title: "Are you sure you want to logout?",
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: "Yes",

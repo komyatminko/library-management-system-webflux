@@ -34,9 +34,9 @@ import reactor.core.publisher.Mono;
 @EnableWebFluxSecurity
 
 public class SecurityConfig {
-	
+
 	@Autowired
-	ReactiveUserDetailsServiceImpl reactiveUserDetailsService;
+	ReactiveUserDetailsService reactiveUserDetailsService;
 	
 //	@Autowired
 //	JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -53,23 +53,6 @@ public class SecurityConfig {
             "/admin/books/**",
     };
 	
-//	@Bean
-//    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-//		
-//        return http
-//        		.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
-//                .csrf(csrf -> csrf.disable())
-//                .authorizeExchange()
-//                .pathMatchers("/api/auth/register", "/api/auth/login").permitAll()
-////                .pathMatchers(AUTH_WHITELIST).permitAll()
-//                .anyExchange().authenticated()
-//                .and()
-//                .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-//                .addFilterAt(webFilter(), SecurityWebFiltersOrder.AUTHORIZATION)
-//                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) // Disable Basic Auth
-//                .formLogin(ServerHttpSecurity.FormLoginSpec::disable) // Disable Form Login
-//                .build();
-//    }
 	
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -116,8 +99,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationWebFilter webFilter() {
         AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(repositoryReactiveAuthenticationManager());
-        authenticationWebFilter.setAuthenticationConverter(new TokenAuthenticationConverter(jwtUtil));
-        authenticationWebFilter.setRequiresAuthenticationMatcher(new JWTHeadersExchangeMatcher());
+//        authenticationWebFilter.setAuthenticationConverter(new TokenAuthenticationConverter(jwtUtil));
+//        authenticationWebFilter.setRequiresAuthenticationMatcher(new JWTHeadersExchangeMatcher());
         authenticationWebFilter.setSecurityContextRepository(NoOpServerSecurityContextRepository.getInstance()); // ✅ Fix session storage
         return authenticationWebFilter;
     }

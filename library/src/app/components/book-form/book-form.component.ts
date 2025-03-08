@@ -98,7 +98,7 @@ export class BookFormComponent implements OnInit{
         birthday: this.bookService.formatDate(book.author?.birthday)
       }
     })
-    console.log('img url ', book.imgUrl)
+    // console.log('img url ', book.imgUrl)
     this.open(this.content);
     this.resetFormIfDismiss();
     
@@ -160,9 +160,9 @@ export class BookFormComponent implements OnInit{
   onSubmit() {
 
     if(!this.editMode){
-      console.log('before upload book cover')
+      // console.log('before upload book cover')
         this.bookService.uploadBookCover(this.bookCoverFile).subscribe(response => {
-          console.log('inside upload book cover'); 
+          // console.log('inside upload book cover'); 
           this.bookForm.value.image = response.imgUrl;
           let book: Book = this.formatFormData();
           this.saveBook(book);
@@ -184,7 +184,7 @@ export class BookFormComponent implements OnInit{
 }
 
 saveBook(data: any) {
-  console.log('book to save', data);
+  // console.log('book to save', data);
   Swal.fire({
     title: "Do you want to save a new book?",
     showDenyButton: true,
@@ -204,7 +204,7 @@ saveBook(data: any) {
 
 updateFormValidation() {
   if (this.bookForm.get('authorType')?.value === 'existing') {
-    console.log('existing author');
+    // console.log('existing author');
     // Clear new author fields' validators
     this.bookForm.get('newAuthor')?.reset();
     this.bookForm.get('newAuthor.firstName')?.clearValidators();
@@ -214,7 +214,7 @@ updateFormValidation() {
     // Ensure existing author selection is required
     this.bookForm.get('existingAuthor')?.setValidators([Validators.required]);
   } else {
-    console.log('new author');
+    // console.log('new author');
     // Clear existing author validator
     this.bookForm.get('existingAuthor')?.reset();
     this.bookForm.get('existingAuthor')?.clearValidators();

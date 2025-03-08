@@ -47,7 +47,7 @@ export class LoginComponent {
       this.authService.login(userData)
         .subscribe(
           data => {
-            // console.log('data after login ', data)
+            console.log('data after login ', data)
             this.loginSuccess(data.data);
             this.isLoginError = false;
           },
@@ -66,7 +66,9 @@ export class LoginComponent {
     this.authService.setToken(data.token);
     let role = this.authService.getUserRole();
     if(role === 'ADMIN'){
-      this.router.navigate(['/admin']);
+      // console.log('data.username', this.authService.getUsername())
+      this.router.navigate(['/admin'], { queryParams: { username: this.authService.getUsername()} });
+      
     }
     else{
       this.router.navigate(['/user']);

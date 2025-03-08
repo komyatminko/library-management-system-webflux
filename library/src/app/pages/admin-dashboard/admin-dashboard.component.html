@@ -25,7 +25,7 @@
                         routerLink="/admin/issuedUsers">
                         <i class="fas fa-users me-2"></i>
                         <span class="d-none d-lg-inline">Users
-                            <span class="badge bg-primary rounded-5 float-end">{{totalBorrowedUserCount}}</span>
+                            <!-- <span class="badge bg-primary rounded-5 float-end">{{totalBorrowedUserCount}}</span> -->
                         </span>
                     </a>
 
@@ -33,7 +33,7 @@
                         routerLink="/admin/books">
                         <i class="fas fa-book me-2"></i>
                         <span class="d-none d-lg-inline">Books
-                            <span class="badge bg-primary rounded-5 float-end">{{totalBookCount}}</span>
+                            <!-- <span class="badge bg-primary rounded-5 float-end">{{totalBookCount}}</span> -->
                         </span>
                     </a>
 
@@ -41,7 +41,7 @@
                         routerLink="/admin/issuedBooks">
                         <i class="fa-solid fa-book-open-reader me-2"></i>
                         <span class="d-none d-lg-inline">Issued Books
-                            <span class="badge bg-primary rounded-5 float-end">{{totalBorrowedBookCount}}</span>
+                            <!-- <span class="badge bg-primary rounded-5 float-end">{{totalBorrowedBookCount}}</span> -->
                         </span>
                     </a>
                 </div>
@@ -67,10 +67,10 @@
                         </span>
                     </app-issued-book-form>
 
-                    <a class="list-group-item list-group-item-action d-none d-lg-inline" (click)="logout()">
+                    <a class="list-group-item list-group-item-action" (click)="logout()">
                         <span>
                             <i class="fa-solid fa-door-open me-2"></i>
-                            Logout
+                            <span class="d-none d-lg-inline">Logout</span>
                         </span>
                     </a>
                 </div>
@@ -89,7 +89,7 @@
                 <!-- total card -->
                 <div class="">
                     <div class="mb-3">
-                        <h1>Hello, <span class="text-primary">Myat Min</span></h1>
+                        <h1>Hello, <span class="text-primary">{{username}}</span></h1>
                     </div>
                     <div class="row g-3">
                         <div class="col-sm-12 col-md-6 col-lg-3">

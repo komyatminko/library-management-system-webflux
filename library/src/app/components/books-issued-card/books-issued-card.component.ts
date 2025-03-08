@@ -28,7 +28,7 @@ export class BooksIssuedCardComponent {
   ngOnInit() {
     this.bookService.getBorrowedBooks().subscribe(data => {
       this.allBooks = data; 
-      console.log('all borrowed books ', this.allBooks)
+      // console.log('all borrowed books ', this.allBooks)
       this.flagToShowUsers = false;
       this.totalUsersToShow = 0;
     })
