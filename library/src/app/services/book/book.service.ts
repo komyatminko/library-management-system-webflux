@@ -47,8 +47,9 @@ export class BookService {
     const params = new HttpParams()
                             .set('page', page)
                             .set('size', size);
-    return this.http.get(URL + '/limit?',{ params, withCredentials: true })
+    return this.http.get(URL + '/limit?',{ params, withCredentials: true });
   }
+
 
   getAllBooksByKeyword(keyword: string):Observable<Book[]>{
     const params = new HttpParams().set('keyword', keyword);
@@ -57,6 +58,7 @@ export class BookService {
 
   saveBook(book:Book){
     this.http.post<{data: Book}>(URL+'/save',book,{ withCredentials: true }).pipe(take(1)).subscribe(res=> {
+      this.bookUpdatedSubject.next(res.data);
       this._saveBook(res.data);
     });
   }
@@ -81,13 +83,17 @@ export class BookService {
     this.emitChange();
   }
 
-  deleteBook(book:Book,callback:()=>void )
+  deleteBook(book:Book,callback:()=>void ): Observable<Book>
   {
-    this.http.delete<Book>(URL+"/delete/"+book.id,{ withCredentials: true }).subscribe((res)=>{
-      this._deleteBook(book);
+    return this.http.delete<Book>(URL+"/delete/"+book.id,{ withCredentials: true }).pipe(
+      take(1),
+      map(res=> {
+        this._deleteBook(book);
       this.bookUpdatedSubject.next(res);
       callback();
-    });
+      return res;
+      })
+    )
   }
 
   _deleteBook(book:Book)

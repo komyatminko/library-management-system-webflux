@@ -66,23 +66,35 @@ export class BooksListComponent implements OnInit{
     //   this.filterBooksBaseOnGenres();
     // }
     // });
-  
-    this.bookService.get10Books(this.currentPage - 1, this.pageSize).subscribe(obj=>{
-      this.allBooks = []
-      this.allBooks = obj.data.bookList;
-      this.filterBooks = this.allBooks;
-      this.originBooks = this.allBooks;
-      this.totalItems = obj.data.collectionSize;
 
-      const storedGenres = localStorage.getItem('selectedGenres');
-    if (storedGenres) {
-      this.selectedGenres = JSON.parse(storedGenres);
-      this.filterBooksBaseOnGenres();
-    }else {
-      this.selectedGenres = [];
-      this.filterBooksBaseOnGenres();
-    }
+    this.bookService.bookUpdated$.subscribe(updatedBook => {
+      this.bookService.get10Books(this.currentPage - 1, this.pageSize).subscribe(obj=>{
+        this.allBooks = []
+        this.allBooks = obj.data.bookList;
+        this.filterBooks = this.allBooks;
+        this.originBooks = this.allBooks;
+        this.totalItems = obj.data.collectionSize;
+
+        
+      })
     })
+  
+      this.bookService.get10Books(this.currentPage - 1, this.pageSize).subscribe(obj=>{
+        this.allBooks = []
+        this.allBooks = obj.data.bookList;
+        this.filterBooks = this.allBooks;
+        this.originBooks = this.allBooks;
+        this.totalItems = obj.data.collectionSize;
+
+        const storedGenres = localStorage.getItem('selectedGenres');
+      if (storedGenres) {
+        this.selectedGenres = JSON.parse(storedGenres);
+        this.filterBooksBaseOnGenres();
+      }else {
+        this.selectedGenres = [];
+        this.filterBooksBaseOnGenres();
+      }
+      })
     
   }
   

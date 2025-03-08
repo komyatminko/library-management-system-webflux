@@ -47,7 +47,7 @@ export class TableRowComponent {
       confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        this.bookService.deleteBook(this.data,this.deleteCallBack);
+        this.bookService.deleteBook(this.data,this.deleteCallBack).subscribe();
         this.bookService.deleteBookCover(this.data.imgUrl).subscribe(
           {
             next: () => console.log('Book cover deleted successfully'),

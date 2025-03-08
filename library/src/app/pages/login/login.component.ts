@@ -65,9 +65,13 @@ export class LoginComponent {
     this.authService.setAuthentication(true);
     this.authService.setToken(data.token);
     let role = this.authService.getUserRole();
+    let username = this.authService.getUsername();
+    localStorage.setItem('username', username)
     if(role === 'ADMIN'){
       // console.log('data.username', this.authService.getUsername())
-      this.router.navigate(['/admin'], { queryParams: { username: this.authService.getUsername()} });
+      this.router.navigate(['/admin'],
+        //  { queryParams: { username: this.authService.getUsername()} }
+      );
       
     }
     else{

@@ -52,12 +52,15 @@ export class AdminDashboardComponent {
   }
 
   ngOnInit(){
-    this.route.queryParamMap.subscribe(params => {
-      this.username = params.get('username') || 'Unknown';
-      console.log('this.user', this.username)
-    })
+    // this.route.queryParamMap.subscribe(params => {
+    //   this.username = params.get('username') || 'Unknown';
+    //   console.log('this.user', this.username)
+    // })
+
+    this.username = localStorage.getItem('username') || 'Unknown';
 
     this.bookService.books.subscribe(books => {
+      this.totalBookCount = 0;
       books.map(book=> {
         
         if(book){
@@ -105,6 +108,7 @@ export class AdminDashboardComponent {
       denyButtonText: `No`
     }).then((result) => {
       if (result.isConfirmed) {
+        localStorage.removeItem('username')
         return this.authService.logout();
       } else {
         Swal.fire("Logout Canceled.", "", "info");

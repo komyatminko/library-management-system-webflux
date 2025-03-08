@@ -274,7 +274,7 @@ formatFormDataForUpdateBook(book:Book | undefined): Book{
         isAvailable: true,
         totalCount: formData.availableCount,
         availableCount: formData.availableCount,
-        borrowedBy: book.borrowedBy
+        borrowedBy: book.borrowedBy || []
 
     }
     

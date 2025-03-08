@@ -48,7 +48,7 @@ public class AuthController {
 	
     @PostMapping("/register")
     public Mono<JWTToken> register(@Valid @RequestBody User user) {
-    	System.out.println("register");
+//    	System.out.println("register");
         if (!this.validation.validate(user).isEmpty()) {
             return Mono.error(new RuntimeException("Bad request"));
         }

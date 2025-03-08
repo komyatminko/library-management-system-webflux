@@ -102,6 +102,7 @@ export class BookIssuedTableRowComponent {
       
           let borrowedUserToRemove = this.book.borrowedBy?.filter(user=> user.userId != this._user.userId);
           this.book.borrowedBy = borrowedUserToRemove;
+          console.log(this.book)
           this.bookService.updateBook(this.book).subscribe(data=> this.book = data);
           
         }
