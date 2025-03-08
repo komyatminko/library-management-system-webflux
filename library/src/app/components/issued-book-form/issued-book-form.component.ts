@@ -98,8 +98,17 @@ export class IssuedBookFormComponent {
       }).subscribe(({ savedUser, books }) => {
        
         issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId.trim());
+        
         if(issuedBook){
-          this.formatBookWithBorrowedUserAndUpdate(issuedBook, savedUser, formData);
+          let isAvailable: boolean = issuedBook.availableCount > 0;
+          console.log(isAvailable)
+          if(isAvailable){
+            this.formatBookWithBorrowedUserAndUpdate(issuedBook, savedUser, formData);
+          }
+          else {
+            Swal.fire("This book is not available!", "", "warning");
+          }
+          
         }
         else {
           Swal.fire("Book Not Found!", "", "warning");
@@ -113,7 +122,15 @@ export class IssuedBookFormComponent {
       this.bookService.books.pipe(take(1)).subscribe(books=>{
         issuedBook = books.find(book => book.uniqueBookId === formData.uniqueBookId.trim());
         if(issuedBook){
-          this.formatBookWithBorrowedUserAndUpdate(issuedBook, user, formData);
+          let isAvailable: boolean = issuedBook.availableCount > 0;
+          console.log(isAvailable)
+          if(isAvailable){
+            this.formatBookWithBorrowedUserAndUpdate(issuedBook, user, formData);
+          }
+          else {
+            Swal.fire("This book is not available!", "", "warning");
+          }
+          
         }else{
           Swal.fire("Book Not Found!", "", "warning");
         }
