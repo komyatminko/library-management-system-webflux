@@ -48,7 +48,6 @@ public class AuthController {
 	
     @PostMapping("/register")
     public Mono<JWTToken> register(@Valid @RequestBody User user) {
-//    	System.out.println("register");
         if (!this.validation.validate(user).isEmpty()) {
             return Mono.error(new RuntimeException("Bad request"));
         }
@@ -62,7 +61,7 @@ public class AuthController {
             .flatMap(token -> {
                 ResponseCookie jwtCookie = ResponseCookie.from("jwt", token.getToken()) // Store JWT in cookie
                         .httpOnly(true)
-                        .secure(false) // Set to false for local testing if needed
+                        .secure(true) // Set to false for local testing if needed
                         .path("/")
                         .maxAge(86400) // 1 day expiration
                         .build();
@@ -82,7 +81,7 @@ public class AuthController {
     public Mono<ResponseEntity<Map<String, String>>> logout() {
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(0)
                 .build();

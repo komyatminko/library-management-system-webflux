@@ -57,17 +57,17 @@ public class SecurityConfig {
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 	    return http
-	        .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Fix CORS
-	        .csrf(ServerHttpSecurity.CsrfSpec::disable) // ✅ Disable CSRF
+	        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+	        .csrf(ServerHttpSecurity.CsrfSpec::disable) 
 	        .authorizeExchange(exchanges -> exchanges
 	            .pathMatchers("/api/auth/register", "/api/auth/login", "/api/auth/me").permitAll()
 //	            .pathMatchers(AUTH_WHITELIST).permitAll()
 	            .anyExchange().authenticated()
 	        )
-	        .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION) // ✅ Ensure JWT filter is used
-	        .addFilterAt(webFilter(), SecurityWebFiltersOrder.AUTHORIZATION) // ✅ Ensure auth filter is used
-	        .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) // ✅ Disable Basic Auth
-	        .formLogin(ServerHttpSecurity.FormLoginSpec::disable) // ✅ Disable Form Login
+	        .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION) 
+	        .addFilterAt(webFilter(), SecurityWebFiltersOrder.AUTHORIZATION) 
+	        .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) 
+	        .formLogin(ServerHttpSecurity.FormLoginSpec::disable) 
 	        .build();
 	}
 	
@@ -101,17 +101,17 @@ public class SecurityConfig {
         AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(repositoryReactiveAuthenticationManager());
 //        authenticationWebFilter.setAuthenticationConverter(new TokenAuthenticationConverter(jwtUtil));
 //        authenticationWebFilter.setRequiresAuthenticationMatcher(new JWTHeadersExchangeMatcher());
-        authenticationWebFilter.setSecurityContextRepository(NoOpServerSecurityContextRepository.getInstance()); // ✅ Fix session storage
+        authenticationWebFilter.setSecurityContextRepository(NoOpServerSecurityContextRepository.getInstance()); 
         return authenticationWebFilter;
     }
     
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200")); // ✅ Allow frontend origin
+        config.setAllowedOrigins(List.of("http://localhost:4200")); 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Set-Cookie", "Content-Type"));
-        config.setAllowCredentials(true); // ✅ Allow credentials (cookies)
+        config.setAllowCredentials(true); // Allow credentials (cookies)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
