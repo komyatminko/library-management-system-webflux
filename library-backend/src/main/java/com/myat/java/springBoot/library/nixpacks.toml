@@ -1,0 +1,5 @@
+[phases.setup]
+nixPkgs = ["jdk17", "maven"]
+
+[start]
+cmd = "mvn spring-boot:run"
