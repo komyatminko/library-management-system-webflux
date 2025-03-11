@@ -1,2 +1,2 @@
 # library-management-system-webflux
-Library Management System coded in Spring Boot(WebFlux) &amp; Angular included admin control and user access.
+Library Management System coded in Spring Boot(WebFlux) &amp; Angular.(A Simple Admin Dashboard)
