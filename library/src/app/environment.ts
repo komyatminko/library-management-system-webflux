@@ -1,5 +1,5 @@
 export const environment = {
-    production: false,
+    production: true,
     overdueFeePerDay: 200,
     dayToReturn: 5
   };
