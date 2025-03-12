@@ -1,0 +1,30 @@
+<div class="card card-body shadow-lg border-0">
+    <div class="row my-3">
+        <h4 class="card-title">Books List</h4>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="d-none d-md-table-cell">ID</th>
+                <th>Title</th>
+                <th class="d-none d-md-table-cell">Author</th>
+                <th class="d-none d-md-table-cell">Available</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let book of books; let bookIndex = index">
+                <tr app-table-row *ngIf="(bookIndex < 5)" [data]="book">
+                    <button class="btn" [routerLink]="['/admin/books', book.id, 'details']" [queryParams]="{ from: '/admin' }" details-btn>
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </tr>
+            </ng-container>
+            
+        </tbody>
+    </table>
+    <div class="text-end">
+        <a routerLink="/admin/books" class="btn text-primary">see all</a>
+    </div>
+</div>

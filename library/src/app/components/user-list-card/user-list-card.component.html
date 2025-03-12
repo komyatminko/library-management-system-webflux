@@ -1,0 +1,32 @@
+<div class="card card-body shadow-lg border-0">
+    
+    <div class="row my-3">
+        <h4 class="card-title">Borrowed Users List</h4>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="d-none d-md-table-cell">Phone</th>
+                <th class="d-none d-md-table-cell">Address</th>
+                <th class="d-none d-md-table-cell">Books Count</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let user of users; let userIndex = index">
+                <tr app-user-issued-table-row *ngIf="(userIndex < 5)" [user]="user">
+                    <button class="btn" [routerLink]="['/admin/issuedUsers', user.id,'details']" [queryParams]="{ from: '/admin/' }" details-btn>
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </tr>
+            </ng-container>
+            
+        </tbody>
+        
+    </table>
+    <div class="text-end">
+        <a class="btn text-primary" routerLink="/admin/issuedUsers">see all</a>
+    </div>
+</div>

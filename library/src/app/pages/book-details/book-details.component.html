@@ -1,0 +1,173 @@
+<div class="container-fluid mt-4" *ngIf="book">
+
+    <!-- header bar -->
+    <div class="row my-3">
+        <div class="col-8">
+            <h4 class="card-title border-start border-5 border-primary ps-3">Book Details</h4>
+        </div>
+        <div class="col-4 text-end ">
+            <button class="btn btn-outline-primary text-end" (click)="goBackToBookList()">
+                <span class=""><i class="fa-solid fa-arrow-left"></i></span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- main layout -->
+    <div class="row ge-5 gy-3">
+        <div class="col-sm-12 col-md-12 col-lg-5" id="first-column">
+            <div class="card shadow border-0">
+                <div class="card-body p-0 d-flex justify-content-center align-items-center">
+                    <img [src]="imgUrl" alt="Book Cover" width="95%" class="py-2 rounded-3" id="image">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-7" id="second-column">
+            <div id="upperContent">
+                <!-- book name, author name, genres & price -->
+                <div class="mb-4">
+                    <small class="text-muted text-sm">
+                        # {{book.uniqueBookId}}
+                    </small>
+                    <h1>{{book.name.toUpperCase()}}</h1>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <span>by {{book.author?.firstName + ' ' + book.author?.lastName}}</span>
+                                    
+                                </div>
+                                <div class="col-12">
+                                    <span class="badge bg-primary me-2 mt-3" *ngFor="let genre of book.bookDetails.genres">{{genre}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 d-flex justify-content-center align-items-center">
+                            <h4 class="text-warning">MMK {{book.price}}</h4>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- issue book count and available book count -->
+                <div class="row mx-1">
+                    <div class="col-6 p-0">
+                        <div class="card card-size bg-light me-3 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="card-title h4 d-flex justify-content-center align-items-center">
+                                    {{issueBookCount}}
+                                </div>
+                                <div class="mt-3 d-flex justify-content-center align-items-center">
+                                    Issue Books
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 p-0">
+                        <div class="card card-size bg-light border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="card-title h4 d-flex justify-content-center align-items-center">
+                                    {{availableBookCount}}
+                                </div>
+                                <div class="mt-3 d-flex justify-content-center align-items-center">
+                                    Available Books
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- page , rating and total book count -->
+                <div class="row mt-3 mx-1">
+                    <div class="col-4 p-0">
+                        <div class="card card-size bg-light me-3 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="card-title h4 d-flex justify-content-center align-items-center">
+                                    {{book.bookDetails.page}}
+                                </div>
+                                <div class="mt-3 d-flex justify-content-center align-items-center">
+                                    Page
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 p-0">
+                        <div class="card card-size bg-light me-3 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="card-title h4 d-flex justify-content-center align-items-center">
+                                    {{book.rating}}
+                                </div>
+                                <div class="mt-3 d-flex justify-content-center align-items-center">
+                                    Rating
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 p-0">
+                        <div class="card card-size bg-light border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="card-title h4 d-flex justify-content-center align-items-center">
+                                    {{totalBookCount}}
+                                </div>
+                                <div class="mt-3 d-flex justify-content-center align-items-center">
+                                    Total
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- nav btns -->
+                <div class="row mt-3 mx-1">
+                    <div class="col-12 nav-container bg-light rounded-2 shadow-sm">
+                        <ul class="nav nav-pills p-2 row g-0">
+                            <li class="nav-item col-6">
+                            <button (click)="activeTab = 'overview'" [class.active]="activeTab === 'overview'" class="nav-link active nav-btn w-100">
+                                Overview
+                            </button>
+                            </li>
+                            <li class="nav-item col-6">
+                                <button (click)="activeTab = 'author'" [class.active]="activeTab === 'author'" class="nav-link nav-btn w-100">
+                                    Author
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div> 
+            
+            <!-- contents -->
+            <div class="row mt-2 mx-1" >
+                <div class="col-12">
+                    <div class="content mt-3" id="content">
+                        <div *ngIf="activeTab === 'overview'" class="scrollable-content" id="scrollable-content">
+                          <p>{{book.bookDetails.details}}</p>
+                        </div>
+                        <div *ngIf="activeTab === 'author'" class="scrollable-content">
+
+                            <table class="table table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>FirstName</th>
+                                        <td>{{book.author?.firstName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>LastName</th>
+                                        <td>{{book.author?.lastName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Birthday</th>
+                                        <td>{{authorBirthday}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        </div>
+    </div>
+</div>
+  

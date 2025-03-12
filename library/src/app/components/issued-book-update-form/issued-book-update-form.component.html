@@ -1,0 +1,55 @@
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Edit Issued Book</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="issuedBookForm">
+            <div class="mb-3">
+              <label class="form-label">User Name</label>
+              <input type="text" class="form-control" formControlName="username" />
+              <div *ngIf="issuedBookForm.get('username')?.invalid && issuedBookForm.get('username')?.touched">
+                <small *ngIf="issuedBookForm.get('username')?.errors?.['required']" class="text-danger">Username is required.</small>
+                <small *ngIf="issuedBookForm.get('username')?.errors?.['minlength']" class="text-danger">Username must be at least 5 characters.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Book ID</label>
+              <input type="text" class="form-control" formControlName="uniqueBookId" />
+              <div *ngIf="issuedBookForm.get('uniqueBookId')?.invalid && issuedBookForm.get('uniqueBookId')?.touched">
+                <small *ngIf="issuedBookForm.get('uniqueBookId')?.errors?.['required']" class="text-danger">Book id is required.</small>
+                <small *ngIf="issuedBookForm.get('uniqueBookId')?.errors?.['minlength']" class="text-danger">Book id must be at least 7 characters.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Issued Date</label>
+              <input type="date" class="form-control" formControlName="issuedDate" />
+              <div *ngIf="issuedBookForm.get('issuedDate')?.invalid && issuedBookForm.get('issuedDate')?.touched">
+                <small *ngIf="issuedBookForm.get('issuedDate')?.errors?.['required']" class="text-danger">Address is required.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Return Date</label>
+                <input type="date" class="form-control" formControlName="returnDate" />
+                <div *ngIf="issuedBookForm.get('returnDate')?.invalid && issuedBookForm.get('returnDate')?.touched">
+                  <small *ngIf="issuedBookForm.get('returnDate')?.errors?.['required']" class="text-danger">Address is required.</small>
+                </div>
+              </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="updateIssuedBook()" [disabled]="!this.isFormValid">
+       Update
+      </button>
+    </div>
+</ng-template>
+
+
+<button type="button" class="btn p-0 me-2">
+  <i class="fa-solid fa-pen-to-square text-success" (click)="showEditDialog()"></i>
+</button>
+
+    
+
+
+

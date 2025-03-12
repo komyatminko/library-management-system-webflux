@@ -1,0 +1,140 @@
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- nav -->
+        <div class="col-2 fixed-col" [class.d-none]="isCol2Hidden">
+            <div class="my-3">
+                <h5 class="text-primary mb-4 text-center">
+                    <i class="fas fa-ghost me-2"></i>
+                </h5>
+                
+                <!-- control -->
+                <div class="list-group mb-3">
+                    <a href="#"  class="list-group-item disabled d-none d-lg-inline">
+                        <span>CONTROLS</span>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action active text-center text-lg-start"
+                        routerLink="/admin">
+                        <i class="fas fa-home me-2"></i>
+                        <span class="d-none d-lg-inline">Dashboard</span>
+                    </a>
+
+                    <a href="#"  class="list-group-item list-group-item-action text-center text-lg-start"
+                        routerLink="/admin/issuedUsers">
+                        <i class="fas fa-users me-2"></i>
+                        <span class="d-none d-lg-inline ">Users
+                            <!-- <span class="badge bg-primary rounded-5 float-end">{{totalBorrowedUserCount}}</span> -->
+                        </span>
+                    </a>
+
+                    <a href="#"  class="list-group-item list-group-item-action text-center text-lg-start"
+                        routerLink="/admin/books">
+                        <i class="fas fa-book me-2"></i>
+                        <span class="d-none d-lg-inline">Books
+                            <!-- <span class="badge bg-primary rounded-5 float-end">{{totalBookCount}}</span> -->
+                        </span>
+                    </a>
+
+                    <a href="#"  class="list-group-item list-group-item-action text-center text-lg-start"
+                        routerLink="/admin/issuedBooks">
+                        <i class="fa-solid fa-book-open-reader me-2"></i>
+                        <span class="d-none d-lg-inline">Issued Books
+                            <!-- <span class="badge bg-primary rounded-5 float-end">{{totalBorrowedBookCount}}</span> -->
+                        </span>
+                    </a>
+                </div>
+
+                <!-- action -->
+                <div class="list-group">
+                    <a href="#" class="list-group-item disabled d-none d-lg-inline">
+                        <span>ACTIONS</span>
+                    </a>
+
+                    
+                    <app-book-form>
+                        <span add-book>
+                            <i class="fa-solid fa-book-medical me-2"></i>
+                            <span class="d-none d-lg-inline">Add Book</span>
+                        </span>
+                    </app-book-form>
+                    
+                    <app-issued-book-form>
+                        <span add-issued-book>
+                            <i class="fa-solid fa-address-book me-2"></i>
+                            <span class="d-none d-lg-inline">Add Issued Book</span>
+                        </span>
+                    </app-issued-book-form>
+
+                    <a class="list-group-item list-group-item-action" (click)="logout()">
+                        <span>
+                            <i class="fa-solid fa-door-open me-2"></i>
+                            <span class="d-none d-lg-inline">Logout</span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- main -->
+        <div class="col-10 mb-3" [class.col-12]="isCol2Hidden">
+            <div class="d-flex fixed-nav sticky-top bg-white">
+                <h5 class="ms-3">ADMIN DASHBOARD</h5>
+                <app-menu-icon-btn class="ms-auto" (toggleCol2)="handleToggleCol2($event)"></app-menu-icon-btn>
+            </div>
+            
+            
+            <div class="bg-light rounded-3 p-3 content">
+                <!-- total card -->
+                <div class="">
+                    <div class="mb-3">
+                        <h1>Hello, <span class="text-primary">{{username}}</span></h1>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-sm-12 col-md-6 col-lg-3">
+                            <app-total-card [total]="totalBookCount" [title]="'Total Books'">
+                                <i class="fas fa-chart-line fa-2x"></i>
+                            </app-total-card>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-3">
+                            <app-total-card [total]="totalBorrowedUserCount" [title]="'Total Borrowed Users'">
+                                <i class="fa-solid fa-chart-gantt fa-2x"></i>
+                            </app-total-card>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-3">
+                            <app-total-card [total]="totalBorrowedBookCount" [title]="'Borrowed Books'">
+                                <i class="fa-solid fa-chart-bar fa-2x"></i>
+                            </app-total-card>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-3">
+                            <app-total-card [total]="totalOverdueBookCount" [title]="'Overdue Books'">
+                                <i class="fa-solid fa-chart-simple fa-2x"></i>
+                            </app-total-card>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- user list and book list -->
+                <div class="mt-3">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <app-user-list-card></app-user-list-card>
+                        </div>
+    
+                        <div class="col-12">
+                            <app-book-list-card></app-book-list-card>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- books issued and available -->
+                <div class="mt-3">
+                    <div class="row ">
+                        <div class="col-12">
+                            <app-books-issued-card></app-books-issued-card>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

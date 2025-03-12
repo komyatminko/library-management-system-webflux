@@ -1,0 +1,153 @@
+
+<div class="container-fluid mt-4">
+
+    <!-- header bar -->
+    <div class="row my-3">
+        <div class="col-8">
+            <h4 class="card-title border-start border-5 border-primary ps-3">Issued Book Details</h4>
+        </div>
+        <div class="col-4 text-end ">
+            <button class="btn btn-outline-primary text-end" (click)="goBack()">
+                <span class=""><i class="fa-solid fa-arrow-left"></i></span>
+            </button>
+           
+        </div>
+    </div>
+    
+    <!-- main layout -->
+    <div class="row ge-5 gy-3" *ngIf="book">
+        <div class="col-sm-12 col-md-12 col-lg-5" id="first-column">
+            <div class="card shadow border-0">
+                <div class="card-body p-0 d-flex justify-content-center align-items-center">
+                    <img [src]="imgUrl" alt="Book Cover" width="95%" class="py-2 rounded-3" id="image">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-7" id="second-column">
+            <div id="upperContent">
+                <!-- book name, author name, genres-->
+                <div class="mb-4">
+                    <small class="text-muted text-sm">
+                        # {{book.uniqueBookId}}
+                    </small>
+                    <h1>{{book.name.toUpperCase()}}</h1>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <span>by {{book.author?.firstName + ' ' + book.author?.lastName}}</span>
+                                    
+                                </div>
+                                <div class="col-12">
+                                    <span class="badge bg-primary me-2 mt-3" *ngFor="let genre of book.bookDetails.genres">{{genre}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="isOverdue; else noOverdue">
+                    <div class="row alert alert-warning mx-1 justify-content-center align-items-center">
+                        <div class="col-4">
+                            <div>
+                                <span>Overdue</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            {{overdueDays}} <span>{{overdueDays > 1? 'Days' : 'Day'}}</span>
+                        </div>
+                        <div class="col-4">
+                            {{overdueFees}} MMK
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template when book is NOT overdue -->
+                <ng-template #noOverdue>
+                    <div class="row alert alert-success mx-1">
+                        <div class="col-12">
+                            <span>This book is not overdue yet.</span>
+                        </div>
+                    </div>
+                </ng-template>
+            
+                
+                <!-- nav btns -->
+                <div class="row mt-3 mx-1">
+                    <div class="col-12 nav-container bg-light rounded-2 shadow-sm">
+                        <ul class="nav nav-pills p-2 row g-0">
+                            <li class="nav-item col-6">
+                            <button (click)="activeTab = 'user'" [class.active]="activeTab === 'user'" class="nav-link active nav-btn w-100">
+                                User
+                            </button>
+                            </li>
+                            <li class="nav-item col-6">
+                                <button (click)="activeTab = 'author'" [class.active]="activeTab === 'author'" class="nav-link nav-btn w-100">
+                                    Author
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- contents -->
+            <div class="row mt-3 mx-1" >
+                <div class="col-12 rounded-2 shadow-sm w-100">
+                    <div class="content pt-3" id="content">
+                        <div *ngIf="activeTab === 'user'" class="scrollable-content" id="scrollable-content">
+                            <table class="table table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>Username</th>
+                                        <td>{{user?.username}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone</th>
+                                        <td>{{user?.phone}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address</th>
+                                        <td>{{user?.address}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Issue Date</th>
+                                        <td>{{issuedDate}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Return Date</th>
+                                        <td>{{returnDate}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Overdue</th>
+                                        <td>{{borrowedUser?.isOverdue ? 'YES' : 'NO'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div *ngIf="activeTab === 'author'" class="scrollable-content">
+                            <table class="table table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>First Name</th>
+                                        <td>{{book.author?.firstName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Last Name</th>
+                                        <td>{{book.author?.lastName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Birthday</th>
+                                        <td>{{birthday}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        </div>
+    </div>
+</div>
+  

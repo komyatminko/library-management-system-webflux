@@ -1,0 +1,52 @@
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Edit Issued User</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="issuedUserForm">
+            <div class="mb-3">
+              <label class="form-label">User Name</label>
+              <input type="text" class="form-control" formControlName="username" />
+              <div *ngIf="issuedUserForm.get('username')?.invalid && issuedUserForm.get('username')?.touched">
+                <small *ngIf="issuedUserForm.get('username')?.errors?.['required']" class="text-danger">Username is required.</small>
+                <small *ngIf="issuedUserForm.get('username')?.errors?.['minlength']" class="text-danger">Username must be at least 5 characters.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Phone</label>
+              <input type="phone" class="form-control" formControlName="phone" />
+              <div *ngIf="issuedUserForm.get('phone')?.invalid && issuedUserForm.get('phone')?.touched">
+                <small *ngIf="issuedUserForm.get('phone')?.errors?.['required']" class="text-danger">Phone number is required.</small>
+                <small *ngIf="issuedUserForm.get('phone')?.errors?.['minlength']" class="text-danger">Phone number must be at least 11 digits.</small>
+                <small *ngIf="issuedUserForm.get('phone')?.errors?.['maxlength']" class="text-danger">Phone number must not be greater than 11 digits.</small>
+                <small *ngIf="issuedUserForm.get('phone')?.errors?.['phoneNumberInvalid']" class="text-danger">
+                  Phone number must start with "09".
+                </small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Address</label>
+              <input type="text" class="form-control" formControlName="address" />
+              <div *ngIf="issuedUserForm.get('address')?.invalid && issuedUserForm.get('address')?.touched">
+                <small *ngIf="issuedUserForm.get('address')?.errors?.['required']" class="text-danger">Address is required.</small>
+              </div>
+            </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="updateIssuedUser()" [disabled]="!this.isFormValid">
+       Update
+      </button>
+    </div>
+</ng-template>
+
+
+<button type="button" class="btn p-0 me-2">
+  <i class="fa-solid fa-pen-to-square text-success" (click)="showEditDialog()"></i>
+</button>
+
+    
+
+
+
