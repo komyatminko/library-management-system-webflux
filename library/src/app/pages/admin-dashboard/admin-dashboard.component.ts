@@ -59,7 +59,10 @@ export class AdminDashboardComponent {
 
     this.username = localStorage.getItem('username') || 'Unknown';
 
+    this.userService.users.subscribe(users => console.log('users', users))
+
     this.bookService.books.subscribe(books => {
+      console.log('books', books)
       this.totalBookCount = 0;
       books.map(book=> {
         
@@ -95,7 +98,7 @@ export class AdminDashboardComponent {
         
       })
     })
-    // this.userService.users.subscribe(users => this.borrowedUsers = users)
+    
   }
 
 
