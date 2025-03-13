@@ -29,16 +29,19 @@ export class UserService {
     });
   }
 
-  getAllUsers(): Observable<User[]> {
-    return this.http.get<User[]>(URL, { withCredentials: true }); 
-  } 
+  getAllUsers(): Observable<{ data: User[] }> {
+    return this.http.get<{ data: User[] }>(URL, { withCredentials: true });
+  }
 
   fetchUsersFromServer(): void {
     this.getAllUsers().subscribe(
-      (response: User[]) => {
-        this._usersData = response.map(item => item);
-        this.emitChange();
-      }
+        (response: { data: User[] }) => {
+            this._usersData = response.data; 
+            this.emitChange();
+        },
+        (error) => {
+            console.error("Error fetching users:", error);
+        }
     );
   }
 

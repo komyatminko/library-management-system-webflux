@@ -30,18 +30,23 @@ export class BookService {
     
   }
 
-  getAllBooks(): Observable<{ data: Book }[]> {
-    return this.http.get<{ data: Book }[]>(URL,{ withCredentials: true }); 
+  getAllBooks(): Observable<{ data: Book[] }> {
+    return this.http.get<{ data: Book[] }>(URL, { withCredentials: true });
   }
+
 
   fetchBooksFromServer(): void {
     this.getAllBooks().subscribe(
-      (response: { data: Book }[]) => {
-        this._booksData = response.map(item => item.data);
-        this.emitChange();
-      }
+        (response: { data: Book[] }) => {
+            this._booksData = response.data; 
+            this.emitChange();
+        },
+        (error) => {
+            console.error("Error fetching books:", error);
+        }
     );
-  }
+}
+
 
   get10Books(page: number, size: number): Observable<any> {
     const params = new HttpParams()

@@ -47,7 +47,6 @@ export class LoginComponent {
       this.authService.login(userData)
         .subscribe(
           data => {
-            console.log('data after login ', data)
             this.loginSuccess(data.data);
             this.isLoginError = false;
           },

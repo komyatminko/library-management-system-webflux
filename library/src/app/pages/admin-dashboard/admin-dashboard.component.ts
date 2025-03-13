@@ -59,10 +59,7 @@ export class AdminDashboardComponent {
 
     this.username = localStorage.getItem('username') || 'Unknown';
 
-    this.userService.users.subscribe(users => console.log('users', users))
-
     this.bookService.books.subscribe(books => {
-      console.log('books', books)
       this.totalBookCount = 0;
       books.map(book=> {
         
@@ -120,9 +117,7 @@ export class AdminDashboardComponent {
     
   }
 
-  
-
   handleToggleCol2(isHidden: boolean): void {
-    this.isCol2Hidden = isHidden; // Update the visibility based on the child's event
+    this.isCol2Hidden = isHidden; 
   }
 }
