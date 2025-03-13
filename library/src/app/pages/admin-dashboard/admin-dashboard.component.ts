@@ -75,7 +75,6 @@ export class AdminDashboardComponent {
                   this.totalOverdueBookCount += 1;
                 }
   
-                // console.log('borrowed users', borrowedUser)
                 if(borrowedUser){
                   this.borrowedUsers.push(borrowedUser);
                 }
