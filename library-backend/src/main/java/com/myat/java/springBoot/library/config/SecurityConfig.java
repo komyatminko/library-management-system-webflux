@@ -108,7 +108,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200")); 
+        config.setAllowedOrigins(List.of("http://localhost:4200, https://library-dashboard.up.railway.app")); 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Set-Cookie", "Content-Type"));
         config.setAllowCredentials(true); // Allow credentials (cookies)
