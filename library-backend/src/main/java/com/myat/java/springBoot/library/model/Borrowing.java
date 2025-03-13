@@ -5,6 +5,8 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Document(collection = "borrowings")
 public class Borrowing {
 
@@ -12,8 +14,11 @@ public class Borrowing {
 	private String id;
 	private String userId;
 	private String bookId;
+	
 	private Date issueDate;
+	
 	private Date returnDate;
+	
 	private Boolean isOverdue;
 	
 	public Borrowing() {}
