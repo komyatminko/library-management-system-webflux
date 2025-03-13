@@ -41,7 +41,7 @@ public class BookController {
 	BookService bookService;
 	
 	@GetMapping
-	public ResponseEntity<Flux<ApiResponse>> getAllBooks() {
+	public Mono<ResponseEntity<ApiResponse>> getAllBooks() {
 	    Flux<BookDto> books = this.bookService.getAllBook();
 
 	    return ResponseEntity.ok()

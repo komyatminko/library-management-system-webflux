@@ -27,8 +27,10 @@ public class UserController {
 	private UserService userService;
 	
 	@GetMapping
-	public Flux<UserDto> getAllUsers(){
-		return this.userService.getAllUsers();
+	public Mono<ResponseEntity<ApiResponse>> getAllUsers(){
+		Flux<User> users = this.userService.getAllUsers();
+		return ResponseEntity.ok()
+	            .body(users.map(user -> ApiResponse.success("Users have been retrieved successfully.", 200, user)));
 				
 				
 	}
