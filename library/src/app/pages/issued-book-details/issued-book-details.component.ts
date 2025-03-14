@@ -87,9 +87,7 @@ export class IssuedBookDetailsComponent {
   showOverdueDetails(isOverdue: boolean){
     if(isOverdue && this.borrowedUser){
       
-      const daysInMilis = this.bookService.getOverdueDays(this.borrowedUser?.returnDate);
-
-      this.overdueDays = Math.floor(daysInMilis / (1000 * 60 * 60 * 24));
+      this.overdueDays = this.bookService.getOverdueDays(this.borrowedUser?.returnDate);
       this.overdueFees = this.bookService.getOverdueFee(this.overdueDays);
     }
   }

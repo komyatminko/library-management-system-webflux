@@ -74,7 +74,6 @@ export class BooksListComponent implements OnInit{
         this.filterBooks = this.allBooks;
         this.originBooks = this.allBooks;
         this.totalItems = obj.data.collectionSize;
-
         
       })
     })
@@ -85,6 +84,15 @@ export class BooksListComponent implements OnInit{
         this.filterBooks = this.allBooks;
         this.originBooks = this.allBooks;
         this.totalItems = obj.data.collectionSize;
+
+        this.originBooks.flatMap(book=>
+          book.bookDetails.genres.map(genre => genre)
+        )
+        .forEach(genre=> {
+          if(!this.genres.includes(genre))
+          this.genres.push(genre)
+        })
+
 
         const storedGenres = localStorage.getItem('selectedGenres');
       if (storedGenres) {

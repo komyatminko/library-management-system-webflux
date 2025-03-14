@@ -54,8 +54,7 @@ export class IssuedUsersDetailsComponent {
   }
 
   calculateOverdueDay(timestamp: Date){
-    let daysInMilis = this.bookService.getOverdueDays(timestamp);
-    return Math.floor(daysInMilis / (1000 * 60 * 60 * 24));
+    return this.bookService.getOverdueDays(timestamp);
   }
 
   calculateOverdueFees(timestamp : Date){

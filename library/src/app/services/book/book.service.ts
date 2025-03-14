@@ -162,19 +162,31 @@ export class BookService {
     return borrowedBy;
   }  
 
-  isOverdue(returnDate: Date): boolean{
-    let currentDate = new Date();
-    return currentDate > returnDate;
-  }
+  isOverdue(returnDate: Date): boolean {
+    const currentDate = new Date();
+    const dueDate = new Date(returnDate);
 
+    currentDate.setHours(0, 0, 0, 0);
+    dueDate.setHours(0, 0, 0, 0);
+  
+    return currentDate > dueDate;
+  }
+  
   getOverdueFee(daysOverdue: number): number {
     return daysOverdue * this.overdueRate;
   }
 
-  getOverdueDays(returnDateTimestamp: Date): number{
+  getOverdueDays(returnDateTimestamp: Date): number {
     const currentDate = new Date();
-      const returnDate = new Date(returnDateTimestamp);
-      return currentDate.getTime() - returnDate?.getTime();
+    const returnDate = new Date(returnDateTimestamp);
+  
+    currentDate.setHours(0, 0, 0, 0);
+    returnDate.setHours(0, 0, 0, 0);
+  
+    const diffInMs = currentDate.getTime() - returnDate.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  
+    return Math.max(diffInDays, 0);
   }
 
   updateBookWhenOverdue(book: Book, borrowing: BorrowedUser){
@@ -184,11 +196,9 @@ export class BookService {
 
         let borrowedBy = book.borrowedBy?.map(user=> user.id == borrowing.id? borrowing : user);
         book.borrowedBy = borrowedBy;
-        this.updateBook(book);
+        this.updateBook(book).subscribe();
       }
     }
   }
-
-  
 
 }
