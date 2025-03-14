@@ -74,6 +74,14 @@ export class BooksListComponent implements OnInit{
         this.filterBooks = this.allBooks;
         this.originBooks = this.allBooks;
         this.totalItems = obj.data.collectionSize;
+
+        this.originBooks.flatMap(book=>
+          book.bookDetails.genres.map(genre => genre)
+        )
+        .forEach(genre=> {
+          if(!this.genres.includes(genre))
+          this.genres.push(genre)
+        })
         
       })
     })
@@ -155,7 +163,8 @@ export class BooksListComponent implements OnInit{
     if (event.target.checked) {
       this.selectedGenres.push(genre.toLowerCase());
     } else {
-      this.selectedGenres = this.selectedGenres.filter(g => g !== genre);
+      this.selectedGenres = this.selectedGenres.filter(g => g != genre);
+      console.log('selected genres',this.selectedGenres)
       this.nothingToShow = false;
     }
     localStorage.setItem('selectedGenres', JSON.stringify(this.selectedGenres));

@@ -37,12 +37,15 @@ import Swal from 'sweetalert2';
 export class AdminDashboardComponent {
 
   borrowedUsers: BorrowedUser[] = [];
+  borrowedBooks !: Book[];
   totalBookCount: number = 0;
   totalBorrowedBookCount: number = 0;
   totalOverdueBookCount: number = 0;
   totalBorrowedUserCount: number = 0;
   username!: string;
   isCol2Hidden = true;
+  processedUsers = new Set<string>();
+  
   constructor(private bookService: BookService,
               private userService: UserService,
               private authService: AuthService,
@@ -56,6 +59,28 @@ export class AdminDashboardComponent {
     //   this.username = params.get('username') || 'Unknown';
     //   console.log('this.user', this.username)
     // })
+    this.bookService.getBorrowedBooks().subscribe(data => {
+      this.borrowedBooks = data; 
+    })
+    // set true to isOverdue and update book 
+    this.borrowedBooks.forEach(book=>{
+      if(book.borrowedBy){
+        book.borrowedBy.forEach(borrowedUser=> {
+          //check whether return date is overdue or not
+          if(this.bookService.isOverdue(borrowedUser.returnDate) && !borrowedUser.isOverdue){
+            //if yes, call fun updateBookWhenOverdue from service to update the book
+            if(borrowedUser.id){
+              if (!this.processedUsers.has(borrowedUser.id)) {
+                this.bookService.updateBookWhenOverdue(book, borrowedUser);
+                this.processedUsers.add(borrowedUser.id);
+              } else {
+                console.log(`Skipping already processed user ${borrowedUser.id}`);
+              }
+            }
+          }
+        })
+      }
+    })
 
     this.username = localStorage.getItem('username') || 'Unknown';
 

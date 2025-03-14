@@ -35,7 +35,7 @@ export class BooksIssuedListComponent {
   filterStatus: string = 'all';
   filteredBooks: Book[] = [];
 
-  private processedUsers = new Set<string>();
+  
 
   constructor(private bookService: BookService,
               private router: Router,
@@ -58,25 +58,7 @@ export class BooksIssuedListComponent {
         });
       });
 
-      // set true to isOverdue and update book 
-      this.allBooks.forEach(book=>{
-        if(book.borrowedBy){
-          book.borrowedBy.forEach(borrowedUser=> {
-            //check whether return date is overdue or not
-            if(this.bookService.isOverdue(borrowedUser.returnDate) && !borrowedUser.isOverdue){
-              //if yes, call fun updateBookWhenOverdue from service to update the book
-              if(borrowedUser.id){
-                if (!this.processedUsers.has(borrowedUser.id)) {
-                  this.bookService.updateBookWhenOverdue(book, borrowedUser);
-                  this.processedUsers.add(borrowedUser.id);
-                } else {
-                  console.log(`Skipping already processed user ${borrowedUser.id}`);
-                }
-              }
-            }
-          })
-        }
-      })
+      
     });
 
     
