@@ -40,10 +40,6 @@ export class BooksListComponent implements OnInit{
   nothingToShow: boolean = false;
   selectedGenres: string[] = [];
   genres : string[] = [
-    'action',
-    'sci-fi',
-    'drama',
-    'history',
     
   ]
 
@@ -162,6 +158,7 @@ export class BooksListComponent implements OnInit{
   onGenreChange(event: any, genre: string){
     if (event.target.checked) {
       this.selectedGenres.push(genre.toLowerCase());
+      console.log('selected genres',this.selectedGenres)
     } else {
       this.selectedGenres = this.selectedGenres.filter(g => g != genre);
       console.log('selected genres',this.selectedGenres)
