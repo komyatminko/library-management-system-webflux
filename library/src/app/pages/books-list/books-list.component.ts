@@ -167,6 +167,6 @@ export class BooksListComponent implements OnInit{
   }
 
   isChecked(genre: string){
-    return this.selectedGenres.includes(genre);
+    return this.selectedGenres.includes(genre.toLowerCase());
   }
 }

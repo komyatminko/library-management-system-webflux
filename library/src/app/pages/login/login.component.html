@@ -1,15 +1,15 @@
 <div class="container mt-5">
     <div class="card shadow">
       <div class="card-body">
-        <h4 class="card-title text-center mb-4">Login</h4>
+        <h2 class="card-title text-center mb-4">Login</h2>
         
         <!-- invalid username or password -->
         <div class="my-2" *ngIf="isLoginError">
-          <span class="text-danger">
+          <span class="text-danger ms-3">
             incorrect username or password
           </span>
         </div>
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mx-3">
           <!-- Username Input -->
           <div class="mb-3">
             <label for="username" class="form-label">Username:</label>
@@ -43,8 +43,13 @@
           </div>
   
           <!-- Submit Button -->
-          <div class="d-grid">
-            <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
+          <div class="d-grid submit-btn mb-3">
+            <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">
+              <div class="d-flex justify-content-center align-items-center">
+                <span class="me-3">Login</span>
+              <app-spinner *ngIf="loading"></app-spinner>
+              </div>
+            </button>
           </div>
         </form>
       </div>

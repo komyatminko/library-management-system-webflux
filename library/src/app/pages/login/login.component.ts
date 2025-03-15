@@ -1,4 +1,5 @@
 
+import { SpinnerComponent } from '@/app/components/spinner/spinner.component';
 import { AuthService } from '@/app/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
@@ -9,7 +10,8 @@ import { Router } from '@angular/router';
   selector: 'app-login',
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SpinnerComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -17,6 +19,7 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   loginForm: FormGroup;
   isLoginError: boolean = false
+  loading: boolean = false;
 
   constructor(private fb: FormBuilder, 
               private authService: AuthService,
@@ -43,15 +46,18 @@ export class LoginComponent {
 
 
     if (this.loginForm.valid) {
+      this.loading = true;
       const userData = this.loginForm.value;
       this.authService.login(userData)
         .subscribe(
           data => {
             this.loginSuccess(data.data);
             this.isLoginError = false;
+            this.loading = false;
           },
           err => {
             this.isLoginError = true;
+            this.loading = false;
           }
         )
     } else {
