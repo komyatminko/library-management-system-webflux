@@ -40,7 +40,6 @@ export class BooksListComponent implements OnInit{
   nothingToShow: boolean = false;
   selectedGenres: string[] = [];
   genres : string[] = [
-    
   ]
 
   constructor(private bookService: BookService){
@@ -158,10 +157,8 @@ export class BooksListComponent implements OnInit{
   onGenreChange(event: any, genre: string){
     if (event.target.checked) {
       this.selectedGenres.push(genre.toLowerCase());
-      console.log('selected genres',this.selectedGenres)
     } else {
-      this.selectedGenres = this.selectedGenres.filter(g => g != genre);
-      console.log('selected genres',this.selectedGenres)
+      this.selectedGenres = this.selectedGenres.filter(g => g != genre.toLowerCase());
       this.nothingToShow = false;
     }
     localStorage.setItem('selectedGenres', JSON.stringify(this.selectedGenres));
